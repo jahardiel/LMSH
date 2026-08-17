@@ -1308,46 +1308,57 @@
                             <select id="selectEquipoHC012Sheet" class="form-control" style="font-weight:700; font-size:0.78rem; padding:0.2rem 0.4rem; width:260px;" onchange="seleccionarEquipoEnGUMDesdeSelect(this.value)">
                                 <option value="">-- Seleccionar de la BD --</option>
                             </select>
+                            <button class="btn btn-primary" style="padding:0.2rem 0.5rem; font-size:0.75rem; font-weight:800;" onclick="agregarEquipoSeleccionadoAHoja()"><i class="fa-solid fa-plus"></i> Incluir Equipo</button>
                         </div>
                     </div>
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.8rem; margin-bottom:1.25rem; text-align:center;">
                         <thead>
                             <tr style="background:#e2e8f0; color:#1e3a8a; font-weight:800;">
-                                <th style="border:1px solid #cbd5e1; padding:0.4rem;">Equipo</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.4rem;">Equipo / Instrumento</th>
                                 <th style="border:1px solid #cbd5e1; padding:0.4rem;">Identificación Interna</th>
                                 <th style="border:1px solid #cbd5e1; padding:0.4rem;">Certificado de Calibración N°</th>
                                 <th style="border:1px solid #cbd5e1; padding:0.4rem;">Fecha de Calibración</th>
+                                <th class="no-print" style="border:1px solid #cbd5e1; padding:0.4rem; width:45px;">Acción</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyEquiposUtilizadosHC012">
                             <tr>
-                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">Prensa Hidráulica / Vernier Digital</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">Prensa Hidráulica Ensayo Compresión 2000 kN (ELE 36-0690/02)</td>
                                 <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#1e3a8a;">LSMCH-EM-002</td>
                                 <td style="border:1px solid #cbd5e1; padding:0.4rem;">03-SI-0356-2025</td>
                                 <td style="border:1px solid #cbd5e1; padding:0.4rem;">2025-10-23</td>
+                                <td class="no-print" style="border:1px solid #cbd5e1; padding:0.4rem;">
+                                    <button class="btn btn-secondary" style="padding:0.15rem 0.35rem; font-size:0.7rem;" onclick="this.closest('tr').remove()"><i class="fa-solid fa-trash"></i></button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
 
 
-                    <!-- PASO 1: MODELADO DE LA MEDICIÓN -->
+                    <!-- PASO 1: MODELADO DE LA MEDICIÓN (GUM ISO/IEC 17025) -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
-                        PASO 1. MODELADO DE LA MEDICIÓN
+                        PASO 1. MODELADO DE LA MEDICIÓN Y ECUACIÓN GUM
                     </div>
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.8rem; margin-bottom:1.25rem;">
                         <tr>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc; width:20%;">Magnitud medida:</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:700;" id="lblHc012MagnitudMedida">Resistencia a la Compresión (f'c)</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc; width:22%;">Magnitud medida (Y):</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:700;" id="lblHc012MagnitudMedida">Resistencia a la Compresión del Concreto (f'c)</td>
                             <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc; width:20%;">Parametro / Unidad:</td>
                             <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:700;" id="lblHc012UnidadMedida">MPa</td>
                         </tr>
                         <tr>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc;">Modelo de medición:</td>
-                            <td colspan="3" style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; font-size:0.9rem;" id="lblHc012EcuacionModelo">
-                                y = f(X1, X2, ..., Xn)
+                            <td style="border:1px solid #cbd5e1; padding:0.55rem; font-weight:800; color:#1e3a8a; background:#f8fafc;">Ecuación del Modelo Matemático:</td>
+                            <td colspan="3" style="border:1px solid #cbd5e1; padding:0.6rem; background:#f8fafc;">
+                                <div style="font-weight:900; color:#1e3a8a; font-size:1.05rem; font-family:'Times New Roman', serif; letter-spacing:0.5px; margin-bottom:0.25rem;" id="lblHc012EcuacionModelo">
+                                    f_c = (4 · P) / (π · d²) + δf_cal + δf_deriva + δf_res + δf_homog
+                                </div>
+                                <div style="font-size:0.76rem; color:#334155; font-style:italic;" id="lblHc012DescripcionModelo">
+                                    Modelo funcional según GUM (ISO/IEC Guide 98-3): La resistencia f_c se determina a partir de la fuerza de ruptura P (kN) y el diámetro d (mm), con correcciones por calibración del instrumento (δf_cal), deriva (δf_deriva), resolución (δf_res) y variabilidad espacial (δf_homog).
+                                </div>
                             </td>
                         </tr>
                     </table>
+
 
                     <!-- PASO 2: IDENTIFICAR FUENTES DE INCERTIDUMBRE -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
@@ -1475,8 +1486,27 @@
                             <div style="font-size:0.75rem; color:#475569; margin-top:0.25rem;">Fecha: _______________</div>
                         </div>
                     </div>
+
+                    <!-- ANEXO TÉCNICO METROLÓGICO: MEMORIA DE CÁLCULO PASO A PASO (GUM / ISO IEC 17025) -->
+                    <div style="margin-top:3rem; page-break-before:always; border-top:2px dashed #1e3a8a; padding-top:1.5rem;">
+                        <div style="text-align:center; border:2px solid #1e3a8a; background:#f8fafc; padding:0.75rem; margin-bottom:1.25rem; border-radius:6px;">
+                            <div style="font-weight:900; font-size:1.1rem; color:#1e3a8a; text-transform:uppercase; letter-spacing:0.5px;">ANEXO TÉCNICO METROLÓGICO</div>
+                            <div style="font-weight:800; font-size:0.92rem; color:#0f172a;">MEMORIA DE CÁLCULO PASO A PASO DE LA INCERTIDUMBRE DE MEDICIÓN</div>
+                            <div style="font-size:0.78rem; color:#475569;">Conforme a la Guía GUM (ISO/IEC Guide 98-3:2008) y Norma ISO/IEC 17025:2017</div>
+                        </div>
+
+                        <!-- CONTENIDO DINÁMICO DE LA MEMORIA DE CÁLCULO -->
+                        <div id="anexoMemoriaCalculoContenido" style="font-size:0.82rem; color:#0f172a; line-height:1.6;">
+                            <div style="text-align:center; padding:1.5rem; color:#64748b;">
+                                <i class="fa-solid fa-calculator" style="font-size:2rem; margin-bottom:0.5rem;"></i><br>
+                                Ejecute el cálculo de incertidumbre para generar la Memoria Técnica Paso a Paso.
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
+
 
             </div>
 
@@ -2727,8 +2757,155 @@
                 if (inpEnsayo) inpEnsayo.value = "Análisis Granulométrico por Tamizado (ASTM D6913)";
                 if (lblEnsayo) lblEnsayo.innerText = "Análisis Granulométrico por Tamizado (ASTM D6913)";
             }
+
+            const nombreEnsayoActual = (inpEnsayo ? inpEnsayo.value : '') || mod;
+            const infoMod = obtenerModeloMatematicoEnsayo(mod, nombreEnsayoActual);
+            const lblEcu = document.getElementById('lblHc012EcuacionModelo');
+            const lblDesc = document.getElementById('lblHc012DescripcionModelo');
+            if (lblEcu) lblEcu.innerText = infoMod.ecuacion;
+            if (lblDesc) lblDesc.innerText = infoMod.descripcion;
         }
 
+
+        function obtenerModeloMatematicoEnsayo(modClean, ensayoTexto) {
+            const txt = (ensayoTexto || '').toLowerCase();
+            const mod = (modClean || '').toLowerCase();
+
+            if (mod.includes('compresion') || txt.includes('compresión') || txt.includes('c39') || txt.includes('fc')) {
+                return {
+                    ecuacion: "f_c = (4 · P) / (π · d²) + δf_cal + δf_deriva + δf_res + δf_homog",
+                    descripcion: "Modelo de Medición GUM (ISO/IEC Guide 98-3): f_c es la resistencia a compresión (MPa), P es la fuerza máxima de ruptura (kN), d es el diámetro medio medido con vernier (mm), δf_cal es la corrección por certificado de la prensa, δf_deriva es la deriva instrumental, δf_res la resolución del manómetro, y δf_homog la variabilidad geométrica del espécimen."
+                };
+            } else if (mod.includes('asentamiento') || mod.includes('slump') || txt.includes('asentamiento') || txt.includes('c143')) {
+                return {
+                    ecuacion: "S = S_ind + δS_cal + δS_deriva + δS_res + δS_operador",
+                    descripcion: "Modelo de Medición GUM (ISO/IEC Guide 98-3): S es el asentamiento (mm/in), S_ind la lectura observada en la regla metálica graduada, δS_cal la corrección por calibración del instrumento, δS_deriva la deriva metrológica, δS_res la resolución graduada, y δS_operador la incertidumbre por variación en el desmoldeo del cono de Abrams."
+                };
+            } else if (mod.includes('temperatura') || txt.includes('temperatura') || txt.includes('c1064')) {
+                return {
+                    ecuacion: "T = T_ind + δT_cal + δT_deriva + δT_res + δT_homog",
+                    descripcion: "Modelo de Medición GUM (ISO/IEC Guide 98-3): T es la temperatura del concreto fresco (°C/°F), T_ind es la lectura directa del termómetro probe, δT_cal es la corrección del certificado de calibración, δT_deriva es la deriva metrológica entre recalibraciones, δT_res la resolución digital, y δT_homog el gradiente térmico de la masa de concreto."
+                };
+            } else if (mod.includes('granulometria') || txt.includes('granulometría') || txt.includes('d6913')) {
+                return {
+                    ecuacion: "%Pasa = 100 - [(∑ m_retenida) / M_total] · 100 + δm_balanza + δm_deriva",
+                    descripcion: "Modelo de Medición GUM (ISO/IEC Guide 98-3): %Pasa es el porcentaje acumulado que pasa por cada tamiz, m_retenida es la masa retenida individual en cada malla (g), M_total es la masa seca total, δm_balanza es la incertidumbre de pesaje, y δm_deriva la deriva metrológica de la balanza."
+                };
+            } else {
+                return {
+                    ecuacion: "Y = f(X₁, X₂, ..., X_N) + ∑ δX_i",
+                    descripcion: "Modelo de Medición GUM Genérico (ISO/IEC Guide 98-3): La magnitud de salida Y se calcula en función de las magnitudes de entrada X_i corregidas por sus componentes de incertidumbre Tipo A y Tipo B asociadas."
+                };
+            }
+        }
+
+        function agregarEquipoSeleccionadoAHoja() {
+            const idVal = document.getElementById('selectEquipoHC012Sheet').value || document.getElementById('selectEquipoMetrologicoBD').value;
+            if (!idVal) {
+                alert("Por favor seleccione un equipo registrado de la Base de Datos en el desplegable.");
+                return;
+            }
+            const eqId = parseInt(idVal);
+            const eq = (window.equiposMetrologicosBDCache || []).find(e => e.id === eqId);
+            if (!eq) return;
+
+            const tbodyHC = document.getElementById('tbodyEquiposUtilizadosHC012');
+            if (tbodyHC) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="border:1px solid #cbd5e1; padding:0.4rem; text-align:left;"><strong style="color:#0f172a;">${eq.nombre || (eq.marca + ' ' + eq.modelo)}</strong> <small style="color:#64748b;">(${eq.marca || ''} ${eq.modelo || ''})</small></td>
+                    <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#1e3a8a;">${eq.codigo}</td>
+                    <td style="border:1px solid #cbd5e1; padding:0.4rem;">${eq.numero_certificado || 'Certificado'}</td>
+                    <td style="border:1px solid #cbd5e1; padding:0.4rem;">${eq.fecha_calibracion || ''}</td>
+                    <td class="no-print" style="border:1px solid #cbd5e1; padding:0.4rem;">
+                        <button class="btn btn-secondary" style="padding:0.15rem 0.35rem; font-size:0.7rem;" onclick="this.closest('tr').remove()" title="Quitar equipo de la lista"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbodyHC.appendChild(tr);
+            }
+        }
+
+        function generarMemoriaCalculoPasoAPaso(r, mod, unidad, nombreEnsayo) {
+            const d = r.detalles_calculo || {};
+            const lecturas = r.lecturas_originales || [];
+            const n = r.num_lecturas || (lecturas.length > 0 ? lecturas.length : 1);
+            const media = r.temp_media_indicada || 0;
+            const std = r.std_muestral || 0;
+            const uRep = r.u_rep || 0;
+            const uCal = r.u_cal || 0;
+            const uRes = r.u_res || 0;
+            const uDeriva = r.u_deriva || 0;
+            const uComb = r.u_combinada || 0;
+            const nuEff = r.grados_libertad_efectivos || 50;
+            const kFactor = r.factor_k || 2.0;
+            const uExp = r.incertidumbre_expandida_U || 0;
+            const tempFinal = r.temp_estimada_final || media;
+            const modeloInfo = obtenerModeloMatematicoEnsayo(mod, nombreEnsayo);
+
+            return `
+                <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.25rem;">
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.92rem; margin-bottom:0.4rem; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.25rem;">
+                        1. ENSAYO EVALUADO Y MODELO FUNCIONAL GUM
+                    </div>
+                    <p style="margin:0 0 0.4rem 0;"><strong>Ensayo Metrológico:</strong> ${nombreEnsayo || 'Ensayo de Laboratorio'}</p>
+                    <p style="margin:0 0 0.4rem 0;"><strong>Modelo Matemático:</strong> <span style="font-family:'Times New Roman', serif; font-weight:800; color:#1e3a8a; font-size:1.05rem;">${modeloInfo.ecuacion}</span></p>
+                    <p style="margin:0; font-size:0.78rem; color:#475569; font-style:italic;">${modeloInfo.descripcion}</p>
+                </div>
+
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.25rem;">
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.92rem; margin-bottom:0.4rem; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.25rem;">
+                        2. PASO A: EVALUACIÓN DE INCERTIDUMBRE TIPO A (REPETIBILIDAD DE LECTURAS)
+                    </div>
+                    <p style="margin:0 0 0.5rem 0;">
+                        Se registraron <strong>n = ${n}</strong> lecturas de medición: <span style="font-family:monospace; background:#ffffff; padding:0.15rem 0.5rem; border-radius:4px; border:1px solid #cbd5e1; font-weight:700;">[${lecturas.join(', ')}] ${unidad}</span>
+                    </p>
+                    <ul style="margin:0; padding-left:1.25rem; line-height:1.7;">
+                        <li><strong>Valor Medio / Promedio (x̄):</strong> x̄ = (∑ xᵢ) / n = <strong>${media.toFixed(3)} ${unidad}</strong></li>
+                        <li><strong>Desviación Estándar Muestral (s):</strong> s = √[ ∑ (xᵢ - x̄)² / (n - 1) ] = <strong>${std.toFixed(4)} ${unidad}</strong></li>
+                        <li><strong>Incertidumbre Estándar Tipo A (u_A):</strong> u_A = s / √n = ${std.toFixed(4)} / √${n} = <strong>${uRep.toFixed(4)} ${unidad}</strong></li>
+                        <li><strong>Grados de Libertad (ν_A):</strong> ν_A = n - 1 = <strong>${n - 1}</strong></li>
+                    </ul>
+                </div>
+
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.25rem;">
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.92rem; margin-bottom:0.4rem; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.25rem;">
+                        3. PASO B: EVALUACIÓN DE INCERTIDUMBRE TIPO B (COMPONENTES INSTRUMENTALES)
+                    </div>
+                    <ul style="margin:0; padding-left:1.25rem; line-height:1.7;">
+                        <li><strong>Incertidumbre por Calibración (u_cal):</strong> u_cal = U_cert / k_cert = <strong>${uCal.toFixed(4)} ${unidad}</strong> (Distribución Normal, k = ${(d.k_cal || 2.0).toFixed(2)})</li>
+                        <li><strong>Incertidumbre por Resolución (u_res):</strong> u_res = (Resolución) / (2√3) = ${(d.resolucion || 0.01)} / 3.4641 = <strong>${uRes.toFixed(4)} ${unidad}</strong> (Distribución Rectangular)</li>
+                        <li><strong>Incertidumbre por Deriva Instrumental (u_deriva):</strong> u_deriva = (Deriva) / √3 = ${(d.deriva || 0.0)} / 1.7320 = <strong>${uDeriva.toFixed(4)} ${unidad}</strong> (Distribución Rectangular)</li>
+                    </ul>
+                </div>
+
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.25rem;">
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.92rem; margin-bottom:0.4rem; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.25rem;">
+                        4. PASO C: COMBINACIÓN DE INCERTIDUMBRES (LEY DE PROPAGACIÓN GUM)
+                    </div>
+                    <p style="margin:0 0 0.4rem 0;">Aplicando el teorema de adición de varianzas independientes:</p>
+                    <div style="font-family:monospace; font-weight:800; color:#1e3a8a; background:#ffffff; padding:0.65rem; border-radius:4px; border:1px solid #cbd5e1; font-size:0.85rem;">
+                        u_c = √[ u_A² + u_cal² + u_res² + u_deriva² ]<br>
+                        u_c = √[ (${uRep.toFixed(4)})² + (${uCal.toFixed(4)})² + (${uRes.toFixed(4)})² + (${uDeriva.toFixed(4)})² ] = <strong>${uComb.toFixed(4)} ${unidad}</strong>
+                    </div>
+                </div>
+
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem;">
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.92rem; margin-bottom:0.4rem; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.25rem;">
+                        5. PASOS D Y E: FÓRMULA WELCH-SATTERTHWAITE E INCERTIDUMBRE EXPANDIDA (U)
+                    </div>
+                    <ul style="margin:0; padding-left:1.25rem; line-height:1.7;">
+                        <li><strong>Grados Efectivos de Libertad (ν_eff):</strong> ν_eff = u_c⁴ / [ ∑ (u_i⁴ / ν_i) ] = <strong>${typeof nuEff === 'number' ? nuEff.toFixed(1) : nuEff}</strong></li>
+                        <li><strong>Factor de Cobertura (k):</strong> k = <strong>${kFactor.toFixed(2)}</strong> (para Nivel de Confianza P = 95.45%)</li>
+                        <li><strong>Incertidumbre Expandida (U):</strong> U = k · u_c = ${kFactor.toFixed(2)} × ${uComb.toFixed(4)} = <strong>± ${uExp.toFixed(3)} ${unidad}</strong></li>
+                        <li style="margin-top:0.4rem; font-size:0.9rem; color:#1e3a8a;"><strong>RESULTADO OFICIAL REPORTADO (ISO/IEC 17025):</strong><br>
+                            <span style="font-size:1.05rem; font-weight:900; background:#e0f2fe; padding:0.25rem 0.6rem; border-radius:4px; border:1px solid #0284c7; display:inline-block; margin-top:0.25rem;">
+                                Y = ${tempFinal.toFixed(2)} ± ${uExp.toFixed(3)} ${unidad} (k = ${kFactor.toFixed(2)}, P = 95.45%)
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            `;
+        }
 
         async function calcularIncertidumbreGUM() {
             const lecturasRaw = document.getElementById('gumLecturas').value;
@@ -2771,14 +2948,16 @@
                     const uComb = r.u_combinada || 0;
                     const tempFinal = r.temp_estimada_final || r.temp_media_indicada || 0;
 
-                    // Encabezado Paso 1
+                    // Encabezado Paso 1 y Modelo Matemático GUM
                     const selectMod = document.getElementById('gumModulo');
                     const nombreProceso = document.getElementById('incNombreEnsayoInput')?.value || selectMod.options[selectMod.selectedIndex].text;
-                    document.getElementById('lblHc012NombreProceso').innerText = nombreProceso;
-                    document.getElementById('lblHc012MagnitudMedida').innerText = mod.toUpperCase();
-                    document.getElementById('lblHc012UnidadMedida').innerText = unidad;
-                    document.getElementById('lblHc012EcuacionModelo').innerText = `y = f(${r.fuentes ? r.fuentes.map((f,i)=>'X'+(i+1)).join(', ') : 'X1, X2'})`;
+                    const modeloInfo = obtenerModeloMatematicoEnsayo(mod, nombreProceso);
 
+                    document.getElementById('lblHc012NombreProceso').innerText = nombreProceso;
+                    document.getElementById('lblHc012MagnitudMedida').innerText = nombreProceso;
+                    document.getElementById('lblHc012UnidadMedida').innerText = unidad;
+                    document.getElementById('lblHc012EcuacionModelo').innerText = modeloInfo.ecuacion;
+                    document.getElementById('lblHc012DescripcionModelo').innerText = modeloInfo.descripcion;
 
                     // Paso 4 y 5 Resumen
                     document.getElementById('lblHC012Uc').innerText = `${uComb.toFixed(4)} ${unidad}`;
@@ -2821,17 +3000,21 @@
                         // Paso 4: Combinada
                         document.getElementById('tbodyPaso4Combinada').innerHTML = r.tabla_presupuesto.map((f, idx) => {
                             const ui = typeof f["ui(y) Contribución"] === 'number' ? f["ui(y) Contribución"] : 0;
-                            const uiSq = ui * ui;
                             return `
                             <tr>
                                 <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">X${idx+1}</td>
                                 <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
                                 <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Coef. Sensibilidad ci"] === 'number' ? f["Coef. Sensibilidad ci"].toFixed(4) : f["Coef. Sensibilidad ci"]}</td>
                                 <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${ui.toFixed(4)}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${uiSq.toExponential(3)}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${f["Grados νi"] || f["grados_libertad"]}</td>
                             </tr>
-                        `}).join('');
+                        `;
+                        }).join('');
+                    }
+
+                    // Generar Anexo Técnico Memoria de Cálculo Paso a Paso
+                    const contenedorAnexo = document.getElementById('anexoMemoriaCalculoContenido');
+                    if (contenedorAnexo) {
+                        contenedorAnexo.innerHTML = generarMemoriaCalculoPasoAPaso(r, mod, unidad, nombreProceso);
                     }
 
                     dibujarPieHC012(r.tabla_presupuesto || []);
