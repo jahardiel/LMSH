@@ -1,7 +1,7 @@
 """
 Motor de Cálculo Geotécnico Rigurosamente Alineado con ASTM D6913 / D6913M - 17 (Reaprobada 2025)
 Formato Oficial HC-LSMCH-006 (Universidad Tecnológica de Panamá - LSMCH)
-Cálculo con Precisión Interna Sin Redondear y Redondeo Final según Método A (1%) o Método B (0.1%)
+Soporte de Tamizado Compuesto y Reducción de Fracción Fina
 """
 
 import math
@@ -26,25 +26,23 @@ TAMICES_ASTM_D6913 = [
 
 def calcular_granulometria_astm_d6913(datos):
     """
-    Cálculo oficial ASTM D6913 / HC-LSMCH-006 con conservación de precisión interna.
-    Redondeo al final:
-      - % Retenido (Intermedio): 2 decimales
-      - % Acumulado Retenido: 1 decimal (0.1%)
-      - % Que Pasa: Entero (1%) para Método A o 1 decimal (0.1%) para Método B.
+    Cálculo oficial ASTM D6913 / HC-LSMCH-006 con Tamizado Compuesto y Reducción de Fracción Fina.
     """
     metodo = datos.get("metodo_ensayo", "METODO_A")
     procedimiento = datos.get("procedimiento", "HUMEDO")
     
     s_md = float(datos.get("masa_total_seca_g", 1246.3)) # Masa total seca espécimen
     m_humeda_total = float(datos.get("masa_total_humeda_g", 1942.7))
+    m_humeda_ffina_total = float(datos.get("masa_total_humeda_ffina_g", 1821.3))
+
+    m_hum_fgruesa = float(datos.get("m_hum_fgruesa", 121.4))
+    m_hum_ffina = float(datos.get("m_hum_ffina", 132.5))
 
     tamices_input = datos.get("tamices", [])
     
     # 1. Factores de tamizado unrounded (CSCF)
-    # Factor Fracción Gruesa = 100 / S,Md
     factor_gruesa = (100.0 / s_md) if s_md > 0 else 0.0
     
-    # Calcular retención de masa en gruesa en Tamiz No. 4
     item_no4 = next((x for x in tamices_input if x.get("tamiz") == 'No. 4'), {})
     m_ret_gruesa_no4 = float(item_no4.get("fgruesa_g", item_no4.get("masa_retenida", 77.9)))
     
@@ -59,7 +57,7 @@ def calcular_granulometria_astm_d6913(datos):
     # Factor Fracción Fina CSCF = pct_pasa_no4_raw / sub_s_md
     factor_fina = (pct_pasa_no4_raw / sub_s_md) if sub_s_md > 0 else factor_gruesa
 
-    # 2. Procesar tamizado conservando precisión flotante sin redondear intermedios
+    # 2. Procesar tamizado conservando precisión flotante
     resultado_tamices = []
     cmr_acumulada_raw = 0.0
     suma_masas_retenidas = 0.0
@@ -79,7 +77,6 @@ def calcular_granulometria_astm_d6913(datos):
         if es_gruesa and nombre != 'No. 4':
             m_ret_ffina = 0.0
             
-        # % Retenido sin redondear
         if es_gruesa:
             pct_ret_ind_raw = m_ret_fgruesa * factor_gruesa
             factor_usado = factor_gruesa
@@ -120,13 +117,22 @@ def calcular_granulometria_astm_d6913(datos):
                 "pct_pasa_raw": round(pct_pasa_raw, 2)
             })
 
-
-
     # Pérdida aceptable por lavado (CP_L) <= 0.5%
     cp_l = ((s_md - (suma_masas_retenidas + m_fina_fondo)) / s_md) * 100.0 if s_md > 0 else 0.0
     cp_l_aceptable = (abs(cp_l) <= 0.5)
 
-    # Diámetros característicos D10, D15, D30, D50, D60, D85 usando valores no redondeados
+    # Parámetros de Reducción y Tamizado Compuesto
+    h_total_pct = round(((m_humeda_total - s_md) / s_md) * 100.0, 1) if s_md > 0 else 0.0
+    h_fgruesa_pct = round(((m_hum_fgruesa - m_ret_gruesa_no4) / m_ret_gruesa_no4) * 100.0, 1) if m_ret_gruesa_no4 > 0 else 0.0
+    h_ffina_pct = round(((m_hum_ffina - sub_s_md) / sub_s_md) * 100.0, 1) if sub_s_md > 0 else 0.0
+
+    pct_fraccion_gruesa = round(pct_ret_no4_raw, 1)
+    pct_fraccion_fina = round(pct_pasa_no4_raw, 1)
+
+    sum_tamizado_gruesa = round(m_ret_gruesa_no4, 1)
+    sum_tamizado_fina = round(sub_s_md - m_fina_fondo, 1)
+
+    # Diámetros característicos D10, D15, D30, D50, D60, D85
     def interpolar_d_exacto(pct_objetivo):
         for i in range(len(resultado_tamices) - 1):
             p1 = resultado_tamices[i]["pct_pasa_raw"]
@@ -151,7 +157,6 @@ def calcular_granulometria_astm_d6913(datos):
     cu = round(d60 / d10, 2) if (d60 and d10 and d10 > 0) else None
     cc = round((d30**2) / (d60 * d10), 2) if (d30 and d60 and d10 and (d60 * d10) > 0) else None
 
-    # Porcentajes desglosados
     pasa_no4_raw = next((t["pct_pasa_raw"] for t in resultado_tamices if t["tamiz"] == 'No. 4'), 93.75)
     pasa_no200_raw = next((t["pct_pasa_raw"] for t in resultado_tamices if t["tamiz"] == 'No. 200'), 11.73)
 
@@ -164,6 +169,22 @@ def calcular_granulometria_astm_d6913(datos):
         "norma": "ASTM D6913 / D6913M - 17 (2025)",
         "metodo_ensayo": metodo,
         "procedimiento": procedimiento,
+        "tamizado_compuesto": {
+            "m_humeda_total": m_humeda_total,
+            "s_md": s_md,
+            "m_humeda_ffina_total": m_humeda_ffina_total,
+            "m_hum_fgruesa": m_hum_fgruesa,
+            "m_hum_ffina": m_hum_ffina,
+            "m_seca_fgruesa": m_ret_gruesa_no4,
+            "sub_s_md": sub_s_md,
+            "h_total_pct": h_total_pct,
+            "h_fgruesa_pct": h_fgruesa_pct,
+            "h_ffina_pct": h_ffina_pct,
+            "pct_fraccion_gruesa": pct_fraccion_gruesa,
+            "pct_fraccion_fina": pct_fraccion_fina,
+            "sum_tamizado_gruesa": sum_tamizado_gruesa,
+            "sum_tamizado_fina": sum_tamizado_fina
+        },
         "factor_gruesa": round(factor_gruesa, 7),
         "factor_fina": round(factor_fina, 7),
         "tamices": resultado_tamices,
@@ -187,25 +208,3 @@ def calcular_granulometria(datos_tamices):
     if isinstance(datos_tamices, dict):
         return calcular_granulometria_astm_d6913(datos_tamices)
     return calcular_granulometria_astm_d6913({"tamices": datos_tamices})
-
-def clasificar_sucs(pct_finos, pct_grava, pct_arena, ll=None, ip=None, cu=None, cc=None):
-    if pct_finos is None: return "Indeterminado"
-    linea_a = (0.73 * (ll - 20)) if (ll is not None and ll >= 20) else 0.0
-    if pct_finos < 50.0:
-        es_grava = (pct_grava > pct_arena)
-        if pct_finos < 5.0:
-            if es_grava: return "GW" if ((cu and cu >= 4.0) and (cc and 1.0 <= cc <= 3.0)) else "GP"
-            else: return "SW" if ((cu and cu >= 6.0) and (cc and 1.0 <= cc <= 3.0)) else "SP"
-        elif pct_finos > 12.0:
-            if ll and ip:
-                es_arcilloso = (ip > linea_a and ip > 7)
-                es_limoso = (ip < linea_a or ip < 4)
-                return ("GC" if es_arcilloso else ("GM" if es_limoso else "GC-GM")) if es_grava else ("SC" if es_arcilloso else ("SM" if es_limoso else "SC-SM"))
-            return "Grava con finos" if es_grava else "Arena con finos"
-        else:
-            return "Grava/Arena con finos"
-    else:
-        if ll is None or ip is None: return "Fino sin clasificar"
-        if 4 <= ip <= 7 and (ip >= linea_a or abs(ip - linea_a) <= 1): return "CL-ML"
-        if ll >= 50.0: return "CH" if ip > linea_a else "MH"
-        else: return "CL" if ip > linea_a else "ML"
