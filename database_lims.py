@@ -147,7 +147,7 @@ class DatabaseLIMS:
                 nombre TEXT NOT NULL,
                 cargo TEXT NOT NULL,
                 pin_autorizacion TEXT NOT NULL,
-                nivel_permiso TEXT DEFAULT 'SUPERVISOR',
+                nivel_permiso TEXT DEFAULT 'Técnico de Laboratorio',
                 activo INTEGER DEFAULT 1
             );
             """)
@@ -157,9 +157,10 @@ class DatabaseLIMS:
             if cursor.fetchone()[0] == 0:
                 cursor.execute("""
                     INSERT INTO usuarios_autorizados (nombre, cargo, pin_autorizacion, nivel_permiso) VALUES
-                    ('Dr. Alexis Arrocha', 'Jefe de Laboratorio LSMCH', '17025', 'JEFE_LAB'),
-                    ('Ing. Néstor Saldaña', 'Supervisor de Metrología', '9999', 'SUPERVISOR'),
-                    ('Ing. Jahardiel CO', 'Director Técnico LSMCH', '8888', 'DIRECTOR')
+                    ('Dr. Alexis Arrocha', 'Jefe de Laboratorio LSMCH', '17025', 'Jefe de Laboratorio'),
+                    ('Ing. Néstor Saldaña', 'Responsable Técnico Metrólogo', '9999', 'Responsable Técnico'),
+                    ('Ing. Jahardiel CO', 'Supervisor de Calidad LSMCH', '8888', 'Supervisor de Calidad'),
+                    ('Técnico LSMCH', 'Analista de Ensayo', '1234', 'Técnico de Laboratorio')
                 """)
 
             conn.commit()
@@ -170,7 +171,7 @@ class DatabaseLIMS:
             cursor.execute("SELECT id, nombre, cargo, nivel_permiso FROM usuarios_autorizados WHERE activo = 1 ORDER BY id ASC")
             return [dict(r) for r in cursor.fetchall()]
 
-    def crear_usuario_autorizado(self, nombre, cargo, pin, nivel_permiso="SUPERVISOR"):
+    def crear_usuario_autorizado(self, nombre, cargo, pin, nivel_permiso="Técnico de Laboratorio"):
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
