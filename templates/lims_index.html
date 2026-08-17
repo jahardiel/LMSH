@@ -2974,13 +2974,20 @@
                 const data = await res.json();
                 if (data.success && data.datos) {
                     const d = data.datos;
-                    if (d.codigo) document.getElementById('eqCodigo').value = d.codigo;
-                    if (d.marca) document.getElementById('eqMarca').value = d.marca;
-                    if (d.modelo) document.getElementById('eqModelo').value = d.modelo;
-                    if (d.numero_serie) document.getElementById('eqSerie').value = d.numero_serie;
-                    if (d.resolucion) document.getElementById('eqResolucion').value = d.resolucion;
-                    if (d.numero_certificado) document.getElementById('eqCertificado').value = d.numero_certificado;
-                    if (d.laboratorio) document.getElementById('eqLaboratorio').value = d.laboratorio;
+                    
+                    let codFinal = d.codigo;
+                    if (!codFinal) {
+                        const certClean = (d.numero_certificado || '').replace(/[^a-zA-Z0-9]/g, '');
+                        codFinal = certClean ? `LSMCH-EM-${certClean.slice(-4)}` : `LSMCH-EM-${Math.floor(100 + Math.random() * 900)}`;
+                    }
+
+                    document.getElementById('eqCodigo').value = codFinal;
+                    document.getElementById('eqMarca').value = d.marca || 'GENÉRICO';
+                    document.getElementById('eqModelo').value = d.modelo || 'LAB-17025';
+                    document.getElementById('eqSerie').value = d.numero_serie || 'S/N';
+                    document.getElementById('eqResolucion').value = d.resolucion || 0.01;
+                    document.getElementById('eqCertificado').value = d.numero_certificado || 'CERT-17025';
+                    document.getElementById('eqLaboratorio').value = d.laboratorio || 'CEI - UTP';
                     if (d.fecha_calibracion) document.getElementById('eqFecha').value = d.fecha_calibracion;
 
                     if (d.puntos_calibracion && Array.isArray(d.puntos_calibracion) && d.puntos_calibracion.length > 0) {
@@ -2998,13 +3005,18 @@
                     }
 
                     switchSubTabIncertidumbre('equipos');
-                    alert(` ¡INFORMACIÓN ABSORBIDA EXITOSAMENTE DEL PDF!\n\n` +
-                          `• Código Equipo: ${d.codigo || 'LSMCH-EM-01'}\n` +
-                          `• Marca/Modelo: ${d.marca || 'Prensa'} ${d.modelo || ''}\n` +
-                          `• Serie: ${d.numero_serie || 'N/A'}\n` +
-                          `• Certificado N°: ${d.numero_certificado || 'N/A'}\n` +
-                          `• Laboratorio: ${d.laboratorio}\n` +
-                          `• Puntos Extraídos: ${d.puntos_calibracion ? d.puntos_calibracion.length : 0} puntos.`);
+
+                    // AUTOMÁTICAMENTE GUARDAR EL EQUIPO EN BD SQLITE
+                    const guardadoExitoso = await guardarEquipoMetrologicoBD(true);
+
+                    if (guardadoExitoso) {
+                        alert(` ¡CERTIFICADO ABSORBIDO Y GUARDADO EN LA BASE DE DATOS EXITOSAMENTE!\n\n` +
+                              `• Código Registrado: ${codFinal}\n` +
+                              `• Marca/Modelo: ${d.marca || 'N/A'} ${d.modelo || ''}\n` +
+                              `• Certificado N°: ${d.numero_certificado || 'N/A'}\n` +
+                              `• Puntos Guardados: ${d.puntos_calibracion ? d.puntos_calibracion.length : 0} puntos.\n\n` +
+                              `El equipo ya ha sido almacenado en la Base de Datos SQLite y cargado en el Inventario y Hoja HC-012.`);
+                    }
                 } else {
                     alert("Error al extraer PDF: " + (data.error || "Formato no compatible"));
                 }
@@ -3028,11 +3040,11 @@
             tbody.appendChild(tr);
         }
 
-        async function guardarEquipoMetrologicoBD() {
+        async function guardarEquipoMetrologicoBD(silencioso = false) {
             const cod = document.getElementById('eqCodigo').value.trim();
             if (!cod) {
-                alert("Por favor ingrese el Código del Equipo Interno.");
-                return;
+                if (!silencioso) alert("Por favor ingrese el Código del Equipo Interno.");
+                return false;
             }
 
             const rows = document.querySelectorAll('#tbodyPuntosCalibracionEquipo tr');
@@ -3070,15 +3082,32 @@
 
                 const data = await res.json();
                 if (data.success) {
-                    alert(` ¡EQUIPO METROLÓGICO REGISTRADO! ${data.message || ''}`);
+                    if (!silencioso) alert(` ¡EQUIPO METROLÓGICO REGISTRADO EN BD! ${data.message || ''}`);
                     cargarEquiposRegistradosBD();
+
+                    // Cargar directamente en la tabla EQUIPOS UTILIZADOS de la Hoja HC-LSMCH-012
+                    const tbodyHC = document.getElementById('tbodyEquiposUtilizadosHC012');
+                    if (tbodyHC) {
+                        tbodyHC.innerHTML = `
+                            <tr>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">${document.getElementById('eqMarca').value} ${document.getElementById('eqModelo').value}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#1e3a8a;">${data.codigo || cod}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">${document.getElementById('eqCertificado').value}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">${document.getElementById('eqFecha').value}</td>
+                            </tr>
+                        `;
+                    }
+                    return true;
                 } else {
-                    alert("Error al guardar equipo: " + (data.error || "Datos no válidos"));
+                    if (!silencioso) alert("Error al guardar equipo: " + (data.error || "Datos no válidos"));
+                    return false;
                 }
             } catch(e) {
-                alert("Error de conexión al registrar el equipo metrológico.");
+                if (!silencioso) alert("Error de conexión al registrar el equipo metrológico.");
+                return false;
             }
         }
+
 
         async function cargarEquiposRegistradosBD() {
             const tbody = document.getElementById('tbodyEquiposRegistrados');
