@@ -477,13 +477,198 @@
                 </div>
             </div>
 
-            <!-- SUB-MÓDULOS DE GEOTECNIA ADICIONALES -->
-            <div id="sub-humedad" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Humedad (ASTM D2216)</h3></div></div>
-            <div id="sub-atterberg" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Límites Atterberg & SUCS (ASTM D4318 / D2487)</h3></div></div>
-            <div id="sub-proctor" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Proctor (ASTM D698 / D1557)</h3></div></div>
-            <div id="sub-cbr" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>CBR (ASTM D1883)</h3></div></div>
-            <div id="sub-densidad-campo" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Densidad de Campo</h3></div></div>
-            <div id="sub-spt" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>SPT (ASTM D1586)</h3></div></div>
+            <!-- SUB-MÓDULO 2: HUMEDAD (ASTM D2216) -->
+            <div id="sub-humedad" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-droplet"></i> DETERMINACIÓN DEL CONTENIDO DE AGUA / HUMEDAD EN SUELOS (ASTM D2216)</span>
+                        <span class="badge-solicitud">HC-LSMCH-002</span>
+                    </div>
+                    
+                    <div class="hc006-header-box" style="margin-bottom:1.25rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
+                            <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
+                            <div style="display:flex; gap:0.35rem; align-items:center;">
+                                <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
+                                <input type="text" id="hum_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('hum')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('hum')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                            </div>
+                        </div>
+                        <div class="form-grid-header">
+                            <div><label>PROYECTO:</label><input type="text" id="hum_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                            <div><label>CLIENTE:</label><input type="text" id="hum_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                            <div><label>LOC. DE PROYECTO:</label><input type="text" id="hum_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
+                            <div><label>INFORME:</label><input type="text" id="hum_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('hum')"></div>
+                            <div><label>MUESTREADO POR:</label><input type="text" id="hum_Muestreado" value="JQ, NS, CO"></div>
+                            <div><label>DESCRIPCIÓN:</label><input type="text" id="hum_Desc" value="SUELO"></div>
+                            <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="hum_IdCliente" value="SUELO"></div>
+                            <div><label>FUENTE:</label><input type="text" id="hum_Fuente" value="SPT 1 Y 2 / 7m @ 8m"></div>
+                            <div><label>IDENT. DEL LSMCH:</label><input type="text" id="hum_IdLsmch" value="M5022@023-2026-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-MÓDULO 3: LÍMITES ATTERBERG & SUCS (ASTM D4318 / D2487) -->
+            <div id="sub-atterberg" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-vial"></i> LÍMITES DE ATTERBERG Y CLASIFICACIÓN SUCS / AASHTO (ASTM D4318 / D2487)</span>
+                        <span class="badge-solicitud">HC-LSMCH-003</span>
+                    </div>
+                    
+                    <div class="hc006-header-box" style="margin-bottom:1.25rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
+                            <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
+                            <div style="display:flex; gap:0.35rem; align-items:center;">
+                                <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
+                                <input type="text" id="att_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('att')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('att')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                            </div>
+                        </div>
+                        <div class="form-grid-header">
+                            <div><label>PROYECTO:</label><input type="text" id="att_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                            <div><label>CLIENTE:</label><input type="text" id="att_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                            <div><label>LOC. DE PROYECTO:</label><input type="text" id="att_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
+                            <div><label>INFORME:</label><input type="text" id="att_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('att')"></div>
+                            <div><label>MUESTREADO POR:</label><input type="text" id="att_Muestreado" value="JQ, NS, CO"></div>
+                            <div><label>DESCRIPCIÓN:</label><input type="text" id="att_Desc" value="SUELO"></div>
+                            <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="att_IdCliente" value="SUELO"></div>
+                            <div><label>FUENTE:</label><input type="text" id="att_Fuente" value="SPT 1 Y 2 / 7m @ 8m"></div>
+                            <div><label>IDENT. DEL LSMCH:</label><input type="text" id="att_IdLsmch" value="M5022@023-2026-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-MÓDULO 4: PROCTOR (ASTM D698 / D1557) -->
+            <div id="sub-proctor" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-weight-hanging"></i> COMPACTACIÓN PROCTOR ESTÁNDAR Y MODIFICADO (ASTM D698 / D1557)</span>
+                        <span class="badge-solicitud">HC-LSMCH-004</span>
+                    </div>
+                    
+                    <div class="hc006-header-box" style="margin-bottom:1.25rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
+                            <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
+                            <div style="display:flex; gap:0.35rem; align-items:center;">
+                                <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
+                                <input type="text" id="prc_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('prc')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('prc')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                            </div>
+                        </div>
+                        <div class="form-grid-header">
+                            <div><label>PROYECTO:</label><input type="text" id="prc_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                            <div><label>CLIENTE:</label><input type="text" id="prc_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                            <div><label>LOC. DE PROYECTO:</label><input type="text" id="prc_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
+                            <div><label>INFORME:</label><input type="text" id="prc_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('prc')"></div>
+                            <div><label>MUESTREADO POR:</label><input type="text" id="prc_Muestreado" value="JQ, NS, CO"></div>
+                            <div><label>DESCRIPCIÓN:</label><input type="text" id="prc_Desc" value="SUELO"></div>
+                            <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="prc_IdCliente" value="SUELO"></div>
+                            <div><label>FUENTE:</label><input type="text" id="prc_Fuente" value="SPT 1 Y 2 / 7m @ 8m"></div>
+                            <div><label>IDENT. DEL LSMCH:</label><input type="text" id="prc_IdLsmch" value="M5022@023-2026-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-MÓDULO 5: CBR (ASTM D1883) -->
+            <div id="sub-cbr" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-gauge-high"></i> VALOR DE SOPORTE CALIFORNIA - CBR (ASTM D1883)</span>
+                        <span class="badge-solicitud">HC-LSMCH-005</span>
+                    </div>
+                    
+                    <div class="hc006-header-box" style="margin-bottom:1.25rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
+                            <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
+                            <div style="display:flex; gap:0.35rem; align-items:center;">
+                                <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
+                                <input type="text" id="cbr_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('cbr')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('cbr')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                            </div>
+                        </div>
+                        <div class="form-grid-header">
+                            <div><label>PROYECTO:</label><input type="text" id="cbr_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                            <div><label>CLIENTE:</label><input type="text" id="cbr_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                            <div><label>LOC. DE PROYECTO:</label><input type="text" id="cbr_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
+                            <div><label>INFORME:</label><input type="text" id="cbr_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('cbr')"></div>
+                            <div><label>MUESTREADO POR:</label><input type="text" id="cbr_Muestreado" value="JQ, NS, CO"></div>
+                            <div><label>DESCRIPCIÓN:</label><input type="text" id="cbr_Desc" value="SUELO"></div>
+                            <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="cbr_IdCliente" value="SUELO"></div>
+                            <div><label>FUENTE:</label><input type="text" id="cbr_Fuente" value="SPT 1 Y 2 / 7m @ 8m"></div>
+                            <div><label>IDENT. DEL LSMCH:</label><input type="text" id="cbr_IdLsmch" value="M5022@023-2026-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-MÓDULO 6: DENSIDAD DE CAMPO -->
+            <div id="sub-densidad-campo" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-circle-dot"></i> DENSIDAD DE CAMPO Y COMPACTACIÓN (ASTM D6938 / D1556)</span>
+                        <span class="badge-solicitud">HC-LSMCH-007</span>
+                    </div>
+                    
+                    <div class="hc006-header-box" style="margin-bottom:1.25rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
+                            <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
+                            <div style="display:flex; gap:0.35rem; align-items:center;">
+                                <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
+                                <input type="text" id="den_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('den')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('den')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                            </div>
+                        </div>
+                        <div class="form-grid-header">
+                            <div><label>PROYECTO:</label><input type="text" id="den_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                            <div><label>CLIENTE:</label><input type="text" id="den_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                            <div><label>LOC. DE PROYECTO:</label><input type="text" id="den_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
+                            <div><label>INFORME:</label><input type="text" id="den_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('den')"></div>
+                            <div><label>MUESTREADO POR:</label><input type="text" id="den_Muestreado" value="JQ, NS, CO"></div>
+                            <div><label>DESCRIPCIÓN:</label><input type="text" id="den_Desc" value="SUELO"></div>
+                            <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="den_IdCliente" value="SUELO"></div>
+                            <div><label>FUENTE:</label><input type="text" id="den_Fuente" value="SPT 1 Y 2 / 7m @ 8m"></div>
+                            <div><label>IDENT. DEL LSMCH:</label><input type="text" id="den_IdLsmch" value="M5022@023-2026-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-MÓDULO 7: SPT -->
+            <div id="sub-spt" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-arrows-down-to-line"></i> ENSAYO DE PENETRACIÓN ESTÁNDAR - SPT (ASTM D1586)</span>
+                        <span class="badge-solicitud">HC-LSMCH-008</span>
+                    </div>
+                    
+                    <div class="hc006-header-box" style="margin-bottom:1.25rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
+                            <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
+                            <div style="display:flex; gap:0.35rem; align-items:center;">
+                                <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
+                                <input type="text" id="spt_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('spt')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('spt')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                            </div>
+                        </div>
+                        <div class="form-grid-header">
+                            <div><label>PROYECTO:</label><input type="text" id="spt_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                            <div><label>CLIENTE:</label><input type="text" id="spt_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                            <div><label>LOC. DE PROYECTO:</label><input type="text" id="spt_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
+                            <div><label>INFORME:</label><input type="text" id="spt_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('spt')"></div>
+                            <div><label>MUESTREADO POR:</label><input type="text" id="spt_Muestreado" value="JQ, NS, CO"></div>
+                            <div><label>DESCRIPCIÓN:</label><input type="text" id="spt_Desc" value="SUELO"></div>
+                            <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="spt_IdCliente" value="SUELO"></div>
+                            <div><label>FUENTE:</label><input type="text" id="spt_Fuente" value="SPT 1 Y 2 / 7m @ 8m"></div>
+                            <div><label>IDENT. DEL LSMCH:</label><input type="text" id="spt_IdLsmch" value="M5022@023-2026-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- DASHBOARD, SOLICITUDES, CONCRETO, INCERTIDUMBRE, REPORTES -->
@@ -658,9 +843,102 @@
 
 
 
-        <section id="tab-concreto" class="tab-content"><div class="card-panel"><h3>Módulo de Concreto</h3></div></section>
-        <section id="tab-incertidumbre" class="tab-content"><div class="card-panel"><h3>Módulo de Incertidumbre GUM</h3></div></section>
-        <section id="tab-reportes" class="tab-content"><div class="card-panel"><h3>Reportes e Impresión PDF</h3><button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Reporte</button></div></section>
+        <!-- MÓDULO DE CONCRETO -->
+        <section id="tab-concreto" class="tab-content">
+            <div class="card-panel">
+                <div class="panel-header">
+                    <span class="panel-title"><i class="fa-solid fa-cubes"></i> MÓDULO DE ENSAYOS DE CONCRETO FRESCO Y ENDURECIDO (ASTM C39 / C143)</span>
+                    <span class="badge-solicitud">HC-LSMCH-C01</span>
+                </div>
+                
+                <div class="hc006-header-box" style="margin-bottom:1.25rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
+                        <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
+                        <div style="display:flex; gap:0.35rem; align-items:center;">
+                            <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
+                            <input type="text" id="cnc_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('cnc')" placeholder="LSMCH-050-2026">
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('cnc')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                        </div>
+                    </div>
+                    <div class="form-grid-header">
+                        <div><label>PROYECTO:</label><input type="text" id="cnc_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                        <div><label>CLIENTE:</label><input type="text" id="cnc_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                        <div><label>LOC. DE PROYECTO:</label><input type="text" id="cnc_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
+                        <div><label>INFORME:</label><input type="text" id="cnc_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('cnc')"></div>
+                        <div><label>MUESTREADO POR:</label><input type="text" id="cnc_Muestreado" value="JQ, NS, CO"></div>
+                        <div><label>DESCRIPCIÓN:</label><input type="text" id="cnc_Desc" value="CILINDROS DE CONCRETO 4x8'"></div>
+                        <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="cnc_IdCliente" value="CONCRETO 280 kg/cm2"></div>
+                        <div><label>FUENTE:</label><input type="text" id="cnc_Fuente" value="VIGA V-101 / LOSA NIVEL 2"></div>
+                        <div><label>IDENT. DEL LSMCH:</label><input type="text" id="cnc_IdLsmch" value="C5022@023-2026-1"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MÓDULO DE INCERTIDUMBRE GUM -->
+        <section id="tab-incertidumbre" class="tab-content">
+            <div class="card-panel">
+                <div class="panel-header">
+                    <span class="panel-title"><i class="fa-solid fa-calculator"></i> ESTIMACIÓN DE INCERTIDUMBRE DE MEDIDA (GUM / ISO/IEC 17025)</span>
+                    <span class="badge-solicitud">EVALUACIÓN METROLÓGICA</span>
+                </div>
+                
+                <div class="hc006-header-box" style="margin-bottom:1.25rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
+                        <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
+                        <div style="display:flex; gap:0.35rem; align-items:center;">
+                            <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
+                            <input type="text" id="inc_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('inc')" placeholder="LSMCH-050-2026">
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('inc')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                        </div>
+                    </div>
+                    <div class="form-grid-header">
+                        <div><label>PROYECTO:</label><input type="text" id="inc_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                        <div><label>CLIENTE:</label><input type="text" id="inc_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                        <div><label>LOC. DE PROYECTO:</label><input type="text" id="inc_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
+                        <div><label>INFORME:</label><input type="text" id="inc_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('inc')"></div>
+                        <div><label>MUESTREADO POR:</label><input type="text" id="inc_Muestreado" value="JQ, NS, CO"></div>
+                        <div><label>DESCRIPCIÓN:</label><input type="text" id="inc_Desc" value="EVALUACIÓN GUM"></div>
+                        <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="inc_IdCliente" value="GUM SUELOS"></div>
+                        <div><label>FUENTE:</label><input type="text" id="inc_Fuente" value="TAMIZADO ASTM D6913"></div>
+                        <div><label>IDENT. DEL LSMCH:</label><input type="text" id="inc_IdLsmch" value="M5022@023-2026-2"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MÓDULO DE REPORTES -->
+        <section id="tab-reportes" class="tab-content">
+            <div class="card-panel">
+                <div class="panel-header">
+                    <span class="panel-title"><i class="fa-solid fa-print"></i> CONSOLIDADOR DE REPORTES DE ENSAYO E IMPRESIÓN PDF</span>
+                    <button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Reporte Oficial</button>
+                </div>
+                
+                <div class="hc006-header-box" style="margin-bottom:1.25rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
+                        <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO A REPORTAR</span>
+                        <div style="display:flex; gap:0.35rem; align-items:center;">
+                            <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
+                            <input type="text" id="rep_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('rep')" placeholder="LSMCH-050-2026">
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('rep')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                        </div>
+                    </div>
+                    <div class="form-grid-header">
+                        <div><label>PROYECTO:</label><input type="text" id="rep_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                        <div><label>CLIENTE:</label><input type="text" id="rep_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                        <div><label>LOC. DE PROYECTO:</label><input type="text" id="rep_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
+                        <div><label>INFORME:</label><input type="text" id="rep_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('rep')"></div>
+                        <div><label>MUESTREADO POR:</label><input type="text" id="rep_Muestreado" value="JQ, NS, CO"></div>
+                        <div><label>DESCRIPCIÓN:</label><input type="text" id="rep_Desc" value="REPORTE UNIFICADO"></div>
+                        <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="rep_IdCliente" value="MUESTRA GENERAL"></div>
+                        <div><label>FUENTE:</label><input type="text" id="rep_Fuente" value="SPT 1 Y 2 / 7m @ 8m"></div>
+                        <div><label>IDENT. DEL LSMCH:</label><input type="text" id="rep_IdLsmch" value="M5022@023-2026-2"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
 
     </main>
 
@@ -695,6 +973,57 @@
             const subObj = document.getElementById(`sub-${subId}`);
             if (subObj) subObj.style.display = 'block';
         }
+
+        async function cargarDatosGenericosModulo(prefix) {
+            const ordenInput = document.getElementById(`${prefix}_Orden`);
+            if (!ordenInput) return;
+            const cod = ordenInput.value.trim();
+            if (!cod) return;
+
+            try {
+                const res = await fetch(`/api/lims/solicitudes/${encodeURIComponent(cod)}`);
+                if (!res.ok) {
+                    console.warn(`Orden ${cod} no encontrada`);
+                    return;
+                }
+                const data = await res.json();
+                
+                if (document.getElementById(`${prefix}_Pry`)) document.getElementById(`${prefix}_Pry`).value = data.proyecto_nombre || '';
+                if (document.getElementById(`${prefix}_Cliente`)) document.getElementById(`${prefix}_Cliente`).value = data.cliente_nombre || '';
+                if (document.getElementById(`${prefix}_Loc`)) document.getElementById(`${prefix}_Loc`).value = data.proyecto_ubicacion || '';
+                if (document.getElementById(`${prefix}_Informe`) && data.numero_informe) document.getElementById(`${prefix}_Informe`).value = data.numero_informe;
+                if (document.getElementById(`${prefix}_Muestreado`) && data.responsable_tecnico) document.getElementById(`${prefix}_Muestreado`).value = data.responsable_tecnico;
+                if (document.getElementById(`${prefix}_Desc`) && data.observaciones) document.getElementById(`${prefix}_Desc`).value = data.observaciones;
+
+                if (data.muestreos && data.muestreos.length > 0 && data.muestreos[0].muestras && data.muestreos[0].muestras.length > 0) {
+                    const m = data.muestreos[0].muestras[0];
+                    if (document.getElementById(`${prefix}_IdLsmch`) && m.codigo_muestra) document.getElementById(`${prefix}_IdLsmch`).value = m.codigo_muestra;
+                    if (document.getElementById(`${prefix}_Desc`) && m.descripcion) document.getElementById(`${prefix}_Desc`).value = m.descripcion;
+                    if (document.getElementById(`${prefix}_Fuente`) && m.profundidad_elemento) document.getElementById(`${prefix}_Fuente`).value = m.profundidad_elemento;
+                }
+            } catch(e) {
+                console.error("Error al cargar orden en módulo:", e);
+            }
+        }
+
+        async function guardarInformeGenerico(prefix) {
+            const cod = document.getElementById(`${prefix}_Orden`)?.value.trim();
+            const inf = document.getElementById(`${prefix}_Informe`)?.value.trim();
+            if (!cod || !inf) return;
+
+            try {
+                await fetch('/api/lims/solicitudes/actualizar_informe', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        codigo_solicitud: cod,
+                        numero_informe: inf
+                    })
+                });
+                cargarSolicitudesTabla();
+            } catch(e) { console.error(e); }
+        }
+
 
         async function cargarStatsDashboard() {
             try {
