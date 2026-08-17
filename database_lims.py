@@ -288,29 +288,40 @@ class DatabaseLIMS:
         if not fecha_recepcion:
             fecha_recepcion = datetime.now().strftime("%Y-%m-%d")
 
+        cliente_nombre = str(cliente_nombre or "").strip()
+        proyecto_nombre = str(proyecto_nombre or "").strip()
+        ubicacion = str(ubicacion or "").strip()
+        numero_informe = str(numero_informe or "").strip()
+        muestreado_por = str(muestreado_por or "").strip()
+        descripcion = str(descripcion or "SUELO").strip()
+        ident_cliente = str(ident_cliente or "SUELO").strip()
+        fuente = str(fuente or "").strip()
+        ident_lsmch = str(ident_lsmch or "").strip()
+        observaciones = str(observaciones or "").strip()
+
         with self.get_connection() as conn:
             cursor = conn.cursor()
             
             # 1. Buscar o Crear Cliente
-            cursor.execute("SELECT id FROM clientes WHERE nombre = ?", (cliente_nombre.strip(),))
+            cursor.execute("SELECT id FROM clientes WHERE nombre = ?", (cliente_nombre,))
             row_c = cursor.fetchone()
             if row_c:
                 cliente_id = row_c["id"]
             else:
-                cursor.execute("INSERT INTO clientes (nombre) VALUES (?)", (cliente_nombre.strip(),))
+                cursor.execute("INSERT INTO clientes (nombre) VALUES (?)", (cliente_nombre,))
                 cliente_id = cursor.lastrowid
                 
             # 2. Buscar o Crear Proyecto
-            cursor.execute("SELECT id FROM proyectos WHERE nombre = ? AND cliente_id = ?", (proyecto_nombre.strip(), cliente_id))
+            cursor.execute("SELECT id FROM proyectos WHERE nombre = ? AND cliente_id = ?", (proyecto_nombre, cliente_id))
             row_p = cursor.fetchone()
             if row_p:
                 proyecto_id = row_p["id"]
             else:
                 cursor.execute("INSERT INTO proyectos (cliente_id, nombre, ubicacion) VALUES (?, ?, ?)", 
-                               (cliente_id, proyecto_nombre.strip(), ubicacion.strip()))
+                               (cliente_id, proyecto_nombre, ubicacion))
                 proyecto_id = cursor.lastrowid
 
-            # 3. Generar Solicitud LSMCH-NNN-AAAA
+            # 3. Generar Solicitud LSMCH-NNN-AAAA (Ej. LSMCH-002-2026)
             anio_actual = datetime.now().year
             cursor.execute("SELECT MAX(numero_correlativo) FROM solicitudes WHERE anio = ?", (anio_actual,))
             max_num = cursor.fetchone()[0]
@@ -321,9 +332,9 @@ class DatabaseLIMS:
                 INSERT INTO solicitudes (codigo_solicitud, numero_informe, proyecto_id, cliente_id, anio, numero_correlativo,
                                         fecha_recepcion, fecha_entrega_estimada, responsable_tecnico, observaciones)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (codigo_solicitud, numero_informe.strip() or f"LSMCH-{siguiente_num:03d}-{anio_actual}",
+            """, (codigo_solicitud, numero_informe or f"LSMCH-{siguiente_num:03d}-{anio_actual}",
                   proyecto_id, cliente_id, anio_actual, siguiente_num,
-                  fecha_recepcion, fecha_entrega_estimada, muestreado_por.strip(), observaciones.strip()))
+                  fecha_recepcion, fecha_entrega_estimada, muestreado_por, observaciones))
             
             sol_id = cursor.lastrowid
 
@@ -331,17 +342,30 @@ class DatabaseLIMS:
             cursor.execute("""
                 INSERT INTO muestreos (solicitud_id, codigo_muestreo, fecha_muestreo, responsable_muestreo, ubicacion_muestreo, observaciones)
                 VALUES (?, ?, ?, ?, ?, ?)
-            """, (sol_id, f"MUE-{siguiente_num:02d}", fecha_recepcion, muestreado_por.strip(), ubicacion.strip(), fuente.strip()))
+            """, (sol_id, f"MUE-{siguiente_num:02d}", fecha_recepcion, muestreado_por, ubicacion, fuente))
             muestreo_id = cursor.lastrowid
 
-            cod_muestra = ident_lsmch.strip() or f"{codigo_solicitud}-M01"
+            # Garantizar unicidad absoluta de cod_muestra sin colisiones SQLite
+            base_cod = ident_lsmch if ident_lsmch else f"{codigo_solicitud}-M01"
+            cod_muestra = base_cod
+            counter = 1
+            while True:
+                cursor.execute("SELECT COUNT(*) FROM muestras WHERE codigo_muestra = ?", (cod_muestra,))
+                if cursor.fetchone()[0] == 0:
+                    break
+                counter += 1
+                cod_muestra = f"{base_cod}-{counter}"
+
             cursor.execute("""
                 INSERT INTO muestras (muestreo_id, codigo_muestra, tipo_material, descripcion, profundidad_elemento)
                 VALUES (?, ?, ?, ?, ?)
-            """, (muestreo_id, cod_muestra, "SUELO", descripcion.strip(), fuente.strip()))
+            """, (muestreo_id, cod_muestra, "SUELO", descripcion, fuente))
 
             conn.commit()
             return sol_id, codigo_solicitud
+
+
+
 
     def crear_solicitud(self, proyecto_id, cliente_id, fecha_recepcion=None, fecha_entrega_estimada=None, 
                         responsable_tecnico="Ing. Metrólogo", jefe_laboratorio="Dr. Jefe de Lab", observaciones=""):
