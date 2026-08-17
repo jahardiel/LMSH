@@ -423,20 +423,22 @@ class GUMCalculator:
                 "grados_libertad": 1000
             })
 
-            # Fuente 4: Deriva (Tipo B)
-            u_deriva = deriva_estimada / np.sqrt(3)
-            fuentes.append({
-                "fuente": nombre_f4,
-                "simbolo": "u_deriva",
-                "tipo": "B",
-                "valor_xi": deriva_estimada,
-                "distribucion": "Rectangular",
-                "divisor": np.sqrt(3),
-                "u_std": u_deriva,
-                "coef_sensibilidad": 1.0,
-                "u_i_y": u_deriva,
-                "grados_libertad": 1000
-            })
+            # Fuente 4: Deriva (Tipo B) - Solo si es estrictamente mayor que cero
+            u_deriva = 0.0
+            if deriva_estimada > 0:
+                u_deriva = deriva_estimada / np.sqrt(3)
+                fuentes.append({
+                    "fuente": nombre_f4,
+                    "simbolo": "u_deriva",
+                    "tipo": "B",
+                    "valor_xi": deriva_estimada,
+                    "distribucion": "Rectangular",
+                    "divisor": np.sqrt(3),
+                    "u_std": u_deriva,
+                    "coef_sensibilidad": 1.0,
+                    "u_i_y": u_deriva,
+                    "grados_libertad": 1000
+                })
 
         # 3. Incertidumbre Estándar Combinada u_c
         varianzas = np.array([f["u_i_y"]**2 for f in fuentes])
@@ -446,6 +448,19 @@ class GUMCalculator:
         for f in fuentes:
             f["varianza_i"] = f["u_i_y"]**2
             f["contribucion_pct"] = (f["varianza_i"] / (u_c**2)) * 100.0 if u_c > 0 else 0.0
+            # Mapear claves en espanol y estandar para JS y DataFrames
+            f["Fuente de Incertidumbre"] = f["fuente"]
+            f["Tipo"] = f["tipo"]
+            f["Distribución"] = f["distribucion"]
+            f["Valor Semi-intervalo"] = f["valor_xi"]
+            f["Divisor"] = f["divisor"]
+            f[f"Incertidumbre u_i ({unit_symbol})"] = f["u_std"]
+            f["u(xi) Estándar"] = f["u_std"]
+            f["Coef. Sens. c_i"] = f["coef_sensibilidad"]
+            f["Coef. Sensibilidad ci"] = f["coef_sensibilidad"]
+            f[f"u_i(y) ({unit_symbol})"] = f["u_i_y"]
+            f["ui(y) Contribución"] = f["u_i_y"]
+            f["Contribución (%)"] = f["contribucion_pct"]
 
         # 5. Grados de Libertad Efectivos (Welch-Satterthwaite)
         denom_ws = np.sum([f["u_i_y"]**4 / f["grados_libertad"] for f in fuentes])
@@ -462,16 +477,12 @@ class GUMCalculator:
         # 7. Incertidumbre Expandida U
         U_expandida = k_factor * u_c
 
-        # Construcción de DataFrame para reporte
-        df_presupuesto = pd.DataFrame(fuentes)
-        df_presupuesto = df_presupuesto[[
-            "fuente", "tipo", "distribucion", "valor_xi", "divisor",
-            "u_std", "coef_sensibilidad", "u_i_y", "contribucion_pct"
-        ]]
-        df_presupuesto.columns = [
-            "Fuente de Incertidumbre", "Tipo", "Distribución", "Valor Semi-intervalo",
-            "Divisor", f"Incertidumbre u_i ({unit_symbol})", "Coef. Sens. c_i", f"u_i(y) ({unit_symbol})", "Contribución (%)"
-        ]
+        # Construcción de lista de diccionarios sanitizados para API
+        tabla_presupuesto_sanitizada = []
+        for f in fuentes:
+            d_item = dict(f)
+            tabla_presupuesto_sanitizada.append(d_item)
+
 
         return {
             "lecturas_originales": lecturas_concreto,
@@ -491,8 +502,9 @@ class GUMCalculator:
             "nivel_confianza_pct": nivel_confianza * 100.0,
             "incertidumbre_expandida_U": U_expandida,
             "fuentes": fuentes,
-            "tabla_presupuesto": df_presupuesto,
+            "tabla_presupuesto": tabla_presupuesto_sanitizada,
             "unidad": unit_symbol,
+
             "detalles_calculo": {
                 "n": n,
                 "temp_media": temp_media,

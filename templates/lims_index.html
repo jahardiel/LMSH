@@ -3397,7 +3397,9 @@
                                     ecuacionUncert = "u(xᵢ) = Δx / √3";
                                 }
 
-                                const uxiVal = typeof f["u_std"] === 'number' ? f["u_std"].toFixed(4) : (typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"].toFixed(4) : (f["u_std"] || '0.0000'));
+                                const rawUxi = typeof f["u_std"] === 'number' ? f["u_std"] : (typeof f["u_i_y"] === 'number' ? f["u_i_y"] : (parseFloat(f["u_std"]) || parseFloat(f["u_i_y"]) || 0));
+                                const uxiVal = (isNaN(rawUxi) ? 0 : rawUxi).toFixed(4);
+
 
 
                                 return `
