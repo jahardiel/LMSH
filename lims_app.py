@@ -462,6 +462,51 @@ def crear_termometro():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
+@app.route('/api/termometros/<int:termometro_id>', methods=['PUT'])
+def actualizar_termometro(termometro_id):
+    try:
+        data = request.json or {}
+        raw_code = data.get("codigo", "").strip()
+        if not raw_code:
+            return jsonify({"success": False, "error": "El código del equipo es obligatorio."}), 400
+        
+        if not raw_code.upper().startswith("LSMCH-EM-"):
+            codigo = f"LSMCH-EM-{raw_code}"
+        else:
+            codigo = raw_code
+
+        nombre = data.get("nombre", "Equipo Metrológico")
+        marca = data.get("marca", "")
+        modelo = data.get("modelo", "")
+        numero_serie = data.get("numero_serie", "")
+        resolucion = float(data.get("resolucion", 0.01))
+        homogeneidad = float(data.get("homogeneidad_concreto", 0.10))
+        fecha = data.get("fecha_calibracion", "")
+        lab = data.get("laboratorio", "")
+        num_cert = data.get("numero_certificado", "CERT-17025")
+
+        puntos = data.get("puntos_calibracion", [])
+        puntos_anteriores = data.get("puntos_calibracion_anteriores", [])
+        tiene_anterior = data.get("tiene_calibracion_anterior", len(puntos_anteriores) > 0)
+
+        if tiene_anterior and puntos_anteriores and len(puntos_anteriores) > 0:
+            deriva = DatabaseManager.calcular_deriva_entre_certificados(puntos, puntos_anteriores)
+        elif "deriva" in data and data["deriva"] is not None:
+            deriva = float(data["deriva"])
+        else:
+            deriva = 0.0
+
+        exito = db_manager.actualizar_termometro(termometro_id, codigo, marca, modelo, numero_serie, resolucion, deriva, fecha, lab, homogeneidad=homogeneidad, numero_certificado=num_cert, nombre=nombre)
+        db_manager.actualizar_puntos_calibracion(termometro_id, puntos, puntos_anteriores)
+
+        return jsonify({
+            "success": True, 
+            "deriva_calculada": deriva,
+            "message": f"Equipo metrológico {codigo} actualizado exitosamente en la Base de Datos."
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
 @app.route('/api/termometros/<int:termometro_id>', methods=['DELETE'])
 def eliminar_termometro(termometro_id):
     try:
@@ -472,6 +517,7 @@ def eliminar_termometro(termometro_id):
             return jsonify({"success": False, "error": "No se encontró el equipo especificado."}), 404
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
 
 @app.route('/api/cargar-pdf-certificado', methods=['POST'])
 def cargar_pdf_certificado():

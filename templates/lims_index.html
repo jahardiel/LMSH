@@ -1502,8 +1502,9 @@
                     </div>
 
                     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #cbd5e1; padding-bottom:0.5rem; margin-bottom:1rem;">
-                        <span style="font-weight:800; color:#1e3a8a; font-size:0.95rem;"><i class="fa-solid fa-pen-to-square"></i> DATOS EXTRAÍDOS / FORMULARIO DE EQUIPO METROLÓGICO</span>
+                        <span id="lblTituloFormEquipo" style="font-weight:800; color:#1e3a8a; font-size:0.95rem;"><i class="fa-solid fa-pen-to-square"></i> REGISTRO Y EDICIÓN DE EQUIPO METROLÓGICO</span>
                     </div>
+
 
 
                     <div class="grid-3" style="gap:1rem; font-size:0.85rem; margin-bottom:1rem;">
@@ -1545,8 +1546,12 @@
                     </table>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <button class="btn btn-secondary" onclick="agregarFilaPuntoCalibracion()"><i class="fa-solid fa-plus"></i> Agregar Punto de Calibración</button>
-                        <button class="btn btn-success" onclick="guardarEquipoMetrologicoBD()"><i class="fa-solid fa-floppy-disk"></i> Guardar Equipo Metrológico en BD</button>
+                        <div>
+                            <button id="btnCancelarEdicionEquipo" class="btn btn-secondary" style="display:none; margin-right:0.5rem;" onclick="limpiarFormularioEquipo()"><i class="fa-solid fa-xmark"></i> Cancelar Edición</button>
+                            <button id="btnGuardarEquipoBD" class="btn btn-success" onclick="guardarEquipoMetrologicoBD()"><i class="fa-solid fa-floppy-disk"></i> Guardar Equipo Metrológico en BD</button>
+                        </div>
                     </div>
+
                 </div>
 
                 <!-- TABLA DE EQUIPOS REGISTRADOS EN BD -->
@@ -3056,6 +3061,72 @@
             tbody.appendChild(tr);
         }
 
+        window.equipoIdEnEdicion = null;
+
+        function editarEquipoMetrologicoBD(id) {
+            const eq = (window.equiposMetrologicosBDCache || []).find(e => e.id === id);
+            if (!eq) return;
+
+            window.equipoIdEnEdicion = id;
+
+            document.getElementById('eqCodigo').value = eq.codigo || '';
+            document.getElementById('eqNombre').value = eq.nombre || '';
+            document.getElementById('eqMarca').value = eq.marca || '';
+            document.getElementById('eqModelo').value = eq.modelo || '';
+            document.getElementById('eqSerie').value = eq.numero_serie || '';
+            document.getElementById('eqResolucion').value = eq.resolucion || 0.01;
+            document.getElementById('eqCertificado').value = eq.numero_certificado || '';
+            document.getElementById('eqLaboratorio').value = eq.laboratorio || '';
+            document.getElementById('eqFecha').value = eq.fecha_calibracion || '';
+            document.getElementById('eqDeriva').value = eq.deriva_estimada || 0.0;
+
+            if (eq.puntos_calibracion && Array.isArray(eq.puntos_calibracion) && eq.puntos_calibracion.length > 0) {
+                const tbody = document.getElementById('tbodyPuntosCalibracionEquipo');
+                tbody.innerHTML = eq.puntos_calibracion.map(p => `
+                    <tr>
+                        <td><input type="number" step="0.01" class="table-input" value="${p.temp_indicada}"></td>
+                        <td><input type="number" step="0.01" class="table-input" value="${p.temp_patron}"></td>
+                        <td><input type="number" step="0.01" class="table-input" value="${p.correccion}"></td>
+                        <td><input type="number" step="0.01" class="table-input" value="${p.u_expandida}"></td>
+                        <td><input type="number" step="0.1" class="table-input" value="${p.factor_k || 2.0}"></td>
+                        <td><button class="btn btn-secondary" onclick="this.closest('tr').remove()"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+            }
+
+            const lblT = document.getElementById('lblTituloFormEquipo');
+            const btnG = document.getElementById('btnGuardarEquipoBD');
+            const btnC = document.getElementById('btnCancelarEdicionEquipo');
+
+            if (lblT) lblT.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> EDITANDO EQUIPO METROLÓGICO: ${eq.codigo}`;
+            if (btnG) btnG.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Actualizar Equipo en BD`;
+            if (btnC) btnC.style.display = 'inline-block';
+
+            document.getElementById('panelSubIncEquipos').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function limpiarFormularioEquipo() {
+            window.equipoIdEnEdicion = null;
+            document.getElementById('eqCodigo').value = 'LSMCH-EM-05';
+            document.getElementById('eqNombre').value = 'Prensa Hidráulica Ensayo Compresión';
+            document.getElementById('eqMarca').value = 'ELE International / Fluke';
+            document.getElementById('eqModelo').value = '36-0690/02';
+            document.getElementById('eqSerie').value = 'SN-ELE-900';
+            document.getElementById('eqResolucion').value = '0.01';
+            document.getElementById('eqCertificado').value = 'CEI-UTP-03-SI-145-2026';
+            document.getElementById('eqLaboratorio').value = 'Centro Experimental de Ingeniería - UTP';
+            document.getElementById('eqFecha').value = '2026-02-10';
+            document.getElementById('eqDeriva').value = '0.05';
+
+            const lblT = document.getElementById('lblTituloFormEquipo');
+            const btnG = document.getElementById('btnGuardarEquipoBD');
+            const btnC = document.getElementById('btnCancelarEdicionEquipo');
+
+            if (lblT) lblT.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> REGISTRO Y EDICIÓN DE EQUIPO METROLÓGICO`;
+            if (btnG) btnG.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Guardar Equipo Metrológico en BD`;
+            if (btnC) btnC.style.display = 'none';
+        }
+
         async function guardarEquipoMetrologicoBD(silencioso = false) {
             const cod = document.getElementById('eqCodigo').value.trim();
             const nom = document.getElementById('eqNombre').value.trim() || 'Equipo Metrológico';
@@ -3079,9 +3150,13 @@
                 }
             });
 
+            const isEditing = !!window.equipoIdEnEdicion;
+            const url = isEditing ? `/api/termometros/${window.equipoIdEnEdicion}` : '/api/termometros';
+            const method = isEditing ? 'PUT' : 'POST';
+
             try {
-                const res = await fetch('/api/termometros', {
-                    method: 'POST',
+                const res = await fetch(url, {
+                    method: method,
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         codigo: cod,
@@ -3100,7 +3175,8 @@
 
                 const data = await res.json();
                 if (data.success) {
-                    if (!silencioso) alert(` ¡EQUIPO METROLÓGICO REGISTRADO EN BD! ${data.message || ''}`);
+                    if (!silencioso) alert(isEditing ? ` ¡EQUIPO METROLÓGICO ACTUALIZADO EN BD!` : ` ¡EQUIPO METROLÓGICO REGISTRADO EN BD! ${data.message || ''}`);
+                    limpiarFormularioEquipo();
                     cargarEquiposRegistradosBD();
 
                     // Cargar directamente en la tabla EQUIPOS UTILIZADOS de la Hoja HC-LSMCH-012
@@ -3163,6 +3239,7 @@
                                 <td>${eq.fecha_calibracion || ''}</td>
                                 <td>
                                     <button class="btn btn-primary" style="padding:0.2rem 0.4rem; font-size:0.75rem;" onclick="seleccionarEquipoEnGUMDesdeSelect(${eq.id})" title="Usar en Presupuesto GUM"><i class="fa-solid fa-check"></i> Usar</button>
+                                    <button class="btn btn-warning" style="padding:0.2rem 0.4rem; font-size:0.75rem; background:#f59e0b; color:#ffffff; border:none;" onclick="editarEquipoMetrologicoBD(${eq.id})" title="Modificar Equipo"><i class="fa-solid fa-pen"></i> Editar</button>
                                     <button class="btn btn-secondary" style="padding:0.2rem 0.4rem; font-size:0.75rem;" onclick="eliminarEquipoMetrologicoBD(${eq.id})"><i class="fa-solid fa-trash"></i></button>
                                 </td>
                             </tr>
@@ -3171,6 +3248,7 @@
                 }
             } catch(e) { console.error(e); }
         }
+
 
         async function eliminarEquipoMetrologicoBD(id) {
             if (!confirm("¿Está seguro de eliminar este equipo metrológico de la base de datos?")) return;
