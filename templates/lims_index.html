@@ -347,32 +347,138 @@
 
         function dibujarCurvaSVG(tamices) {
             const svg = document.getElementById('svgCurvaHC006');
-            if (!svg || !tamices) return;
-            
-            let pts = [];
-            tamices.forEach(t => {
-                if (t.apertura_mm > 0) {
-                    const logAp = Math.log10(t.apertura_mm);
-                    const logMin = Math.log10(0.075);
-                    const logMax = Math.log10(75.0);
-                    const x = 450 - ((logAp - logMin) / (logMax - logMin)) * 400;
-                    const y = 200 - (t.pct_pasa / 100.0) * 160;
-                    pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
-                }
+            if (!svg) return;
+
+            // Dimensiones del canvas SVG
+            const width = 720;
+            const height = 360;
+            const marginLeft = 65;
+            const marginRight = 35;
+            const marginTop = 50;
+            const marginBottom = 65;
+
+            const plotWidth = width - marginLeft - marginRight;
+            const plotHeight = height - marginTop - marginBottom;
+
+            // Rango Logarítmico de X (100mm a 0.01mm)
+            const logMax = 2.0;   // log10(100) = 2.0
+            const logMin = -2.0;  // log10(0.01) = -2.0
+            const logSpan = logMax - logMin;
+
+            function xLog(apertura) {
+                if (apertura <= 0) apertura = 0.01;
+                const logVal = Math.log10(apertura);
+                return marginLeft + ((logMax - logVal) / logSpan) * plotWidth;
+            }
+
+            function yPct(pasa) {
+                if (pasa < 0) pasa = 0;
+                if (pasa > 100) pasa = 100;
+                return (marginTop + plotHeight) - (pasa / 100.0) * plotHeight;
+            }
+
+            // Coordenadas X para límites de franjas geotécnicas
+            const x75 = xLog(75.0);
+            const x19 = xLog(19.0);
+            const x475 = xLog(4.75);
+            const x2 = xLog(2.0);
+            const x0425 = xLog(0.425);
+            const x0075 = xLog(0.075);
+            const x001 = xLog(0.01);
+
+            let html = `
+                <!-- Fondos Pasteles de Franjas Geotécnicas -->
+                <rect x="${x75}" y="${marginTop}" width="${x475 - x75}" height="${plotHeight}" fill="#fef9c3" opacity="0.85"/>
+                <rect x="${x475}" y="${marginTop}" width="${x0075 - x475}" height="${plotHeight}" fill="#e0f2fe" opacity="0.85"/>
+                <rect x="${x0075}" y="${marginTop}" width="${x001 - x0075}" height="${plotHeight}" fill="#f3e8ff" opacity="0.85"/>
+
+                <!-- Divisiones de Sub-Franjas (Líneas verticales punteadas) -->
+                <line x1="${x19}" y1="${marginTop}" x2="${x19}" y2="${marginTop + plotHeight}" stroke="#d97706" stroke-dasharray="3,3" stroke-width="1"/>
+                <line x1="${x475}" y1="${marginTop}" x2="${x475}" y2="${marginTop + plotHeight}" stroke="#0284c7" stroke-width="1.5"/>
+                <line x1="${x2}" y1="${marginTop}" x2="${x2}" y2="${marginTop + plotHeight}" stroke="#0284c7" stroke-dasharray="3,3" stroke-width="1"/>
+                <line x1="${x0425}" y1="${marginTop}" x2="${x0425}" y2="${marginTop + plotHeight}" stroke="#0284c7" stroke-dasharray="3,3" stroke-width="1"/>
+                <line x1="${x0075}" y1="${marginTop}" x2="${x0075}" y2="${marginTop + plotHeight}" stroke="#7e22ce" stroke-width="1.5"/>
+
+                <!-- Etiquetas de Franjas Superiores (GRAVA / ARENA / FINOS) -->
+                <rect x="${x75}" y="22" width="${x475 - x75}" height="22" fill="#fef3c7" stroke="#f59e0b" rx="3"/>
+                <text x="${(x75 + x475)/2}" y="37" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">GRAVA</text>
+
+                <rect x="${x475}" y="22" width="${x0075 - x475}" height="22" fill="#bae6fd" stroke="#0284c7" rx="3"/>
+                <text x="${(x475 + x0075)/2}" y="37" text-anchor="middle" font-size="11" font-weight="700" fill="#0369a1">ARENA</text>
+
+                <rect x="${x0075}" y="22" width="${x001 - x0075}" height="22" fill="#e9d5ff" stroke="#a855f7" rx="3"/>
+                <text x="${(x0075 + x001)/2}" y="37" text-anchor="middle" font-size="10" font-weight="700" fill="#6b21a8">FINOS (LIMO/ARCILLA)</text>
+            `;
+
+            // Grid Horizontal (% Que Pasa)
+            for (let pct = 0; pct <= 100; pct += 20) {
+                const y = yPct(pct);
+                html += `
+                    <line x1="${marginLeft}" y1="${y}" x2="${width - marginRight}" y2="${y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="${pct === 0 || pct === 100 ? '0' : '2,2'}"/>
+                    <text x="${marginLeft - 8}" y="${y + 4}" text-anchor="end" font-size="11" font-weight="600" fill="#475569">${pct}%</text>
+                `;
+            }
+
+            // Tamices Principales en Eje X
+            const tamicesTicks = [
+                {label: '3"', ap: 75.0},
+                {label: '1 1/2"', ap: 38.1},
+                {label: '3/4"', ap: 19.0},
+                {label: '3/8"', ap: 9.5},
+                {label: 'No. 4', ap: 4.75},
+                {label: 'No. 10', ap: 2.0},
+                {label: 'No. 40', ap: 0.425},
+                {label: 'No. 100', ap: 0.15},
+                {label: 'No. 200', ap: 0.075}
+            ];
+
+            tamicesTicks.forEach(t => {
+                const x = xLog(t.ap);
+                html += `
+                    <line x1="${x}" y1="${marginTop + plotHeight}" x2="${x}" y2="${marginTop + plotHeight + 5}" stroke="#475569" stroke-width="1.5"/>
+                    <text x="${x}" y="${marginTop + plotHeight + 18}" text-anchor="middle" font-size="10" font-weight="600" fill="#1e293b">${t.label}</text>
+                    <text x="${x}" y="${marginTop + plotHeight + 30}" text-anchor="middle" font-size="9" fill="#64748b">${t.ap}</text>
+                `;
             });
 
-            svg.innerHTML = `
-                <line x1="50" y1="200" x2="450" y2="200" stroke="#cbd5e1" stroke-width="2"/>
-                <line x1="50" y1="40" x2="50" y2="200" stroke="#cbd5e1" stroke-width="2"/>
-                <polyline fill="none" stroke="#2563eb" stroke-width="3" points="${pts.join(' ')}"/>
-                ${pts.map(p => {
-                    const [x,y] = p.split(',');
-                    return `<circle cx="${x}" cy="${y}" r="4" fill="#1e3a8a"/>`;
-                }).join('')}
-                <text x="250" y="230" text-anchor="middle" font-size="12" fill="#64748b">Abertura del Tamiz (mm)</text>
-                <text x="15" y="120" text-anchor="middle" font-size="12" fill="#64748b" transform="rotate(-90 15 120)">% Que Pasa</text>
+            // Trazado de la Curva Granulométrica (Polyline)
+            let pts = [];
+            if (tamices && tamices.length > 0) {
+                tamices.forEach(t => {
+                    if (t.apertura_mm > 0) {
+                        const x = xLog(t.apertura_mm);
+                        const y = yPct(t.pct_pasa);
+                        pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+                    }
+                });
+            }
+
+            if (pts.length > 0) {
+                html += `
+                    <polyline fill="none" stroke="#1e3a8a" stroke-width="3.5" points="${pts.join(' ')}"/>
+                    ${pts.map(p => {
+                        const [x,y] = p.split(',');
+                        return `<circle cx="${x}" cy="${y}" r="5" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>`;
+                    }).join('')}
+                `;
+            }
+
+            // Títulos de Ejes y Gráfico
+            html += `
+                <!-- Marco del Gráfico -->
+                <rect x="${marginLeft}" y="${marginTop}" width="${plotWidth}" height="${plotHeight}" fill="none" stroke="#1e3a8a" stroke-width="1.5"/>
+
+                <!-- Título Eje Y -->
+                <text x="18" y="${marginTop + plotHeight/2}" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a" transform="rotate(-90 18 ${marginTop + plotHeight/2})">% QUE PASA</text>
+
+                <!-- Título Eje X -->
+                <text x="${marginLeft + plotWidth/2}" y="${height - 8}" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">ABERTURA DEL TAMIZ (mm) - ESCALA SEMILOGARÍTMICA</text>
             `;
+
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            svg.innerHTML = html;
         }
+
 
         async function ejecutarBusquedaGlobal(e) {
             const q = document.getElementById('globalSearchInput').value.trim();
