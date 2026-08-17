@@ -6,9 +6,11 @@ Laboratorio de Suelos, Materiales y Concreto Hidráulico
 import os
 import json
 import math
+import numpy as np
 from flask import Flask, request, jsonify, render_template
 from database_lims import DatabaseLIMS
 import geotechnics_engine
+
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 db = DatabaseLIMS()
@@ -347,7 +349,60 @@ def api_listar_hojas():
         return jsonify({"success": False, "error": str(e)}), 400
 
 
+@app.route('/api/lims/incertidumbre/evaluar', methods=['POST'])
+def api_evaluar_incertidumbre():
+    try:
+        data = request.json or {}
+        lecturas = data.get("lecturas", [28.5, 28.7, 28.4, 28.6])
+        resolucion = float(data.get("resolucion", 0.1))
+        u_cal = float(data.get("u_calibracion", 1.5))
+        k_cal = float(data.get("k_calibracion", 2.0))
+        deriva = float(data.get("deriva", 0.2))
+        homogeneidad = float(data.get("homogeneidad", 0.0))
+        modulo = data.get("modulo", "compresion")
+        unidad = data.get("unidad", "MPa")
+        
+        puntos_cal = [{
+            'temp_indicada': float(np.mean(lecturas)),
+            'temp_patron': float(np.mean(lecturas)),
+            'correccion': 0.0,
+            'u_expandida': u_cal,
+            'factor_k': k_cal
+        }]
+
+        from gum_calculator import GUMCalculator
+        res = GUMCalculator.evaluar_incertidumbre(
+            lecturas_concreto=lecturas,
+            resolucion=resolucion,
+            puntos_calibracion=puntos_cal,
+            deriva_estimada=deriva,
+            homogeneidad_concreto=homogeneidad,
+            unidad=unidad,
+            modulo=modulo
+        )
+
+        def sanitize_json(obj):
+            if isinstance(obj, dict):
+                return {k: sanitize_json(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [sanitize_json(v) for v in obj]
+            elif hasattr(obj, 'item'):
+                return obj.item()
+            else:
+                return obj
+
+        if "tabla_presupuesto" in res and hasattr(res["tabla_presupuesto"], "to_dict"):
+            res["tabla_presupuesto"] = res["tabla_presupuesto"].to_dict(orient="records")
+
+        res_clean = sanitize_json(res)
+        return jsonify({"success": True, "resultado": res_clean})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+
+
 if __name__ == '__main__':
     print("Iniciando Sistema LIMS LSMCH (ISO/IEC 17025) en http://localhost:5050")
     app.run(host='0.0.0.0', port=5050, debug=True)
+
 

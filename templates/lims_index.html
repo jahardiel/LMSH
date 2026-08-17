@@ -959,19 +959,27 @@
             <div class="card-panel">
                 <div class="panel-header">
                     <span class="panel-title"><i class="fa-solid fa-calculator"></i> ESTIMACIÓN DE INCERTIDUMBRE DE MEDIDA (GUM / ISO/IEC 17025)</span>
-                    <span class="badge-solicitud">EVALUACIÓN METROLÓGICA</span>
+                    <div style="display:flex; gap:0.5rem; align-items:center;">
+                        <span class="badge-solicitud">LSMCH GUM ISO 17025</span>
+                        <button class="btn btn-primary" onclick="calcularIncertidumbreGUM()"><i class="fa-solid fa-calculator"></i> Calcular Presupuesto GUM</button>
+                        <button class="btn btn-success" onclick="guardarHojaCalculoBD('INCERTIDUMBRE_GUM', 'inc')"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar GUM en BD</button>
+                        <button class="btn btn-secondary" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;" onclick="cargarHojaCalculoBD('INCERTIDUMBRE_GUM', 'inc')"><i class="fa-solid fa-folder-open"></i> Cargar GUM</button>
+                    </div>
                 </div>
                 
+                <!-- ENCABEZADO DE ORDEN DE SERVICIO -->
                 <div class="hc006-header-box" style="margin-bottom:1.25rem;">
                     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
-                        <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
+                        <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO Y MUESTRA METROLÓGICA</span>
                         <div style="display:flex; gap:0.35rem; align-items:center;">
                             <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                            <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'inc')">
-                                <option value="">-- Seleccionar --</option>
+                            <select class="form-control select-orden-servicio" id="inc_SelectOrden" style="width:190px; font-weight:700; color:#1e3a8a; font-size:0.85rem;" onchange="cargarDatosGenericosModulo('inc', this.value)">
+                                <option value="">-- Seleccionar Orden --</option>
                             </select>
-                            <input type="text" id="inc_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('inc')" placeholder="LSMCH-050-2026">
-                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('inc')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
+                            <input type="hidden" id="inc_Orden" value="LSMCH-050-2026">
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.78rem;" title="Llamar Datos de la Orden" onclick="cargarDatosGenericosModulo('inc')">
+                                <i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden
+                            </button>
                         </div>
                     </div>
                     <div class="form-grid-header">
@@ -980,14 +988,150 @@
                         <div><label>LOC. DE PROYECTO:</label><input type="text" id="inc_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
                         <div><label>INFORME:</label><input type="text" id="inc_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('inc')"></div>
                         <div><label>MUESTREADO POR:</label><input type="text" id="inc_Muestreado" value="JQ, NS, CO"></div>
-                        <div><label>DESCRIPCIÓN:</label><input type="text" id="inc_Desc" value="EVALUACIÓN GUM"></div>
-                        <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="inc_IdCliente" value="GUM SUELOS"></div>
-                        <div><label>FUENTE:</label><input type="text" id="inc_Fuente" value="TAMIZADO ASTM D6913"></div>
-                        <div><label>IDENT. DEL LSMCH:</label><input type="text" id="inc_IdLsmch" value="M5022@023-2026-2"></div>
+                        <div><label>DESCRIPCIÓN:</label><input type="text" id="inc_Desc" value="EVALUACIÓN DE INCERTIDUMBRE GUM"></div>
+                        <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="inc_IdCliente" value="CONCRETO 280 kg/cm2"></div>
+                        <div><label>FUENTE:</label><input type="text" id="inc_Fuente" value="PRENSA HIDRÁULICA Y VERNIER"></div>
+                        <div><label>IDENT. DEL LSMCH:</label><input type="text" id="inc_IdLsmch" value="C5022@023-2026-1"></div>
                     </div>
                 </div>
+
+                <!-- CONFIGURACIÓN DE FUENTES Y PARÁMETROS GUM -->
+                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:8px; padding:1.25rem; margin-bottom:1.5rem;">
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.95rem; margin-bottom:0.85rem; border-bottom:1px solid #cbd5e1; padding-bottom:0.35rem;">
+                        <i class="fa-solid fa-sliders"></i> PARÁMETROS Y PARÁMETROS METROLÓGICOS DEL ENSAYO
+                    </div>
+                    
+                    <div class="grid-3" style="gap:1rem; font-size:0.85rem;">
+                        <div>
+                            <label style="font-weight:700; color:#1e3a8a;">Ensayo / Magnitud Evaluar:</label>
+                            <select id="gumModulo" class="form-control" style="font-weight:700;" onchange="ajustarCamposGUM()">
+                                <option value="compresion">CONCRETO: Compresión de Cilindros ASTM C39 (Prensa & Vernier)</option>
+                                <option value="temperatura">CONCRETO: Temperatura Mezcla Fresca ASTM C1064 (Termómetro)</option>
+                                <option value="asentamiento">CONCRETO: Asentamiento Slump ASTM C143 (Cono & Regla)</option>
+                                <option value="granulometria">SUELOS: Granulometría por Tamizado ASTM D6913 (Balanza & Tamices)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-weight:700; color:#1e3a8a;">Lecturas Obtenidas de Campo / Lab:</label>
+                            <input type="text" id="gumLecturas" class="form-control" value="28.5, 28.7, 28.4, 28.6" placeholder="Ej. 28.5, 28.7, 28.4, 28.6">
+                        </div>
+                        <div>
+                            <label style="font-weight:700; color:#1e3a8a;">Unidad de Medida:</label>
+                            <select id="gumUnidad" class="form-control" style="font-weight:700;">
+                                <option value="MPa">MPa (Esfuerzo)</option>
+                                <option value="psi">psi (Esfuerzo)</option>
+                                <option value="°C">°C (Temperatura)</option>
+                                <option value="mm">mm (Longitud / Slump)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-weight:700; color:#1e3a8a;">Resolución del Instrumento (R):</label>
+                            <input type="number" step="0.001" id="gumResolucion" class="form-control" value="0.1">
+                        </div>
+                        <div>
+                            <label style="font-weight:700; color:#1e3a8a;">Incertidumbre Certificado Patrón (U_cal):</label>
+                            <input type="number" step="0.001" id="gumUCal" class="form-control" value="1.5">
+                        </div>
+                        <div>
+                            <label style="font-weight:700; color:#1e3a8a;">Factor de Cobertura Certificado (k_cal):</label>
+                            <input type="number" step="0.1" id="gumKCal" class="form-control" value="2.0">
+                        </div>
+                        <div>
+                            <label style="font-weight:700; color:#1e3a8a;">Deriva Metrológica Estimada (u_deriva):</label>
+                            <input type="number" step="0.001" id="gumDeriva" class="form-control" value="0.2">
+                        </div>
+                        <div>
+                            <label style="font-weight:700; color:#1e3a8a;">Variación Ambiental / Homogeneidad:</label>
+                            <input type="number" step="0.001" id="gumHomogeneidad" class="form-control" value="0.1">
+                        </div>
+                        <div>
+                            <label style="font-weight:700; color:#1e3a8a;">Nivel de Confianza Metrológico:</label>
+                            <select id="gumConfianza" class="form-control" style="font-weight:700;">
+                                <option value="0.9545">95.45% (k ≈ 2.00 - ISO/IEC 17025)</option>
+                                <option value="0.95">95.00% (k ≈ 1.96)</option>
+                                <option value="0.99">99.00% (k ≈ 2.58)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESUMEN DE RESULTADOS GUM -->
+                <div class="grid-4" style="gap:1rem; margin-bottom:1.5rem;">
+                    <div style="background:#eff6ff; border:1.5px solid #3b82f6; border-radius:8px; padding:1rem; text-align:center;">
+                        <div style="font-size:0.75rem; font-weight:800; color:#1d4ed8; text-transform:uppercase;">Incertidumbre Expandida (U)</div>
+                        <div id="lblGumUExpandida" style="font-size:1.6rem; font-weight:900; color:#1e3a8a; margin:0.3rem 0;">± 0.82 MPa</div>
+                        <div style="font-size:0.7rem; color:#3b82f6; font-weight:700;">Con Nivel de Confianza del 95.45%</div>
+                    </div>
+                    <div style="background:#f0fdf4; border:1.5px solid #22c55e; border-radius:8px; padding:1rem; text-align:center;">
+                        <div style="font-size:0.75rem; font-weight:800; color:#15803d; text-transform:uppercase;">Factor de Cobertura (k)</div>
+                        <div id="lblGumFactorK" style="font-size:1.6rem; font-weight:900; color:#14532d; margin:0.3rem 0;">k = 2.00</div>
+                        <div style="font-size:0.7rem; color:#16a34a; font-weight:700;">Distribución Student's t (ISO 98-3)</div>
+                    </div>
+                    <div style="background:#fefce8; border:1.5px solid #eab308; border-radius:8px; padding:1rem; text-align:center;">
+                        <div style="font-size:0.75rem; font-weight:800; color:#a16207; text-transform:uppercase;">Grados de Libertad Efectivos (ν_eff)</div>
+                        <div id="lblGumNuEff" style="font-size:1.6rem; font-weight:900; color:#713f12; margin:0.3rem 0;">ν_eff = 54.2</div>
+                        <div style="font-size:0.7rem; color:#ca8a04; font-weight:700;">Ecuación de Welch-Satterthwaite</div>
+                    </div>
+                    <div style="background:#faf5ff; border:1.5px solid #a855f7; border-radius:8px; padding:1rem; text-align:center;">
+                        <div style="font-size:0.75rem; font-weight:800; color:#7e22ce; text-transform:uppercase;">Incertidumbre Combinada (u_c)</div>
+                        <div id="lblGumUCombinada" style="font-size:1.6rem; font-weight:900; color:#581c87; margin:0.3rem 0;">u_c = 0.41 MPa</div>
+                        <div style="font-size:0.7rem; color:#9333ea; font-weight:700;">Suma en Varianza Cuadrática</div>
+                    </div>
+                </div>
+
+                <!-- DECLARACIÓN DEL RESULTADO OFICIAL ISO/IEC 17025 -->
+                <div style="background:#1e3a8a; color:#ffffff; border-radius:8px; padding:1rem 1.25rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-size:0.8rem; font-weight:700; color:#93c5fd; text-transform:uppercase;"><i class="fa-solid fa-certificate"></i> DECLARACIÓN OFICIAL DEL RESULTADO METROLÓGICO (ISO/IEC 17025:2017)</div>
+                        <div id="lblGumDeclaracionOficial" style="font-size:1.2rem; font-weight:800; margin-top:0.25rem; color:#ffffff;">
+                            Resistencia f'c = 28.54 ± 0.82 MPa (k = 2.00, P = 95.45%)
+                        </div>
+                    </div>
+                    <button class="btn btn-success" style="padding:0.5rem 1rem; font-size:0.85rem;" onclick="copiarDeclaracionGUM()"><i class="fa-solid fa-copy"></i> Copiar Declaración</button>
+                </div>
+
+                <!-- TABLA PRESUPUESTO DE INCERTIDUMBRE GUM -->
+                <div style="margin-bottom:1.5rem; overflow-x:auto;">
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.95rem; margin-bottom:0.5rem;">
+                        <i class="fa-solid fa-table-list"></i> TABLA DE PRESUPUESTO DE INCERTIDUMBRE DE MEDIDA (GUM / ISO 98-3)
+                    </div>
+                    <table class="table-custom" style="font-size:0.8rem;">
+                        <thead>
+                            <tr style="background:#1e3a8a; color:#ffffff;">
+                                <th>Fuente de Incertidumbre</th>
+                                <th>Tipo</th>
+                                <th>Valor x_i</th>
+                                <th>Distribución</th>
+                                <th>Divisor</th>
+                                <th>u(x_i) Estándar</th>
+                                <th>Coef. Sensibilidad c_i</th>
+                                <th>u_i(y) Contribución</th>
+                                <th>Grados ν_i</th>
+                                <th>Aporte %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyTablaGUM">
+                            <tr>
+                                <td colspan="10" style="text-align:center; padding:1rem; color:#64748b;">Presione "Calcular Presupuesto GUM" para generar la evaluación.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- GRÁFICO DE APORTACIÓN DE FUENTES (PARETO) -->
+                <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:8px; padding:1.25rem;">
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.95rem; margin-bottom:0.75rem; display:flex; justify-content:space-between; align-items:center;">
+                        <span><i class="fa-solid fa-chart-pie"></i> GRÁFICO DE APORTACIÓN DE FUENTES DE INCERTIDUMBRE (PARETO METROLÓGICO)</span>
+                        <span style="font-size:0.75rem; color:#64748b;">GUM / ISO/IEC 17025</span>
+                    </div>
+                    <div style="height:260px; display:flex; justify-content:center; align-items:center;" id="containerGraficoGUM">
+                        <svg id="svgParetoGUM" width="100%" height="240"></svg>
+                    </div>
+                </div>
+
             </div>
         </section>
+
 
         <!-- MÓDULO DE REPORTES -->
         <section id="tab-reportes" class="tab-content">
@@ -2010,9 +2154,165 @@
             }
         }
 
+        function ajustarCamposGUM() {
+            const mod = document.getElementById('gumModulo').value;
+            const selectUnidad = document.getElementById('gumUnidad');
+            
+            if (mod === 'compresion') {
+                selectUnidad.value = 'MPa';
+                document.getElementById('gumResolucion').value = '0.1';
+                document.getElementById('gumUCal').value = '1.5';
+                document.getElementById('gumKCal').value = '2.0';
+                document.getElementById('gumDeriva').value = '0.2';
+                document.getElementById('gumLecturas').value = '28.5, 28.7, 28.4, 28.6';
+            } else if (mod === 'temperatura') {
+                selectUnidad.value = '°C';
+                document.getElementById('gumResolucion').value = '0.1';
+                document.getElementById('gumUCal').value = '0.05';
+                document.getElementById('gumKCal').value = '2.0';
+                document.getElementById('gumDeriva').value = '0.05';
+                document.getElementById('gumLecturas').value = '24.5, 24.6, 24.5, 24.7';
+            } else if (mod === 'asentamiento') {
+                selectUnidad.value = 'mm';
+                document.getElementById('gumResolucion').value = '1.0';
+                document.getElementById('gumUCal').value = '1.0';
+                document.getElementById('gumKCal').value = '2.0';
+                document.getElementById('gumDeriva').value = '0.5';
+                document.getElementById('gumLecturas').value = '100, 105, 100, 95';
+            } else if (mod === 'granulometria') {
+                selectUnidad.value = 'mm';
+                document.getElementById('gumResolucion').value = '0.01';
+                document.getElementById('gumUCal').value = '0.05';
+                document.getElementById('gumKCal').value = '2.0';
+                document.getElementById('gumDeriva').value = '0.02';
+                document.getElementById('gumLecturas').value = '4.75, 2.0, 0.425, 0.075';
+            }
+        }
+
+        async function calcularIncertidumbreGUM() {
+            const lecturasRaw = document.getElementById('gumLecturas').value;
+            const arrLecturas = lecturasRaw.split(',').map(x => parseFloat(x.trim())).filter(x => !isNaN(x));
+            if (arrLecturas.length === 0) {
+                alert("Ingrese al menos una lectura numérica de campo/laboratorio.");
+                return;
+            }
+
+            const mod = document.getElementById('gumModulo').value;
+            const unidad = document.getElementById('gumUnidad').value;
+            const resolucion = parseFloat(document.getElementById('gumResolucion').value) || 0.1;
+            const uCal = parseFloat(document.getElementById('gumUCal').value) || 1.0;
+            const kCal = parseFloat(document.getElementById('gumKCal').value) || 2.0;
+            const deriva = parseFloat(document.getElementById('gumDeriva').value) || 0.1;
+            const homog = parseFloat(document.getElementById('gumHomogeneidad').value) || 0.0;
+
+            try {
+                const res = await fetch('/api/lims/incertidumbre/evaluar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        lecturas: arrLecturas,
+                        resolucion: resolucion,
+                        u_calibracion: uCal,
+                        k_calibracion: kCal,
+                        deriva: deriva,
+                        homogeneidad: homog,
+                        modulo: mod,
+                        unidad: unidad
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success && data.resultado) {
+                    const r = data.resultado;
+                    const uExp = r.incertidumbre_expandida_U || 0;
+                    const kFactor = r.factor_k || 2.0;
+                    const nuEff = r.grados_libertad_efectivos || 50;
+                    const uComb = r.u_combinada || 0;
+                    const tempFinal = r.temp_estimada_final || r.temp_media_indicada || 0;
+
+                    document.getElementById('lblGumUExpandida').innerText = `± ${uExp.toFixed(3)} ${unidad}`;
+                    document.getElementById('lblGumFactorK').innerText = `k = ${kFactor.toFixed(2)}`;
+                    document.getElementById('lblGumNuEff').innerText = `ν_eff = ${typeof nuEff === 'number' ? nuEff.toFixed(1) : nuEff}`;
+                    document.getElementById('lblGumUCombinada').innerText = `u_c = ${uComb.toFixed(4)} ${unidad}`;
+
+                    document.getElementById('lblGumDeclaracionOficial').innerText = 
+                        `Resultado = ${tempFinal.toFixed(2)} ± ${uExp.toFixed(3)} ${unidad} (k = ${kFactor.toFixed(2)}, P = 95.45%)`;
+
+                    const tbody = document.getElementById('tbodyTablaGUM');
+                    if (r.tabla_presupuesto && Array.isArray(r.tabla_presupuesto)) {
+                        tbody.innerHTML = r.tabla_presupuesto.map(f => `
+                            <tr>
+                                <td><strong>${f["Fuente de Incertidumbre"] || f["fuente"] || ''}</strong></td>
+                                <td><span class="badge-status ${f["Tipo"] === 'A' ? 'badge-validado' : 'badge-en-proceso'}">${f["Tipo"] || f["tipo"]}</span></td>
+                                <td>${typeof f["Valor xi"] === 'number' ? f["Valor xi"].toFixed(3) : f["Valor xi"]}</td>
+                                <td>${f["Distribución"] || f["distribucion"]}</td>
+                                <td>${typeof f["Divisor"] === 'number' ? f["Divisor"].toFixed(2) : f["Divisor"]}</td>
+                                <td>${typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"].toFixed(4) : f["u(xi) Estándar"]}</td>
+                                <td>${typeof f["Coef. Sensibilidad ci"] === 'number' ? f["Coef. Sensibilidad ci"].toFixed(4) : f["Coef. Sensibilidad ci"]}</td>
+                                <td><strong>${typeof f["ui(y) Contribución"] === 'number' ? f["ui(y) Contribución"].toFixed(4) : f["ui(y) Contribución"]}</strong></td>
+                                <td>${f["Grados νi"] || f["grados_libertad"]}</td>
+                                <td><strong style="color:#1e3a8a;">${typeof f["Aporte %"] === 'number' ? f["Aporte %"].toFixed(1) + '%' : (f["Aporte %"] || '')}</strong></td>
+                            </tr>
+                        `).join('');
+                    }
+
+                    dibujarGraficoParetoGUM(r.tabla_presupuesto || []);
+                } else {
+                    alert("Error en el cálculo GUM: " + (data.error || "Datos no válidos"));
+                }
+            } catch(e) {
+                alert("Error de conexión al calcular la Incertidumbre GUM.");
+            }
+        }
+
+        function dibujarGraficoParetoGUM(fuentes) {
+            const svg = document.getElementById('svgParetoGUM');
+            if (!svg || !fuentes || fuentes.length === 0) return;
+
+            const width = 760;
+            const height = 230;
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            let items = fuentes.map(f => ({
+                nombre: f["Fuente de Incertidumbre"] || f["fuente"] || '',
+                aporte: parseFloat(f["Aporte %"]) || 0
+            })).sort((a,b) => b.aporte - a.aporte);
+
+            const colors = ['#1e3a8a', '#3b82f6', '#0284c7', '#06b6d4', '#14b8a6', '#64748b'];
+            let html = `<rect width="${width}" height="${height}" fill="#ffffff"/>`;
+
+            const barWidth = Math.min(90, (width - 100) / items.length);
+            const startX = 60;
+            const maxH = 150;
+            const startY = 180;
+
+            items.forEach((it, idx) => {
+                const x = startX + idx * (barWidth + 25);
+                const h = Math.max(5, (it.aporte / 100.0) * maxH);
+                const y = startY - h;
+                const col = colors[idx % colors.length];
+
+                html += `
+                    <rect x="${x}" y="${y}" width="${barWidth}" height="${h}" fill="${col}" rx="4"/>
+                    <text x="${x + barWidth/2}" y="${y - 6}" text-anchor="middle" font-size="11" font-weight="800" fill="#1e3a8a">${it.aporte.toFixed(1)}%</text>
+                    <text x="${x + barWidth/2}" y="${startY + 16}" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">F${idx+1}</text>
+                `;
+            });
+
+            html += `<line x1="40" y1="${startY}" x2="${width - 20}" y2="${startY}" stroke="#cbd5e1" stroke-width="1.5"/>`;
+            svg.innerHTML = html;
+        }
+
+        function copiarDeclaracionGUM() {
+            const txt = document.getElementById('lblGumDeclaracionOficial').innerText;
+            navigator.clipboard.writeText(txt);
+            alert("¡Declaración de Incertidumbre ISO/IEC 17025 copiada al portapapeles!\n\n" + txt);
+        }
+
         function cerrarBusqueda() {
             document.getElementById('searchResultsPanel').style.display = 'none';
         }
+
     </script>
 </body>
 </html>
