@@ -170,23 +170,48 @@ class DatabaseLIMS:
             cursor.execute("SELECT id, nombre, cargo, nivel_permiso FROM usuarios_autorizados WHERE activo = 1 ORDER BY id ASC")
             return [dict(r) for r in cursor.fetchall()]
 
-    def validar_pin_autorizacion(self, usuario_id, pin):
+    def crear_usuario_autorizado(self, nombre, cargo, pin, nivel_permiso="SUPERVISOR"):
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM usuarios_autorizados WHERE id = ? AND pin_autorizacion = ? AND activo = 1", (usuario_id, str(pin).strip()))
+            cursor.execute("""
+                INSERT INTO usuarios_autorizados (nombre, cargo, pin_autorizacion, nivel_permiso, activo)
+                VALUES (?, ?, ?, ?, 1)
+            """, (nombre.strip(), cargo.strip(), str(pin).strip(), nivel_permiso.strip()))
+            conn.commit()
+            return cursor.lastrowid
+
+    def eliminar_usuario_autorizado(self, usuario_id):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE usuarios_autorizados SET activo = 0 WHERE id = ?", (usuario_id,))
+            conn.commit()
+            return True
+
+    def validar_pin_autorizacion(self, usuario_id_o_ninguno, pin):
+        pin_str = str(pin).strip()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            if usuario_id_o_ninguno and str(usuario_id_o_ninguno).isdigit():
+                cursor.execute("SELECT * FROM usuarios_autorizados WHERE id = ? AND pin_autorizacion = ? AND activo = 1", (usuario_id_o_ninguno, pin_str))
+                row = cursor.fetchone()
+                if row: return dict(row)
+            
+            # Buscar por PIN en todos los usuarios activos
+            cursor.execute("SELECT * FROM usuarios_autorizados WHERE pin_autorizacion = ? AND activo = 1", (pin_str,))
             row = cursor.fetchone()
             return dict(row) if row else None
 
     def eliminar_solicitud_con_autorizacion(self, codigo_solicitud, usuario_id, pin, motivo=""):
         usuario = self.validar_pin_autorizacion(usuario_id, pin)
         if not usuario:
-            return False, "Código PIN de autorización incorrecto o usuario no autorizado."
+            return False, "Código PIN de autorización incorrecto o no registrado."
 
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("DELETE FROM solicitudes WHERE codigo_solicitud = ? OR id = ?", (codigo_solicitud, str(codigo_solicitud)))
             conn.commit()
-            return True, f"Solicitud {codigo_solicitud} eliminada exitosamente por {usuario['nombre']} ({usuario['cargo']})."
+            return True, f"Orden de Servicio {codigo_solicitud} eliminada exitosamente por {usuario['nombre']} ({usuario['cargo']})."
+
 
     # ----------------------------------------------------
     # GENERADOR AUTOMÁTICO LSMCH-NNN-AAAA

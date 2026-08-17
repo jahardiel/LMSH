@@ -163,6 +163,31 @@ def actualizar_informe_solicitud():
 def get_usuarios_autorizados():
     return jsonify(db.obtener_usuarios_autorizados())
 
+@app.route('/api/lims/autorizados/crear', methods=['POST'])
+def crear_usuario_autorizado_api():
+    data = request.json or {}
+    nombre = data.get("nombre", "").strip()
+    cargo = data.get("cargo", "").strip()
+    pin = data.get("pin", "").strip()
+    permiso = data.get("nivel_permiso", "SUPERVISOR").strip()
+
+    if not nombre or not cargo or not pin:
+        return jsonify({"error": "Nombre, Cargo y PIN son obligatorios"}), 400
+
+    u_id = db.crear_usuario_autorizado(nombre, cargo, pin, permiso)
+    return jsonify({"success": True, "usuario_id": u_id, "message": f"Usuario autorizado {nombre} creado con éxito."})
+
+@app.route('/api/lims/autorizados/eliminar', methods=['POST'])
+def eliminar_usuario_autorizado_api():
+    data = request.json or {}
+    u_id = data.get("usuario_id")
+    if not u_id:
+        return jsonify({"error": "ID de usuario es obligatorio"}), 400
+
+    db.eliminar_usuario_autorizado(u_id)
+    return jsonify({"success": True, "message": "Usuario autorizado desactivado con éxito."})
+
+
 
 @app.route('/api/lims/solicitudes/eliminar', methods=['POST'])
 def eliminar_solicitud_api():
