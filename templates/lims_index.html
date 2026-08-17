@@ -1400,25 +1400,27 @@
                     </table>
 
 
-                    <!-- PASO 2: IDENTIFICAR FUENTES DE INCERTIDUMBRE -->
+                    <!-- PASO 2: IDENTIFICAR FUENTES DE INCERTIDUMBRE (FORMATO EXACTO MASTER HC-LSMCH-012) -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
                         PASO 2. IDENTIFICAR FUENTES DE INCERTIDUMBRE
                     </div>
-                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1.25rem;">
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1.25rem; text-align:center;">
                         <thead>
                             <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:40px;">Xi</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Fuente de incertidumbre</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Evaluación (Tipo)</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Distribución de probabilidad</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Divisor (k)</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Unidad</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:50px;">Magnitud de entrada X_i</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; text-align:left;">Fuente de incertidumbre</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Parámetro para cuantificar la fuente</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Distribución asociada a la fuente</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:70px;">Tipo de evaluación</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:70px; font-style:italic;">Símbolo</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:90px;">Valor constante</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyPaso2Fuentes">
                             <!-- Generado dinámicamente por JS -->
                         </tbody>
                     </table>
+
 
                     <!-- PASO 3: CUANTIFICAR COMPONENTES E INCERTIDUMBRES Y COEFICIENTES DE SENSIBILIDAD -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
@@ -3147,20 +3149,28 @@
 
                     // Llenar Tablas Pasos 2, 3, 4 y 5 conforme al formato Master HC-LSMCH-012 Rev. 01
                     if (r.tabla_presupuesto && Array.isArray(r.tabla_presupuesto)) {
-                        // Paso 2: Fuentes
+                        // Paso 2: Fuentes (7 columnas exactas del Master UTP)
                         const tbPaso2 = document.getElementById('tbodyPaso2Fuentes');
                         if (tbPaso2) {
-                            tbPaso2.innerHTML = r.tabla_presupuesto.map((f, idx) => `
-                                <tr>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${idx+1}</td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;"><span class="badge-status ${f["Tipo"] === 'A' ? 'badge-validado' : 'badge-en-proceso'}">${f["Tipo"] || f["tipo"]}</span></td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${f["Distribución"] || f["distribucion"]}</td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Divisor"] === 'number' ? f["Divisor"].toFixed(2) : f["Divisor"]}</td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
-                                </tr>
-                            `).join('');
+                            tbPaso2.innerHTML = r.tabla_presupuesto.map((f, idx) => {
+                                const simboloXi = f["simbolo"] || (f["Tipo"] === 'A' ? 'u_rep' : (idx === 1 ? 'Ucal' : (idx === 2 ? 'res' : 'u_deriva')));
+                                const parametroCuant = f["parametro"] || (f["Tipo"] === 'A' ? 'Variación de lecturas' : (f["fuente"].toLowerCase().includes('calibr') ? 'Incertidumbre del certificado' : (f["fuente"].toLowerCase().includes('resolución') || f["fuente"].toLowerCase().includes('resolucion') ? 'Resolución' : 'Deriva instrumental')));
+                                const valorConst = typeof f["Valor xi"] === 'number' ? f["Valor xi"].toFixed(3) : (typeof f["valor_xi"] === 'number' ? f["valor_xi"].toFixed(3) : (f["Valor xi"] || f["valor_xi"] || '-'));
+
+                                return `
+                                    <tr>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">X${idx+1}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem;">${parametroCuant}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem;">${f["Distribución"] || f["distribucion"]}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;"><span class="badge-status ${f["Tipo"] === 'A' ? 'badge-validado' : 'badge-en-proceso'}">${f["Tipo"] || f["tipo"]}</span></td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; font-style:italic; color:#0369a1;">${simboloXi}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${valorConst}</td>
+                                    </tr>
+                                `;
+                            }).join('');
                         }
+
 
                         // Paso 3: Cuantificar Variables
                         const tbPaso3 = document.getElementById('tbodyPaso3Cuantificar');
