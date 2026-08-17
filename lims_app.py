@@ -159,6 +159,29 @@ def actualizar_informe_solicitud():
     db.actualizar_numero_informe(cod_sol, num_inf)
     return jsonify({"success": True, "message": f"Número de informe '{num_inf}' actualizado correctamente para {cod_sol}"})
 
+@app.route('/api/lims/autorizados', methods=['GET'])
+def get_usuarios_autorizados():
+    return jsonify(db.obtener_usuarios_autorizados())
+
+
+@app.route('/api/lims/solicitudes/eliminar', methods=['POST'])
+def eliminar_solicitud_api():
+    data = request.json or {}
+    cod_sol = data.get("codigo_solicitud")
+    usr_id = data.get("usuario_id")
+    pin = data.get("pin")
+    motivo = data.get("motivo", "")
+
+    if not cod_sol or not usr_id or not pin:
+        return jsonify({"error": "Debe proporcionar Solicitud, Usuario Autorizado y PIN de Seguridad."}), 400
+
+    success, msg = db.eliminar_solicitud_con_autorizacion(cod_sol, usr_id, pin, motivo)
+    if success:
+        return jsonify({"success": True, "message": msg})
+    else:
+        return jsonify({"success": False, "error": msg}), 403
+
+
 
 
 # ---------------------------------------------------------

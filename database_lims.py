@@ -140,25 +140,58 @@ class DatabaseLIMS:
             );
             """)
 
-            # Tabla 8: Informes Consolidados
+            # Tabla 9: Usuarios Autorizados LIMS (Nivel de Autorización ISO 17025)
             cursor.execute("""
-            CREATE TABLE IF NOT EXISTS informes (
+            CREATE TABLE IF NOT EXISTS usuarios_autorizados (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                solicitud_id INTEGER NOT NULL,
-                codigo_informe TEXT UNIQUE NOT NULL,
-                fecha_emision DATE NOT NULL,
-                ensayos_incluidos_json TEXT,
-                firmado_por TEXT,
-                estado TEXT DEFAULT 'EMITIDO',
-                FOREIGN KEY (solicitud_id) REFERENCES solicitudes(id) ON DELETE CASCADE
+                nombre TEXT NOT NULL,
+                cargo TEXT NOT NULL,
+                pin_autorizacion TEXT NOT NULL,
+                nivel_permiso TEXT DEFAULT 'SUPERVISOR',
+                activo INTEGER DEFAULT 1
             );
             """)
 
+            # Insertar usuarios demo si la tabla está vacía
+            cursor.execute("SELECT COUNT(*) FROM usuarios_autorizados")
+            if cursor.fetchone()[0] == 0:
+                cursor.execute("""
+                    INSERT INTO usuarios_autorizados (nombre, cargo, pin_autorizacion, nivel_permiso) VALUES
+                    ('Dr. Alexis Arrocha', 'Jefe de Laboratorio LSMCH', '17025', 'JEFE_LAB'),
+                    ('Ing. Néstor Saldaña', 'Supervisor de Metrología', '9999', 'SUPERVISOR'),
+                    ('Ing. Jahardiel CO', 'Director Técnico LSMCH', '8888', 'DIRECTOR')
+                """)
+
             conn.commit()
+
+    def obtener_usuarios_autorizados(self):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, nombre, cargo, nivel_permiso FROM usuarios_autorizados WHERE activo = 1 ORDER BY id ASC")
+            return [dict(r) for r in cursor.fetchall()]
+
+    def validar_pin_autorizacion(self, usuario_id, pin):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM usuarios_autorizados WHERE id = ? AND pin_autorizacion = ? AND activo = 1", (usuario_id, str(pin).strip()))
+            row = cursor.fetchone()
+            return dict(row) if row else None
+
+    def eliminar_solicitud_con_autorizacion(self, codigo_solicitud, usuario_id, pin, motivo=""):
+        usuario = self.validar_pin_autorizacion(usuario_id, pin)
+        if not usuario:
+            return False, "Código PIN de autorización incorrecto o usuario no autorizado."
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM solicitudes WHERE codigo_solicitud = ? OR id = ?", (codigo_solicitud, str(codigo_solicitud)))
+            conn.commit()
+            return True, f"Solicitud {codigo_solicitud} eliminada exitosamente por {usuario['nombre']} ({usuario['cargo']})."
 
     # ----------------------------------------------------
     # GENERADOR AUTOMÁTICO LSMCH-NNN-AAAA
     # ----------------------------------------------------
+
     def generar_codigo_solicitud(self, anio=None):
         if not anio:
             anio = datetime.now().year
