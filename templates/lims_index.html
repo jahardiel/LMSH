@@ -1184,107 +1184,119 @@
 
                 <!-- 1. PANEL DE PRESUPUESTO GUM EN FORMATO OFICIAL HC-LSMCH-012 REV. 01 -->
                 <div id="panelSubIncCalc">
-                    <!-- CONTROLES Y PARÁMETROS RÁPIDOS (NO IMPRESO) -->
-                    <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:8px; padding:1rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;" class="no-print">
-                        <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
-
-                        <label style="font-weight:800; color:#1e3a8a;">ENSAYO:</label>
-                        <input type="text" id="incNombreEnsayoInput" class="form-control" style="font-weight:700; width:280px; color:#1e3a8a;" value="Resistencia a la Compresión en Cilindros de Concreto (ASTM C39)" oninput="document.getElementById('lblHc012NombreProceso').innerText = this.value">
-                        <select id="gumModulo" class="form-control" style="font-weight:700; width:150px;" onchange="ajustarCamposGUM()">
-                            <option value="compresion">CONCRETO: ASTM C39</option>
-                            <option value="temperatura">CONCRETO: ASTM C1064</option>
-                            <option value="asentamiento">CONCRETO: ASTM C143</option>
-                            <option value="granulometria">SUELOS: ASTM D6913</option>
-                        </select>
-                        <label style="font-weight:800; color:#1e3a8a; margin-left:0.4rem;"><i class="fa-solid fa-scale-balanced"></i> EQUIPO BD:</label>
-                        <select id="selectEquipoMetrologicoBD" class="form-control" style="font-weight:700; width:200px; color:#1e3a8a;" onchange="seleccionarEquipoEnGUMDesdeSelect(this.value)">
-                            <option value="">-- Cargar Equipo de BD --</option>
-                        </select>
-                    </div>
-                    <div style="display:flex; gap:0.5rem; align-items:center;">
-                        <button class="btn btn-primary" onclick="calcularIncertidumbreGUM()"><i class="fa-solid fa-calculator"></i> Calcular HC-012</button>
-                        <button class="btn btn-success" onclick="guardarHojaCalculoBD('INCERTIDUMBRE_GUM', 'inc')"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar en BD</button>
-                        <button class="btn btn-secondary" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;" onclick="cargarHojaCalculoBD('INCERTIDUMBRE_GUM', 'inc')"><i class="fa-solid fa-folder-open"></i> Cargar BD</button>
-                        <button class="btn btn-secondary" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Reporte PDF (HC-012)</button>
-                    </div>
-                </div>
-
-                <div style="background:#f1f5f9; border:1.5px solid #cbd5e1; border-radius:8px; padding:1rem; margin-bottom:1.5rem;" class="no-print">
-                    <div style="font-weight:800; color:#1e3a8a; font-size:0.88rem; margin-bottom:0.75rem; border-bottom:1px solid #cbd5e1; padding-bottom:0.25rem;">
-                        <i class="fa-solid fa-sliders"></i> DATOS DE ENTRADA Y PARÁMETROS METROLÓGICOS
-                    </div>
-
-                    <!-- CAJA DE CONVERSIÓN Y TRANSFORMACIÓN DE UNIDADES METROLÓGICAS -->
-                    <div style="background:linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); border:1.5px solid #0284c7; border-radius:8px; padding:0.85rem; margin-bottom:1rem;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
-                            <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
-                                <span style="font-weight:900; color:#0369a1; font-size:0.85rem;"><i class="fa-solid fa-arrows-rotate"></i> TRANSFORMACIÓN DE UNIDADES:</span>
+                    <!-- PANEL DE CONTROL E INGRESO DE LECTURAS INTEGRADO SIN SCROLL (NO IMPRESO) -->
+                    <div style="background:linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); border-radius:10px; padding:1.15rem; margin-bottom:1.25rem; color:#ffffff; box-shadow:0 4px 12px rgba(15, 23, 42, 0.15);" class="no-print">
+                        
+                        <!-- BARRA SUPERIOR DE ENSAYO, EQUIPO Y BOTÓN DE CÁLCULO DIRECTO -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:0.75rem; margin-bottom:0.85rem;">
+                            <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
+                                <span style="font-weight:900; font-size:0.95rem; color:#38bdf8;"><i class="fa-solid fa-calculator"></i> SELECCIÓN Y CÁLCULO GUM:</span>
                                 
-                                <label style="font-weight:700; color:#0369a1; font-size:0.8rem;">Unidad del Certificado / Origen:</label>
-                                <select id="gumUnidadOrigen" class="form-control" style="font-weight:800; width:100px; color:#1e3a8a; background:#ffffff; border:1px solid #0284c7;" onchange="actualizarInfoTransformacionUnidades()">
-                                    <option value="°F">°F</option>
-                                    <option value="°C" selected>°C</option>
-                                    <option value="psi">psi</option>
-                                    <option value="MPa">MPa</option>
-                                    <option value="in">in</option>
-                                    <option value="mm">mm</option>
-                                    <option value="kN">kN</option>
+                                <select id="gumModulo" class="form-control" style="font-weight:800; width:180px; background:#ffffff; color:#0f172a; font-size:0.82rem;" onchange="ajustarCamposGUM()">
+                                    <option value="compresion">CONCRETO: ASTM C39</option>
+                                    <option value="temperatura" selected>CONCRETO: ASTM C1064</option>
+                                    <option value="asentamiento">CONCRETO: ASTM C143</option>
+                                    <option value="granulometria">SUELOS: ASTM D6913</option>
                                 </select>
 
-                                <i class="fa-solid fa-right-long" style="color:#0284c7; font-size:1.1rem;"></i>
+                                <input type="text" id="incNombreEnsayoInput" class="form-control" style="font-weight:700; width:260px; background:#ffffff; color:#0f172a; font-size:0.82rem;" value="Temperatura de la Mezcla de Concreto Fresco (ASTM C1064)" oninput="document.getElementById('lblHc012NombreProceso').innerText = this.value" placeholder="Nombre del Ensayo">
 
-                                <label style="font-weight:700; color:#0369a1; font-size:0.8rem;">Unidad Objetivo del Cálculo / Reporte:</label>
-                                <select id="gumUnidad" class="form-control" style="font-weight:800; width:100px; color:#1e3a8a; background:#ffffff; border:1px solid #0284c7;" onchange="actualizarInfoTransformacionUnidades()">
-                                    <option value="°C" selected>°C</option>
-                                    <option value="°F">°F</option>
-                                    <option value="MPa">MPa</option>
-                                    <option value="psi">psi</option>
-                                    <option value="mm">mm</option>
-                                    <option value="in">in</option>
+                                <select id="selectEquipoMetrologicoBD" class="form-control" style="font-weight:700; width:200px; background:#ffffff; color:#0f172a; font-size:0.82rem;" onchange="seleccionarEquipoEnGUMDesdeSelect(this.value)">
+                                    <option value="">-- Cargar Equipo BD --</option>
                                 </select>
                             </div>
-                            <div id="lblBadgeTransformacionUnidades" style="font-weight:800; font-size:0.78rem; background:#ffffff; color:#0284c7; border:1px solid #0284c7; padding:0.35rem 0.75rem; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-                                <i class="fa-solid fa-check"></i> Sin conversión (Mismas unidades)
+
+                            <div style="display:flex; gap:0.4rem; align-items:center;">
+                                <button class="btn btn-primary" style="padding:0.55rem 1.2rem; font-size:0.9rem; font-weight:900; background:#0284c7; border:none; box-shadow:0 2px 8px rgba(2,132,199,0.4);" onclick="calcularIncertidumbreGUM()"><i class="fa-solid fa-calculator"></i> CALCULAR HC-012</button>
+                                <button class="btn btn-success" style="padding:0.55rem 0.85rem; font-weight:800; font-size:0.82rem;" onclick="guardarHojaCalculoBD('INCERTIDUMBRE_GUM', 'inc')"><i class="fa-solid fa-floppy-disk"></i> Guardar BD</button>
+                                <button class="btn btn-secondary" style="padding:0.55rem 0.85rem; background:#334155; color:#ffffff; font-size:0.82rem;" onclick="cargarHojaCalculoBD('INCERTIDUMBRE_GUM', 'inc')"><i class="fa-solid fa-folder-open"></i> Cargar</button>
+                                <button class="btn btn-secondary" style="padding:0.55rem 0.85rem; background:#475569; color:#ffffff; font-size:0.82rem;" onclick="window.print()"><i class="fa-solid fa-print"></i> PDF</button>
                             </div>
+                        </div>
+
+                        <!-- FILA INFERIOR EN 2 COLUMNAS: TRANSFORMACIÓN + PARÁMETROS VS LECTURAS (BASE 5 REGISTROS) -->
+                        <div style="display:grid; grid-template-columns: 1.1fr 0.9fr; gap:1rem; align-items:start;">
+                            
+                            <!-- COLUMNA 1: TRANSFORMACIÓN DE UNIDADES Y PARÁMETROS METROLÓGICOS -->
+                            <div style="background:rgba(255,255,255,0.08); border-radius:8px; padding:0.85rem; border:1px solid rgba(255,255,255,0.15);">
+                                <div style="font-weight:800; font-size:0.82rem; color:#38bdf8; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                                    <span><i class="fa-solid fa-arrows-rotate"></i> CONVERSIÓN DE UNIDADES Y PARÁMETROS</span>
+                                    <span id="lblBadgeTransformacionUnidades" style="font-size:0.72rem; background:#ffffff; color:#0284c7; padding:0.1rem 0.45rem; border-radius:4px; font-weight:800;">°C ➔ °C</span>
+                                </div>
+
+                                <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom:0.6rem; flex-wrap:wrap;">
+                                    <label style="font-size:0.76rem; color:#cbd5e1; font-weight:700;">Unidad Certificado:</label>
+                                    <select id="gumUnidadOrigen" class="form-control" style="width:75px; padding:0.2rem; font-weight:800; font-size:0.78rem;" onchange="actualizarInfoTransformacionUnidades()">
+                                        <option value="°F">°F</option>
+                                        <option value="°C" selected>°C</option>
+                                        <option value="psi">psi</option>
+                                        <option value="MPa">MPa</option>
+                                        <option value="in">in</option>
+                                        <option value="mm">mm</option>
+                                    </select>
+
+                                    <i class="fa-solid fa-right-long" style="color:#38bdf8; font-size:0.9rem;"></i>
+
+                                    <label style="font-size:0.76rem; color:#cbd5e1; font-weight:700;">Unidad Reporte:</label>
+                                    <select id="gumUnidad" class="form-control" style="width:75px; padding:0.2rem; font-weight:800; font-size:0.78rem;" onchange="actualizarInfoTransformacionUnidades()">
+                                        <option value="°C" selected>°C</option>
+                                        <option value="°F">°F</option>
+                                        <option value="MPa">MPa</option>
+                                        <option value="psi">psi</option>
+                                        <option value="mm">mm</option>
+                                        <option value="in">in</option>
+                                    </select>
+                                </div>
+
+                                <div class="grid-3" style="gap:0.4rem; font-size:0.75rem;">
+                                    <div><label style="color:#cbd5e1;">Resolución (R):</label><input type="number" step="0.001" id="gumResolucion" class="form-control" value="0.1" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
+                                    <div><label style="color:#cbd5e1;">Uncert Cert (U_cal):</label><input type="number" step="0.001" id="gumUCal" class="form-control" value="1.5" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
+                                    <div><label style="color:#cbd5e1;">Factor Cobertura (k):</label><input type="number" step="0.1" id="gumKCal" class="form-control" value="2.0" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
+                                    <div><label style="color:#cbd5e1;">Deriva Estimada (d):</label><input type="number" step="0.001" id="gumDeriva" class="form-control" value="0.2" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
+                                    <div><label style="color:#cbd5e1;">Variación Amb (h):</label><input type="number" step="0.001" id="gumHomogeneidad" class="form-control" value="0.1" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
+                                    <div><label style="color:#cbd5e1;">Nivel Confianza (P):</label>
+                                        <select id="gumConfianza" class="form-control" style="padding:0.15rem 0.25rem; font-size:0.75rem;">
+                                            <option value="0.9545">95.45% (ISO 17025)</option>
+                                            <option value="0.95">95.00%</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- COLUMNA 2: SECCIÓN DE LECTURAS MUESTRALES (TABLA BASE 5 REGISTROS + BOTÓN AÑADIR) -->
+                            <div style="background:rgba(255,255,255,0.08); border-radius:8px; padding:0.85rem; border:1px solid rgba(255,255,255,0.15);">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                                    <span style="font-weight:800; font-size:0.82rem; color:#38bdf8;"><i class="fa-solid fa-list-check"></i> LECTURAS MUESTRALES (5 REGISTROS BASE)</span>
+                                    <button class="btn btn-primary" style="padding:0.2rem 0.5rem; font-size:0.72rem; background:#0284c7; font-weight:800;" onclick="agregarFilaLecturaMuestra()"><i class="fa-solid fa-plus"></i> Añadir Lectura</button>
+                                </div>
+
+                                <table style="width:100%; border-collapse:collapse; font-size:0.78rem; margin-bottom:0.4rem; text-align:center;">
+                                    <thead>
+                                        <tr style="background:rgba(255,255,255,0.15); color:#ffffff; font-weight:800;">
+                                            <th style="padding:0.2rem; width:80px;">N° Lectura</th>
+                                            <th style="padding:0.2rem;">Valor Medido</th>
+                                            <th style="padding:0.2rem; width:35px;">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyLecturasMuestra5">
+                                        <tr><td><strong>Lectura 1</strong></td><td><input type="number" step="0.01" class="form-control input-lectura-5" value="28.5" oninput="calcularStatsLecturasEnVivo()" style="padding:0.15rem; text-align:center; font-weight:800; color:#1e3a8a;"></td><td>-</td></tr>
+                                        <tr><td><strong>Lectura 2</strong></td><td><input type="number" step="0.01" class="form-control input-lectura-5" value="28.7" oninput="calcularStatsLecturasEnVivo()" style="padding:0.15rem; text-align:center; font-weight:800; color:#1e3a8a;"></td><td>-</td></tr>
+                                        <tr><td><strong>Lectura 3</strong></td><td><input type="number" step="0.01" class="form-control input-lectura-5" value="28.4" oninput="calcularStatsLecturasEnVivo()" style="padding:0.15rem; text-align:center; font-weight:800; color:#1e3a8a;"></td><td>-</td></tr>
+                                        <tr><td><strong>Lectura 4</strong></td><td><input type="number" step="0.01" class="form-control input-lectura-5" value="28.6" oninput="calcularStatsLecturasEnVivo()" style="padding:0.15rem; text-align:center; font-weight:800; color:#1e3a8a;"></td><td>-</td></tr>
+                                        <tr><td><strong>Lectura 5</strong></td><td><input type="number" step="0.01" class="form-control input-lectura-5" value="28.5" oninput="calcularStatsLecturasEnVivo()" style="padding:0.15rem; text-align:center; font-weight:800; color:#1e3a8a;"></td><td>-</td></tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- ESTADÍSTICAS RÁPIDAS EN VIVO DE LECTURAS -->
+                                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.25); padding:0.35rem 0.5rem; border-radius:4px; font-size:0.75rem;">
+                                    <span id="lblStatsLecturasEnVivo" style="font-weight:800; color:#38bdf8;">Promedio x̄ = 28.54 | s = 0.114 | n = 5</span>
+                                    <input type="hidden" id="gumLecturas" value="28.5, 28.7, 28.4, 28.6, 28.5">
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
-                    <div class="grid-4" style="gap:0.75rem; font-size:0.82rem;">
-                        <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Lecturas Obtenidas de Campo/Lab:</label>
-                            <input type="text" id="gumLecturas" class="form-control" value="28.5, 28.7, 28.4, 28.6" placeholder="Ej. 28.5, 28.7, 28.4">
-                        </div>
-
-                        <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Resolución Equipo (R):</label>
-                            <input type="number" step="0.001" id="gumResolucion" class="form-control" value="0.1">
-                        </div>
-                        <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Incertidumbre Certificado (U_cal):</label>
-                            <input type="number" step="0.001" id="gumUCal" class="form-control" value="1.5">
-                        </div>
-                        <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Factor Cobertura (k_cal):</label>
-                            <input type="number" step="0.1" id="gumKCal" class="form-control" value="2.0">
-                        </div>
-                        <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Deriva Metrológica Estimada:</label>
-                            <input type="number" step="0.001" id="gumDeriva" class="form-control" value="0.2">
-                        </div>
-                        <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Variación Ambiental / Homogeneidad:</label>
-                            <input type="number" step="0.001" id="gumHomogeneidad" class="form-control" value="0.1">
-                        </div>
-                        <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Nivel de Confianza (P):</label>
-                            <select id="gumConfianza" class="form-control" style="font-weight:700;">
-                                <option value="0.9545">95.45% (ISO/IEC 17025)</option>
-                                <option value="0.95">95.00%</option>
-                                <option value="0.99">99.00%</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- HOJA OFICIAL HC-LSMCH-012 REVISIÓN 01 (REPORTE OFICIAL IMPRESO) -->
                 <div class="hoja-hc012-format" id="hojaReporteHC012Format" style="background:#ffffff; border:2px solid #1e3a8a; border-radius:4px; padding:1.25rem; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#0f172a;">
@@ -3008,11 +3020,67 @@
             }
         }
 
+        function obtenerArrayLecturasMuestrales() {
+            const inps = document.querySelectorAll('#tbodyLecturasMuestra5 .input-lectura-5');
+            let vals = [];
+            inps.forEach(inp => {
+                const v = parseFloat(inp.value);
+                if (!isNaN(v)) vals.push(v);
+            });
+            
+            if (vals.length === 0) {
+                const raw = document.getElementById('gumLecturas')?.value || '';
+                vals = raw.split(',').map(x => parseFloat(x.trim())).filter(x => !isNaN(x));
+            }
+            
+            if (vals.length > 0) {
+                const hiddenInp = document.getElementById('gumLecturas');
+                if (hiddenInp) hiddenInp.value = vals.join(', ');
+            }
+            
+            return vals;
+        }
+
+        function calcularStatsLecturasEnVivo() {
+            const arr = obtenerArrayLecturasMuestrales();
+            const lbl = document.getElementById('lblStatsLecturasEnVivo');
+            if (!lbl) return;
+
+            if (arr.length === 0) {
+                lbl.innerText = "Ingrese lecturas numéricas";
+                return;
+            }
+
+            const n = arr.length;
+            const mean = arr.reduce((a, b) => a + b, 0) / n;
+            let std = 0;
+            if (n > 1) {
+                const variance = arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1);
+                std = Math.sqrt(variance);
+            }
+
+            lbl.innerHTML = `Promedio x̄ = <strong>${mean.toFixed(2)}</strong> | s = <strong>${std.toFixed(3)}</strong> | n = <strong>${n}</strong>`;
+        }
+
+        function agregarFilaLecturaMuestra() {
+            const tbody = document.getElementById('tbodyLecturasMuestra5');
+            if (!tbody) return;
+            
+            const count = tbody.querySelectorAll('tr').length + 1;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>Lectura ${count}</strong></td>
+                <td><input type="number" step="0.01" class="form-control input-lectura-5" value="0.0" oninput="calcularStatsLecturasEnVivo()" style="padding:0.15rem; text-align:center; font-weight:800; color:#1e3a8a;"></td>
+                <td><button class="btn btn-secondary" style="padding:0.1rem 0.3rem; font-size:0.7rem;" onclick="this.closest('tr').remove(); calcularStatsLecturasEnVivo();" title="Quitar lectura"><i class="fa-solid fa-trash"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+            calcularStatsLecturasEnVivo();
+        }
+
         async function calcularIncertidumbreGUM() {
-            const lecturasRaw = document.getElementById('gumLecturas').value;
-            const arrLecturas = lecturasRaw.split(',').map(x => parseFloat(x.trim())).filter(x => !isNaN(x));
+            const arrLecturas = obtenerArrayLecturasMuestrales();
             if (arrLecturas.length === 0) {
-                alert("Ingrese al menos una lectura numérica de campo/laboratorio.");
+                alert("Ingrese al menos una lectura numérica en la tabla de lecturas de campo/laboratorio.");
                 return;
             }
 
@@ -3024,6 +3092,7 @@
             const kCal = parseFloat(document.getElementById('gumKCal').value) || 2.0;
             const deriva = parseFloat(document.getElementById('gumDeriva').value) || 0.1;
             const homog = parseFloat(document.getElementById('gumHomogeneidad').value) || 0.0;
+
 
             try {
                 const res = await fetch('/api/lims/incertidumbre/evaluar', {
