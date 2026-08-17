@@ -961,11 +961,19 @@
                     <span class="panel-title"><i class="fa-solid fa-calculator"></i> ESTIMACIÓN DE INCERTIDUMBRE DE MEDIDA (GUM / ISO/IEC 17025)</span>
                     <div style="display:flex; gap:0.5rem; align-items:center;">
                         <span class="badge-solicitud">LSMCH GUM ISO 17025</span>
+                        <button class="btn btn-secondary" style="background:#fef3c7; color:#92400e; border-color:#fde68a;" onclick="abrirModalCargarPDFCertificado()"><i class="fa-solid fa-file-pdf"></i> Cargar Certificado PDF</button>
                         <button class="btn btn-primary" onclick="calcularIncertidumbreGUM()"><i class="fa-solid fa-calculator"></i> Calcular Presupuesto GUM</button>
                         <button class="btn btn-success" onclick="guardarHojaCalculoBD('INCERTIDUMBRE_GUM', 'inc')"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar GUM en BD</button>
                         <button class="btn btn-secondary" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;" onclick="cargarHojaCalculoBD('INCERTIDUMBRE_GUM', 'inc')"><i class="fa-solid fa-folder-open"></i> Cargar GUM</button>
                     </div>
                 </div>
+
+                <!-- SUB-NAVEGACIÓN INTERNA METROLÓGICA -->
+                <div style="display:flex; gap:0.5rem; border-bottom:2px solid #cbd5e1; padding-bottom:0.5rem; margin-bottom:1.25rem;">
+                    <button class="btn btn-primary" id="btnSubIncCalc" style="padding:0.4rem 0.8rem; font-size:0.82rem;" onclick="switchSubTabIncertidumbre('calc')"><i class="fa-solid fa-calculator"></i> Presupuesto GUM en Vivo</button>
+                    <button class="btn btn-secondary" id="btnSubIncEquipos" style="padding:0.4rem 0.8rem; font-size:0.82rem;" onclick="switchSubTabIncertidumbre('equipos')"><i class="fa-solid fa-scale-balanced"></i> Equipos y Certificados de Calibración</button>
+                </div>
+
                 
                 <!-- ENCABEZADO DE ORDEN DE SERVICIO -->
                 <div class="hc006-header-box" style="margin-bottom:1.25rem;">
@@ -1128,9 +1136,108 @@
                         <svg id="svgParetoGUM" width="100%" height="240"></svg>
                     </div>
                 </div>
+            </div>
 
+            <!-- 2. PANEL DE GESTIÓN DE EQUIPOS Y CERTIFICADOS DE CALIBRACIÓN -->
+            <div id="panelSubIncEquipos" style="display:none;">
+                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:8px; padding:1.25rem; margin-bottom:1.5rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #cbd5e1; padding-bottom:0.5rem; margin-bottom:1rem;">
+                        <span style="font-weight:800; color:#1e3a8a; font-size:1rem;"><i class="fa-solid fa-plus-circle"></i> REGISTRO DE NUEVO EQUIPO Y CERTIFICADO METROLÓGICO</span>
+                        <button class="btn btn-secondary" style="background:#fef3c7; color:#92400e; border-color:#fde68a;" onclick="abrirModalCargarPDFCertificado()"><i class="fa-solid fa-file-pdf"></i> Extraer desde PDF</button>
+                    </div>
+
+                    <div class="grid-3" style="gap:1rem; font-size:0.85rem; margin-bottom:1rem;">
+                        <div><label style="font-weight:700; color:#1e3a8a;">Código Equipo Interno:</label><input type="text" id="eqCodigo" class="form-control" value="LSMCH-EM-05" placeholder="LSMCH-EM-05"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Marca del Instrumento:</label><input type="text" id="eqMarca" class="form-control" value="Fluke / Testo / ELE" placeholder="Ej. Fluke"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Modelo:</label><input type="text" id="eqModelo" class="form-control" value="52 II Dual Input" placeholder="Ej. 52 II"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Número de Serie:</label><input type="text" id="eqSerie" class="form-control" value="SN-984210" placeholder="Ej. SN-984210"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Resolución (R):</label><input type="number" step="0.001" id="eqResolucion" class="form-control" value="0.01"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Número de Certificado:</label><input type="text" id="eqCertificado" class="form-control" value="CEI-UTP-03-SI-145-2026" placeholder="03-SI-145-2026"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Laboratorio de Calibración:</label><input type="text" id="eqLaboratorio" class="form-control" value="Centro Experimental de Ingeniería - UTP"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Fecha de Calibración:</label><input type="date" id="eqFecha" class="form-control" value="2026-02-10"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Deriva Estimada (u_deriva):</label><input type="number" step="0.001" id="eqDeriva" class="form-control" value="0.05"></div>
+                    </div>
+
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-table-list"></i> PUNTOS DEL CERTIFICADO DE CALIBRACIÓN</div>
+                    <table class="table-custom" style="font-size:0.8rem; margin-bottom:1rem;">
+                        <thead>
+                            <tr style="background:#1e3a8a; color:#ffffff;">
+                                <th>Lectura Indicada</th>
+                                <th>Patrón / Referencia</th>
+                                <th>Corrección (Patrón - Indicada)</th>
+                                <th>Incertidumbre U_cal</th>
+                                <th>Factor k</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPuntosCalibracionEquipo">
+                            <tr>
+                                <td><input type="number" step="0.01" class="table-input" value="20.0"></td>
+                                <td><input type="number" step="0.01" class="table-input" value="20.05"></td>
+                                <td><input type="number" step="0.01" class="table-input" value="0.05"></td>
+                                <td><input type="number" step="0.01" class="table-input" value="0.10"></td>
+                                <td><input type="number" step="0.1" class="table-input" value="2.0"></td>
+                                <td><button class="btn btn-secondary" onclick="this.closest('tr').remove()"><i class="fa-solid fa-trash"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <button class="btn btn-secondary" onclick="agregarFilaPuntoCalibracion()"><i class="fa-solid fa-plus"></i> Agregar Punto de Calibración</button>
+                        <button class="btn btn-success" onclick="guardarEquipoMetrologicoBD()"><i class="fa-solid fa-floppy-disk"></i> Guardar Equipo Metrológico en BD</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE EQUIPOS REGISTRADOS EN BD -->
+                <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:8px; padding:1.25rem;">
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.95rem; margin-bottom:0.75rem; display:flex; justify-content:space-between; align-items:center;">
+                        <span><i class="fa-solid fa-boxes-stacked"></i> INVENTARIO DE EQUIPOS METROLÓGICOS REGISTRADOS</span>
+                        <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarEquiposRegistradosBD()"><i class="fa-solid fa-rotate"></i> Actualizar Tabla</button>
+                    </div>
+                    <table class="table-custom" style="font-size:0.8rem;">
+                        <thead>
+                            <tr style="background:#1e3a8a; color:#ffffff;">
+                                <th>Código Equipo</th>
+                                <th>Marca / Modelo</th>
+                                <th>N° Serie</th>
+                                <th>Resolución</th>
+                                <th>Certificado N°</th>
+                                <th>Deriva</th>
+                                <th>Fecha Calib.</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyEquiposRegistrados">
+                            <tr>
+                                <td colspan="8" style="text-align:center; padding:1rem; color:#64748b;">Cargando equipos metrológicos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
+
+        <!-- MODAL SUBIR Y CARGAR CERTIFICADO PDF -->
+        <div id="modalCargarPDFCertificado" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.6); z-index:9999; justify-content:center; align-items:center;">
+            <div style="background:#ffffff; width:540px; max-width:92%; border-radius:12px; padding:1.5rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.3);">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #cbd5e1; padding-bottom:0.75rem; margin-bottom:1rem;">
+                    <span style="font-weight:800; color:#1e3a8a; font-size:1.1rem;"><i class="fa-solid fa-file-pdf"></i> EXTRAER CERTIFICADO DE CALIBRACIÓN (PDF)</span>
+                    <button style="background:none; border:none; font-size:1.2rem; cursor:pointer;" onclick="cerrarModalCargarPDFCertificado()">✕</button>
+                </div>
+                <p style="font-size:0.85rem; color:#475569; margin-bottom:1rem;">
+                    Seleccione un certificado PDF oficial emitido por un Laboratorio Acreditado (ej. CEI-UTP). El sistema leerá automáticamente el código, número de certificado, marca, modelo, serie y tabla de calibración.
+                </p>
+                <div style="border:2px dashed #3b82f6; border-radius:8px; padding:1.5rem; text-align:center; background:#eff6ff; margin-bottom:1.25rem;">
+                    <i class="fa-solid fa-cloud-arrow-up" style="font-size:2.2rem; color:#2563eb; margin-bottom:0.5rem;"></i>
+                    <br>
+                    <input type="file" id="filePDFCertificado" accept=".pdf" style="margin-top:0.5rem;">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+                    <button class="btn btn-secondary" onclick="cerrarModalCargarPDFCertificado()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="procesarSubidaPDFCertificado()"><i class="fa-solid fa-wand-magic-sparkles"></i> Extraer Datos con IA / OCR</button>
+                </div>
+            </div>
+        </div>
+
 
 
         <!-- MÓDULO DE REPORTES -->
@@ -2307,6 +2414,220 @@
             const txt = document.getElementById('lblGumDeclaracionOficial').innerText;
             navigator.clipboard.writeText(txt);
             alert("¡Declaración de Incertidumbre ISO/IEC 17025 copiada al portapapeles!\n\n" + txt);
+        }
+
+        // --- SUB-NAVEGACIÓN DE INCERTIDUMBRE Y EQUIPOS ---
+        function switchSubTabIncertidumbre(sub) {
+            const btnCalc = document.getElementById('btnSubIncCalc');
+            const btnEq = document.getElementById('btnSubIncEquipos');
+            const pCalc = document.getElementById('panelSubIncCalc');
+            const pEq = document.getElementById('panelSubIncEquipos');
+
+            if (sub === 'equipos') {
+                if (pCalc) pCalc.style.display = 'none';
+                if (pEq) pEq.style.display = 'block';
+                if (btnCalc) { btnCalc.className = 'btn btn-secondary'; }
+                if (btnEq) { btnEq.className = 'btn btn-primary'; }
+                cargarEquiposRegistradosBD();
+            } else {
+                if (pCalc) pCalc.style.display = 'block';
+                if (pEq) pEq.style.display = 'none';
+                if (btnCalc) { btnCalc.className = 'btn btn-primary'; }
+                if (btnEq) { btnEq.className = 'btn btn-secondary'; }
+            }
+        }
+
+        function abrirModalCargarPDFCertificado() {
+            const modal = document.getElementById('modalCargarPDFCertificado');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function cerrarModalCargarPDFCertificado() {
+            const modal = document.getElementById('modalCargarPDFCertificado');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function procesarSubidaPDFCertificado() {
+            const input = document.getElementById('filePDFCertificado');
+            if (!input || !input.files || input.files.length === 0) {
+                alert("Por favor seleccione un archivo PDF de Certificado de Calibración.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', input.files[0]);
+
+            try {
+                const res = await fetch('/api/cargar-pdf-certificado', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success && data.datos) {
+                    const d = data.datos;
+                    if (d.codigo) document.getElementById('eqCodigo').value = d.codigo;
+                    if (d.marca) document.getElementById('eqMarca').value = d.marca;
+                    if (d.modelo) document.getElementById('eqModelo').value = d.modelo;
+                    if (d.numero_serie) document.getElementById('eqSerie').value = d.numero_serie;
+                    if (d.resolucion) document.getElementById('eqResolucion').value = d.resolucion;
+                    if (d.numero_certificado) document.getElementById('eqCertificado').value = d.numero_certificado;
+                    if (d.laboratorio) document.getElementById('eqLaboratorio').value = d.laboratorio;
+                    if (d.fecha_calibracion) document.getElementById('eqFecha').value = d.fecha_calibracion;
+
+                    if (d.puntos_calibracion && Array.isArray(d.puntos_calibracion)) {
+                        const tbody = document.getElementById('tbodyPuntosCalibracionEquipo');
+                        tbody.innerHTML = d.puntos_calibracion.map(p => `
+                            <tr>
+                                <td><input type="number" step="0.01" class="table-input" value="${p.temp_indicada}"></td>
+                                <td><input type="number" step="0.01" class="table-input" value="${p.temp_patron}"></td>
+                                <td><input type="number" step="0.01" class="table-input" value="${p.correccion}"></td>
+                                <td><input type="number" step="0.01" class="table-input" value="${p.u_expandida}"></td>
+                                <td><input type="number" step="0.1" class="table-input" value="${p.factor_k || 2.0}"></td>
+                                <td><button class="btn btn-secondary" onclick="this.closest('tr').remove()"><i class="fa-solid fa-trash"></i></button></td>
+                            </tr>
+                        `).join('');
+                    }
+
+                    cerrarModalCargarPDFCertificado();
+                    switchSubTabIncertidumbre('equipos');
+                    alert(` ¡CERTIFICADO EXTRAÍDO EXITOSAMENTE! Datos de ${d.codigo || 'Equipo'} importados correctamente.`);
+                } else {
+                    alert("Error al extraer PDF: " + (data.error || "Formato no compatible"));
+                }
+            } catch(e) {
+                alert("Error de conexión al procesar el certificado PDF.");
+            }
+        }
+
+        function agregarFilaPuntoCalibracion() {
+            const tbody = document.getElementById('tbodyPuntosCalibracionEquipo');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="number" step="0.01" class="table-input" value="0.0"></td>
+                <td><input type="number" step="0.01" class="table-input" value="0.0"></td>
+                <td><input type="number" step="0.01" class="table-input" value="0.0"></td>
+                <td><input type="number" step="0.01" class="table-input" value="0.10"></td>
+                <td><input type="number" step="0.1" class="table-input" value="2.0"></td>
+                <td><button class="btn btn-secondary" onclick="this.closest('tr').remove()"><i class="fa-solid fa-trash"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        async function guardarEquipoMetrologicoBD() {
+            const cod = document.getElementById('eqCodigo').value.trim();
+            if (!cod) {
+                alert("Por favor ingrese el Código del Equipo Interno.");
+                return;
+            }
+
+            const rows = document.querySelectorAll('#tbodyPuntosCalibracionEquipo tr');
+            let puntos = [];
+            rows.forEach(r => {
+                const inps = r.querySelectorAll('input');
+                if (inps.length >= 4) {
+                    puntos.push({
+                        temp_indicada: parseFloat(inps[0].value) || 0,
+                        temp_patron: parseFloat(inps[1].value) || 0,
+                        correccion: parseFloat(inps[2].value) || 0,
+                        u_expandida: parseFloat(inps[3].value) || 0,
+                        factor_k: parseFloat(inps[4]?.value) || 2.0
+                    });
+                }
+            });
+
+            try {
+                const res = await fetch('/api/termometros', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        codigo: cod,
+                        marca: document.getElementById('eqMarca').value,
+                        modelo: document.getElementById('eqModelo').value,
+                        numero_serie: document.getElementById('eqSerie').value,
+                        resolucion: parseFloat(document.getElementById('eqResolucion').value) || 0.01,
+                        numero_certificado: document.getElementById('eqCertificado').value,
+                        laboratorio: document.getElementById('eqLaboratorio').value,
+                        fecha_calibracion: document.getElementById('eqFecha').value,
+                        deriva: parseFloat(document.getElementById('eqDeriva').value) || 0.0,
+                        puntos_calibracion: puntos
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert(` ¡EQUIPO METROLÓGICO REGISTRADO! ${data.message || ''}`);
+                    cargarEquiposRegistradosBD();
+                } else {
+                    alert("Error al guardar equipo: " + (data.error || "Datos no válidos"));
+                }
+            } catch(e) {
+                alert("Error de conexión al registrar el equipo metrológico.");
+            }
+        }
+
+        async function cargarEquiposRegistradosBD() {
+            const tbody = document.getElementById('tbodyEquiposRegistrados');
+            if (!tbody) return;
+
+            try {
+                const res = await fetch('/api/termometros');
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:1rem; color:#64748b;">No hay equipos metrológicos registrados en la base de datos.</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = data.map(eq => `
+                        <tr>
+                            <td><strong style="color:#1e3a8a;">${eq.codigo}</strong></td>
+                            <td>${eq.marca || ''} ${eq.modelo || ''}</td>
+                            <td>${eq.numero_serie || ''}</td>
+                            <td>${eq.resolucion || 0.01}</td>
+                            <td><span class="badge-status badge-validado">${eq.numero_certificado || 'Certificado'}</span></td>
+                            <td>${eq.deriva_estimada || 0}</td>
+                            <td>${eq.fecha_calibracion || ''}</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding:0.2rem 0.4rem; font-size:0.75rem;" onclick="seleccionarEquipoEnGUM(${eq.id})" title="Usar en Presupuesto GUM"><i class="fa-solid fa-check"></i> Usar</button>
+                                <button class="btn btn-secondary" style="padding:0.2rem 0.4rem; font-size:0.75rem;" onclick="eliminarEquipoMetrologicoBD(${eq.id})"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function eliminarEquipoMetrologicoBD(id) {
+            if (!confirm("¿Está seguro de eliminar este equipo metrológico de la base de datos?")) return;
+            try {
+                const res = await fetch(`/api/termometros/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    alert("Equipo metrológico eliminado.");
+                    cargarEquiposRegistradosBD();
+                } else {
+                    alert("Error al eliminar: " + data.error);
+                }
+            } catch(e) { alert("Error de conexión."); }
+        }
+
+        function seleccionarEquipoEnGUM(id) {
+            fetch('/api/termometros')
+                .then(r => r.json())
+                .then(data => {
+                    const eq = data.find(t => t.id === id);
+                    if (eq) {
+                        document.getElementById('gumResolucion').value = eq.resolucion || 0.01;
+                        document.getElementById('gumDeriva').value = eq.deriva_estimada || 0.0;
+                        if (eq.puntos_calibracion && eq.puntos_calibracion.length > 0) {
+                            const p0 = eq.puntos_calibracion[0];
+                            document.getElementById('gumUCal').value = p0.u_expandida || 1.0;
+                            document.getElementById('gumKCal').value = p0.factor_k || 2.0;
+                        }
+                        switchSubTabIncertidumbre('calc');
+                        alert(` ¡EQUIPO CADO AL PRESUPUESTO GUM! Se aplicó Resolución=${eq.resolucion} y Deriva=${eq.deriva_estimada}.`);
+                    }
+                });
         }
 
         function cerrarBusqueda() {
