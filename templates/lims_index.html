@@ -81,11 +81,11 @@
             gap: 0.75rem;
         }
 
-        /* ESTILOS DE IMPRESIÓN TIPO REPORTE CARTA (50% GRÁFICO) */
+        /* ESTILOS DE IMPRESIÓN REPORTE CARTA (TABLA PRIMERO, GRÁFICO SEGUNDO) */
         @media print {
             @page {
                 size: letter portrait;
-                margin: 12mm 12mm 12mm 12mm;
+                margin: 10mm;
             }
 
             .lims-header, .lims-nav, .btn, .chart-controls-bar, .subnav-pills, .global-search-container, .table-input {
@@ -95,7 +95,7 @@
             body {
                 background: #ffffff !important;
                 color: #000000 !important;
-                font-size: 11pt;
+                font-size: 10pt;
             }
 
             .lims-container {
@@ -112,8 +112,8 @@
 
             .hc006-header-box {
                 border: 2px solid #1e3a8a !important;
-                padding: 0.75rem !important;
-                margin-bottom: 1rem !important;
+                padding: 0.5rem !important;
+                margin-bottom: 0.75rem !important;
             }
 
             .form-grid-header input {
@@ -123,34 +123,33 @@
                 font-weight: 600 !important;
             }
 
-            /* GRÁFICO GRANULOMÉTRICO AMPLIADO A 50% DE PÁGINA CARTA */
             .chart-print-container {
                 width: 100% !important;
-                height: 440px !important;
-                margin: 1rem 0 !important;
+                height: 420px !important;
+                margin-top: 1rem !important;
                 page-break-inside: avoid;
             }
 
             #svgCurvaHC006 {
-                height: 430px !important;
+                height: 410px !important;
                 width: 100% !important;
             }
 
             .table-lims th {
                 background: #f1f5f9 !important;
                 color: #1e3a8a !important;
-                font-size: 9pt !important;
-                padding: 4px 6px !important;
+                font-size: 8.5pt !important;
+                padding: 3px 5px !important;
             }
 
             .table-lims td {
-                font-size: 9pt !important;
-                padding: 3px 6px !important;
+                font-size: 8.5pt !important;
+                padding: 2px 5px !important;
             }
 
             .print-signatures-block {
-                margin-top: 2rem !important;
-                padding-top: 1rem !important;
+                margin-top: 1.5rem !important;
+                padding-top: 0.75rem !important;
                 border-top: 1px solid #000000 !important;
                 page-break-inside: avoid;
             }
@@ -271,7 +270,7 @@
                             <span id="badgeCPL" class="badge-status badge-validado">Criterio Pérdida por Lavado: Cumple (CP_L &le; 0.5%)</span>
                         </div>
                         
-                        <div class="grid-4" style="margin-bottom:0.75rem;">
+                        <div class="grid-4">
                             <div class="form-group">
                                 <label class="form-label">Método de Ensayo</label>
                                 <select id="hcMetodoASTM" class="form-control" onchange="calcularHojaHC006()">
@@ -296,37 +295,10 @@
                                 <input type="number" id="hcMasaSecaTotal" class="form-control" value="1246.3" step="0.1">
                             </div>
                         </div>
-
-
                     </div>
 
-                    <!-- GRÁFICO GRANULOMÉTRICO AMPLIADO (HASTA 50% DE PÁGINA CARTA) -->
-                    <div style="margin-bottom: 1.5rem;">
-                        <h4 style="color:#1e3a8a; font-size:0.95rem; font-weight:700; margin-bottom:0.5rem;"><i class="fa-solid fa-chart-area"></i> CURVA GRANULOMÉTRICA (ASTM D6913 / HC-LSMCH-006)</h4>
-                        
-                        <!-- BARRA DE CONTROLES DE ZOOM EN PANTALLA -->
-                        <div class="chart-controls-bar">
-                            <div class="chart-controls-group">
-                                <label><strong>Ajuste de Escala Y (% Que Pasa):</strong></label>
-                                <span>Mín:</span>
-                                <input type="number" id="zoomYMin" value="0" min="0" max="100" style="width:55px;" onchange="reRenderChart()"> %
-                                <span>Máx:</span>
-                                <input type="number" id="zoomYMax" value="100" min="0" max="100" style="width:55px;" onchange="reRenderChart()"> %
-                            </div>
-                            <div class="chart-controls-group">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.78rem;" onclick="autoAjustarEscalaY()"><i class="fa-solid fa-expand"></i> Auto-Ajustar Mínimo</button>
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.78rem;" onclick="restablecerEscalaY()"><i class="fa-solid fa-rotate-left"></i> 0-100%</button>
-                            </div>
-                        </div>
-
-                        <!-- CONTENEDOR DE GRÁFICO AMPLIADO -->
-                        <div class="chart-print-container" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; width:100%;">
-                            <svg id="svgCurvaHC006" viewBox="0 0 840 450" style="width:100%; height:440px; background:#fafafa; border-radius:4px; border:1px solid #e2e8f0;"></svg>
-                        </div>
-                    </div>
-
-                    <!-- TABLA DE RESULTADOS DE TAMIZADO Y PARÁMETROS -->
-                    <div class="grid-2">
+                    <!-- PRIMERO: TABLA DE RESULTADOS DE TAMIZADO Y PARÁMETROS -->
+                    <div class="grid-2" style="margin-bottom: 1.5rem;">
                         <!-- TABLA DE TAMIZADO -->
                         <div>
                             <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-table-cells"></i> Resultados de Tamizado E11 (ASTM D6913)</h4>
@@ -343,21 +315,21 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr><td>3"</td><td>75.000</td><td><input type="number" class="table-input hc-mret" value="0.0"><span class="print-val" style="display:none;">0.0</span></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>2"</td><td>50.000</td><td><input type="number" class="table-input hc-mret" value="0.0"><span class="print-val" style="display:none;">0.0</span></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>1 1/2"</td><td>38.100</td><td><input type="number" class="table-input hc-mret" value="0.0"><span class="print-val" style="display:none;">0.0</span></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>1"</td><td>25.000</td><td><input type="number" class="table-input hc-mret" value="0.0"><span class="print-val" style="display:none;">0.0</span></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>3/4"</td><td>19.000</td><td><input type="number" class="table-input hc-mret" value="0.0"><span class="print-val" style="display:none;">0.0</span></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>3/8"</td><td>9.500</td><td><input type="number" class="table-input hc-mret" value="0.0"><span class="print-val" style="display:none;">0.0</span></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>No. 4</td><td>4.750</td><td><input type="number" class="table-input hc-mret" value="77.9"><span class="print-val" style="display:none;">77.9</span></td><td class="r-ind">6.25</td><td class="r-acu">6.25</td><td class="r-pasa">93.75</td></tr>
-                                        <tr><td>No. 10</td><td>2.000</td><td><input type="number" class="table-input hc-mret" value="1.25"><span class="print-val" style="display:none;">1.25</span></td><td class="r-ind">1.39</td><td class="r-acu">7.64</td><td class="r-pasa">92.36</td></tr>
-                                        <tr><td>No. 20</td><td>0.850</td><td><input type="number" class="table-input hc-mret" value="5.92"><span class="print-val" style="display:none;">5.92</span></td><td class="r-ind">6.56</td><td class="r-acu">14.20</td><td class="r-pasa">85.80</td></tr>
-                                        <tr><td>No. 40</td><td>0.425</td><td><input type="number" class="table-input hc-mret" value="13.32"><span class="print-val" style="display:none;">13.32</span></td><td class="r-ind">14.76</td><td class="r-acu">28.96</td><td class="r-pasa">71.04</td></tr>
-                                        <tr><td>No. 60</td><td>0.250</td><td><input type="number" class="table-input hc-mret" value="12.18"><span class="print-val" style="display:none;">12.18</span></td><td class="r-ind">13.50</td><td class="r-acu">42.46</td><td class="r-pasa">57.54</td></tr>
-                                        <tr><td>No. 100</td><td>0.150</td><td><input type="number" class="table-input hc-mret" value="11.16"><span class="print-val" style="display:none;">11.16</span></td><td class="r-ind">12.37</td><td class="r-acu">54.83</td><td class="r-pasa">45.17</td></tr>
-                                        <tr><td>No. 140</td><td>0.106</td><td><input type="number" class="table-input hc-mret" value="17.41"><span class="print-val" style="display:none;">17.41</span></td><td class="r-ind">19.29</td><td class="r-acu">74.12</td><td class="r-pasa">25.88</td></tr>
-                                        <tr><td>No. 200</td><td>0.075</td><td><input type="number" class="table-input hc-mret" value="12.77"><span class="print-val" style="display:none;">12.77</span></td><td class="r-ind">14.15</td><td class="r-acu">88.27</td><td class="r-pasa">11.73</td></tr>
-                                        <tr><td>Fondo</td><td>0.000</td><td><input type="number" class="table-input hc-mret" value="10.34"><span class="print-val" style="display:none;">10.34</span></td><td class="r-ind">--</td><td class="r-acu">--</td><td class="r-pasa">--</td></tr>
+                                        <tr><td>3"</td><td>75.000</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>2"</td><td>50.000</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>1 1/2"</td><td>38.100</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>1"</td><td>25.000</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>3/4"</td><td>19.000</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>3/8"</td><td>9.500</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>No. 4</td><td>4.750</td><td><input type="number" class="table-input hc-mret" value="77.9" onchange="calcularHojaHC006()"></td><td class="r-ind">6.25</td><td class="r-acu">6.25</td><td class="r-pasa">93.75</td></tr>
+                                        <tr><td>No. 10</td><td>2.000</td><td><input type="number" class="table-input hc-mret" value="1.25" onchange="calcularHojaHC006()"></td><td class="r-ind">1.39</td><td class="r-acu">7.64</td><td class="r-pasa">92.36</td></tr>
+                                        <tr><td>No. 20</td><td>0.850</td><td><input type="number" class="table-input hc-mret" value="5.92" onchange="calcularHojaHC006()"></td><td class="r-ind">6.56</td><td class="r-acu">14.20</td><td class="r-pasa">85.80</td></tr>
+                                        <tr><td>No. 40</td><td>0.425</td><td><input type="number" class="table-input hc-mret" value="13.32" onchange="calcularHojaHC006()"></td><td class="r-ind">14.76</td><td class="r-acu">28.96</td><td class="r-pasa">71.04</td></tr>
+                                        <tr><td>No. 60</td><td>0.250</td><td><input type="number" class="table-input hc-mret" value="12.18" onchange="calcularHojaHC006()"></td><td class="r-ind">13.50</td><td class="r-acu">42.46</td><td class="r-pasa">57.54</td></tr>
+                                        <tr><td>No. 100</td><td>0.150</td><td><input type="number" class="table-input hc-mret" value="11.16" onchange="calcularHojaHC006()"></td><td class="r-ind">12.37</td><td class="r-acu">54.83</td><td class="r-pasa">45.17</td></tr>
+                                        <tr><td>No. 140</td><td>0.106</td><td><input type="number" class="table-input hc-mret" value="17.41" onchange="calcularHojaHC006()"></td><td class="r-ind">19.29</td><td class="r-acu">74.12</td><td class="r-pasa">25.88</td></tr>
+                                        <tr><td>No. 200</td><td>0.075</td><td><input type="number" class="table-input hc-mret" value="12.77" onchange="calcularHojaHC006()"></td><td class="r-ind">14.15</td><td class="r-acu">88.27</td><td class="r-pasa">11.73</td></tr>
+                                        <tr><td>Fondo</td><td>0.000</td><td><input type="number" class="table-input hc-mret" value="10.34" onchange="calcularHojaHC006()"></td><td class="r-ind">--</td><td class="r-acu">--</td><td class="r-pasa">--</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -386,6 +358,31 @@
                         </div>
                     </div>
 
+                    <!-- SEGUNDO: GRÁFICO GRANULOMÉTRICO AMPLIADO -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color:#1e3a8a; font-size:0.95rem; font-weight:700; margin-bottom:0.5rem;"><i class="fa-solid fa-chart-area"></i> CURVA GRANULOMÉTRICA (ASTM D6913 / HC-LSMCH-006)</h4>
+                        
+                        <!-- CONTROLES DE ZOOM -->
+                        <div class="chart-controls-bar">
+                            <div class="chart-controls-group">
+                                <label><strong>Ajuste de Escala Y (% Que Pasa):</strong></label>
+                                <span>Mín:</span>
+                                <input type="number" id="zoomYMin" value="0" min="0" max="100" style="width:55px;" onchange="reRenderChart()"> %
+                                <span>Máx:</span>
+                                <input type="number" id="zoomYMax" value="100" min="0" max="100" style="width:55px;" onchange="reRenderChart()"> %
+                            </div>
+                            <div class="chart-controls-group">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.78rem;" onclick="autoAjustarEscalaY()"><i class="fa-solid fa-expand"></i> Auto-Ajustar Mínimo</button>
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.78rem;" onclick="restablecerEscalaY()"><i class="fa-solid fa-rotate-left"></i> 0-100%</button>
+                            </div>
+                        </div>
+
+                        <!-- CONTENEDOR DE GRÁFICO SVG -->
+                        <div class="chart-print-container" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; width:100%;">
+                            <svg id="svgCurvaHC006" viewBox="0 0 840 450" style="width:100%; height:420px; background:#fafafa; border-radius:4px; border:1px solid #e2e8f0;"></svg>
+                        </div>
+                    </div>
+
                     <!-- PIE DE FIRMAS DE REPORTE CARTA -->
                     <div class="print-signatures-block" style="display:flex; justify-content:space-between; margin-top:2.5rem; padding-top:1rem; border-top:1px solid #cbd5e1; font-size:0.85rem;">
                         <div>ENSAYADO POR: <strong>N.S.</strong></div>
@@ -395,7 +392,7 @@
                 </div>
             </div>
 
-            <!-- SUB-MÓDULOS DE GEOTECNIA -->
+            <!-- SUB-MÓDULOS DE GEOTECNIA ADICIONALES -->
             <div id="sub-humedad" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Humedad (ASTM D2216)</h3></div></div>
             <div id="sub-atterberg" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Límites Atterberg & SUCS (ASTM D4318 / D2487)</h3></div></div>
             <div id="sub-proctor" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Proctor (ASTM D698 / D1557)</h3></div></div>
@@ -507,8 +504,6 @@
 
         async function calcularHojaHC006() {
             const mSecaTotal = parseFloat(document.getElementById('hcMasaSecaTotal').value || 1246.3);
-            const ll = parseFloat(document.getElementById('hcLL').value || 38.0);
-            const lp = parseFloat(document.getElementById('hcLP').value || 22.0);
             const metodo = document.getElementById('hcMetodoASTM').value || "METODO_A";
             const procedimiento = document.getElementById('hcProcedimientoASTM').value || "HUMEDO";
 
@@ -529,8 +524,6 @@
                         metodo_ensayo: metodo,
                         procedimiento: procedimiento,
                         masa_total_seca_g: mSecaTotal,
-                        ll: ll,
-                        lp: lp,
                         tamices: tamices
                     })
                 });
@@ -558,9 +551,6 @@
                     badgeCPL.innerText = `ALERTA NORMATIVA: Pérdida Lavado Excesiva (${data.cp_l_pct}% > 0.5%)`;
                 }
 
-                if (document.getElementById('hcResultSUCS')) document.getElementById('hcResultSUCS').innerText = data.clasificacion_sucs || "GW";
-                if (document.getElementById('hcResultSUCSParams')) document.getElementById('hcResultSUCSParams').innerText = `Cu: ${data.cu || '-'} | Cc: ${data.cc || '-'}`;
-                
                 document.getElementById('valPctGrava').innerText = (data.pct_grava || 0) + '%';
                 document.getElementById('valPctArena').innerText = (data.pct_arena || 0) + '%';
                 document.getElementById('valPctFino').innerText = (data.pct_finos || 0) + '%';
@@ -629,16 +619,30 @@
         }
 
         function autoAjustarEscalaY() {
-            if (!ultimoDataTamices || ultimoDataTamices.length === 0) return;
-            const pasas = ultimoDataTamices.filter(t => t.apertura_mm > 0).map(t => t.pct_pasa);
-            let minP = Math.min(...pasas);
-            let maxP = Math.max(...pasas);
+            let pasas = [];
+            if (ultimoDataTamices && ultimoDataTamices.length > 0) {
+                pasas = ultimoDataTamices.filter(t => t.apertura_mm > 0).map(t => t.pct_pasa);
+            }
             
-            minP = Math.max(0, Math.floor(minP - 5));
-            maxP = Math.min(100, Math.ceil(maxP + 5));
+            if (pasas.length === 0) {
+                const rows = document.querySelectorAll('#tablaHC006 tbody tr');
+                rows.forEach(r => {
+                    const ap = parseFloat(r.cells[1].innerText || 0);
+                    const pasaStr = r.cells[5]?.innerText.replace('%','') || '100';
+                    const pasa = parseFloat(pasaStr);
+                    if (ap > 0 && !isNaN(pasa)) pasas.push(pasa);
+                });
+            }
 
-            document.getElementById('zoomYMin').value = minP;
-            document.getElementById('zoomYMax').value = maxP;
+            if (pasas.length > 0) {
+                let minP = Math.min(...pasas);
+                let maxP = Math.max(...pasas);
+                minP = Math.max(0, Math.floor(minP - 5));
+                maxP = Math.min(100, Math.ceil(maxP + 5));
+
+                document.getElementById('zoomYMin').value = minP;
+                document.getElementById('zoomYMax').value = maxP;
+            }
             dibujarCurvaSVG(ultimoDataTamices);
         }
 
@@ -648,10 +652,24 @@
             dibujarCurvaSVG(ultimoDataTamices);
         }
 
-        // RENDERIZADO DEL GRÁFICO AMPLIADO (VIEWBOX 840x450, 50% DE PÁGINA CARTA)
+        // RENDERIZADO GARANTIZADO DE CURVA SVG GRANULOMÉTRICA (840x450, ESCALA SEMILOGARÍTMICA)
         function dibujarCurvaSVG(tamices) {
             const svg = document.getElementById('svgCurvaHC006');
             if (!svg) return;
+
+            // Extraer puntos si viene vacío
+            if (!tamices || tamices.length === 0) {
+                const rows = document.querySelectorAll('#tablaHC006 tbody tr');
+                tamices = [];
+                rows.forEach(r => {
+                    const ap = parseFloat(r.cells[1].innerText || 0);
+                    const pasaStr = r.cells[5]?.innerText.replace('%','') || '100';
+                    const pasa = parseFloat(pasaStr);
+                    if (ap > 0 && !isNaN(pasa)) {
+                        tamices.push({ apertura_mm: ap, pct_pasa: pasa });
+                    }
+                });
+            }
 
             const width = 840;
             const height = 450;
@@ -697,7 +715,7 @@
                 <rect x="${x475}" y="${marginTop}" width="${x0075 - x475}" height="${plotHeight}" fill="#e0f2fe" opacity="0.85"/>
                 <rect x="${x0075}" y="${marginTop}" width="${x001 - x0075}" height="${plotHeight}" fill="#f3e8ff" opacity="0.85"/>
 
-                <!-- Divisiones de Sub-Franjas -->
+                <!-- Divisiones -->
                 <line x1="${x19}" y1="${marginTop}" x2="${x19}" y2="${marginTop + plotHeight}" stroke="#d97706" stroke-dasharray="3,3" stroke-width="1.2"/>
                 <line x1="${x475}" y1="${marginTop}" x2="${x475}" y2="${marginTop + plotHeight}" stroke="#0284c7" stroke-width="2"/>
                 <line x1="${x2}" y1="${marginTop}" x2="${x2}" y2="${marginTop + plotHeight}" stroke="#0284c7" stroke-dasharray="3,3" stroke-width="1.2"/>
@@ -749,7 +767,7 @@
             let pts = [];
             if (tamices && tamices.length > 0) {
                 tamices.forEach(t => {
-                    if (t.apertura_mm > 0) {
+                    if (t.apertura_mm > 0 && t.pct_pasa !== undefined) {
                         const x = xLog(t.apertura_mm);
                         const y = yPct(t.pct_pasa);
                         pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
