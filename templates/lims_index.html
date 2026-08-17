@@ -1375,43 +1375,77 @@
                     </table>
 
 
-                    <!-- PASO 1: MODELADO DE LA MEDICIÓN (GUM ISO/IEC 17025) -->
+                    <!-- PASO 1: MODELAR LA MEDICIÓN (FORMATO EXACTO VALIDADO UTP HC-012) -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
-                        PASO 1. MODELADO DE LA MEDICIÓN Y ECUACIÓN GUM
+                        PASO 1. MODELAR LA MEDICIÓN
                     </div>
-                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.8rem; margin-bottom:1.25rem;">
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:0.75rem; text-align:center;">
+                        <thead>
+                            <tr style="background:#f1f5f9; color:#1e3a8a; font-weight:800;">
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:15%;">Mesurando</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Descripción</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:10%; font-style:italic;">Símbolo</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:18%;">Referencia (Unidad de medida)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">Magnitud de salida</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;" id="lblHc012MagnitudMedida">Temperatura del concreto</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; font-family:'Times New Roman', serif;">T</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;" id="lblHc012UnidadMedida">°F</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:0.75rem;">
                         <tr>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc; width:22%;">Magnitud medida (Y):</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:700;" id="lblHc012MagnitudMedida">Resistencia a la Compresión del Concreto (f'c)</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc; width:20%;">Parametro / Unidad:</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:700;" id="lblHc012UnidadMedida">MPa</td>
-                        </tr>
-                        <tr>
-                            <td style="border:1px solid #cbd5e1; padding:0.55rem; font-weight:800; color:#1e3a8a; background:#f8fafc;">Ecuación del Modelo Matemático:</td>
-                            <td colspan="3" style="border:1px solid #cbd5e1; padding:0.6rem; background:#f8fafc;">
-                                <div style="font-weight:900; color:#1e3a8a; font-size:1.05rem; font-family:'Times New Roman', serif; letter-spacing:0.5px; margin-bottom:0.25rem;" id="lblHc012EcuacionModelo">
-                                    f_c = (4 · P) / (π · d²) + δf_cal + δf_deriva + δf_res + δf_homog
-                                </div>
-                                <div style="font-size:0.76rem; color:#334155; font-style:italic;" id="lblHc012DescripcionModelo">
-                                    Modelo funcional según GUM (ISO/IEC Guide 98-3): La resistencia f_c se determina a partir de la fuerza de ruptura P (kN) y el diámetro d (mm), con correcciones por calibración del instrumento (δf_cal), deriva (δf_deriva), resolución (δf_res) y variabilidad espacial (δf_homog).
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc; width:30%;">Modelo matemático f(X₁, X₂, ..., X_N):</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; background:#ffffff;">
+                                <div style="font-weight:900; color:#dc2626; font-size:1.05rem; font-family:'Times New Roman', serif; letter-spacing:0.5px;" id="lblHc012EcuacionModelo">
+                                    T = I + C
                                 </div>
                             </td>
                         </tr>
                     </table>
 
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1.25rem; text-align:center;">
+                        <thead>
+                            <tr style="background:#f1f5f9; color:#1e3a8a; font-weight:800;">
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:22%;">Mesurando</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Descripción</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:10%; font-style:italic;">Símbolo</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:18%;">Referencia (Unidad)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPaso1Entradas">
+                            <tr>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">Magnitud de entrada X₁</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Temperatura indicada por el termómetro</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; font-family:'Times New Roman', serif;">I</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">°F</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">Magnitud de entrada X₂</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Corrección del termómetro por su certificado (calibración)</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; font-family:'Times New Roman', serif;">C</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">°F</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                    <!-- PASO 2: IDENTIFICAR FUENTES DE INCERTIDUMBRE (FORMATO EXACTO MASTER HC-LSMCH-012) -->
+                    <!-- PASO 2: IDENTIFICAR FUENTES DE INCERTIDUMBRE (FORMATO EXACTO VALIDADO UTP) -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
                         PASO 2. IDENTIFICAR FUENTES DE INCERTIDUMBRE
                     </div>
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1.25rem; text-align:center;">
                         <thead>
                             <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:50px;">Magnitud de entrada X_i</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:120px;">Magnitud de entrada X_i</th>
                                 <th style="border:1px solid #1e3a8a; padding:0.35rem; text-align:left;">Fuente de incertidumbre</th>
                                 <th style="border:1px solid #1e3a8a; padding:0.35rem;">Parámetro para cuantificar la fuente</th>
                                 <th style="border:1px solid #1e3a8a; padding:0.35rem;">Distribución asociada a la fuente</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:70px;">Tipo de evaluación</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:80px;">Tipo de evaluación</th>
                                 <th style="border:1px solid #1e3a8a; padding:0.35rem; width:70px; font-style:italic;">Símbolo</th>
                                 <th style="border:1px solid #1e3a8a; padding:0.35rem; width:90px;">Valor constante</th>
                             </tr>
@@ -1421,19 +1455,61 @@
                         </tbody>
                     </table>
 
-
-                    <!-- PASO 3: CUANTIFICAR COMPONENTES E INCERTIDUMBRES Y COEFICIENTES DE SENSIBILIDAD -->
+                    <!-- PASO 3: CUANTIFICAR VARIABLES E INCERTIDUMBRES (FORMATO EXACTO VALIDADO UTP) -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
-                        PASO 3. CUANTIFICAR VARIABLES, INCERTIDUMBRES Y COEFICIENTES DE SENSIBILIDAD
+                        PASO 3. CUANTIFICAR VARIABLES E INCERTIDUMBRES
+                    </div>
+
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.78rem; margin-bottom:0.25rem; text-transform:uppercase;">
+                        MAGNITUD DE ENTRADA
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1rem; text-align:center;">
+                        <thead>
+                            <tr style="background:#e2e8f0; color:#1e3a8a; font-weight:800;">
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:120px;">Magnitud de entrada X_i</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Ecuación para calcularla o valor constante</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Valores obtenidos de N, M mediciones</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Valor promedio o constante de X_i</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Referencia de X_i (Unidad)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPaso3MagnitudEntrada">
+                            <!-- Generado dinámicamente por JS -->
+                        </tbody>
+                    </table>
+
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.78rem; margin-bottom:0.25rem; text-transform:uppercase;">
+                        MAGNITUD DE SALIDA
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1rem; text-align:center;">
+                        <thead>
+                            <tr style="background:#e2e8f0; color:#1e3a8a; font-weight:800;">
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:150px;">Mesurando</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Ecuación para calcularla</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Valor promedio</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Unidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="font-weight:700;">
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; color:#1e3a8a; font-weight:800;" id="lblPaso3SalidaMesurando">T</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-family:'Times New Roman', serif;" id="lblPaso3SalidaEcuacion">T = I + C</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;" id="lblPaso3SalidaValorPromedio">93.72</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;" id="lblPaso3SalidaUnidad">°F</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.78rem; margin-bottom:0.25rem; text-transform:uppercase;">
+                        FUENTES DE INCERTIDUMBRE POR MAGNITUD DE ENTRADA
                     </div>
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1rem; text-align:center;">
                         <thead>
                             <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:40px;">Xi</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:120px;">Magnitud de entrada X_i</th>
                                 <th style="border:1px solid #1e3a8a; padding:0.35rem; text-align:left;">Fuente de incertidumbre</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Ecuación o valor constante xi</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">u(xi) Incertidumbre estándar</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Porcentaje de contribución (%)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Ecuación para el cálculo de la incertidumbre</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:120px;">u(x_i)</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyPaso3Cuantificar">
@@ -1441,17 +1517,26 @@
                         </tbody>
                     </table>
 
-                    <!-- TABLA EXPLICITA DE COEFICIENTES DE SENSIBILIDAD POR MAGNITUD DE ENTRADA (DEL MASTER) -->
-                    <div style="font-weight:900; color:#1e3a8a; font-size:0.82rem; margin-bottom:0.35rem; text-transform:uppercase;">
-                        COEFICIENTES DE SENSIBILIDAD POR MAGNITUD DE ENTRADA (c_i = ∂y / ∂X_i)
+                    <!-- GRÁFICO APORTACIÓN POR CADA FUENTE (PARETO DEL MASTER VALIDADO) -->
+                    <div style="text-align:center; padding:0.75rem; border:1.5px solid #cbd5e1; border-radius:6px; margin-bottom:1.25rem; background:#fafafa;">
+                        <div style="font-weight:900; color:#1e3a8a; font-size:0.82rem; margin-bottom:0.5rem; text-transform:uppercase;">
+                            INCERTIDUMBRE APORTADA POR CADA FUENTE
+                        </div>
+                        <div id="containerPieHC012" style="display:flex; justify-content:center; align-items:center; min-height:210px;">
+                            <svg id="svgPieHC012" width="520" height="210"></svg>
+                        </div>
+                    </div>
+
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.78rem; margin-bottom:0.25rem; text-transform:uppercase;">
+                        COEFICIENTES DE SENSIBILIDAD POR MAGNITUD DE ENTRADA
                     </div>
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1.25rem; text-align:center;">
                         <thead>
                             <tr style="background:#e2e8f0; color:#1e3a8a; font-weight:800;">
-                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:40px;">Xi</th>
-                                <th style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Coeficiente de Sensibilidad (Derivada Parcial)</th>
-                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Valor del Coeficiente c_i</th>
-                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Referencia de Xi (Unidad)</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:120px;">Magnitud de entrada X_i</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Coeficiente de sensibilidad</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:100px;">Valor</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Referencia de X_i (Unidad)</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyPaso3Coeficientes">
@@ -1459,30 +1544,24 @@
                         </tbody>
                     </table>
 
-                    <!-- GRÁFICO APORTACIÓN POR CADA FUENTE (DIBUJO DEL MASTER) -->
-                    <div style="text-align:center; padding:0.75rem; border:1.5px solid #cbd5e1; border-radius:6px; margin-bottom:1.25rem; background:#fafafa;">
-                        <div style="font-weight:900; color:#1e3a8a; font-size:0.82rem; margin-bottom:0.5rem; text-transform:uppercase;">
-                            INCERTIDUMBRE APORTADA POR CADA FUENTE (DISTR. DE VARIANZA)
-                        </div>
-                        <div id="containerPieHC012" style="display:flex; justify-content:center; align-items:center; min-height:210px;">
-                            <svg id="svgPieHC012" width="520" height="210"></svg>
-                        </div>
+                    <!-- PASO 4: COMBINAR INCERTIDUMBRES (FORMATO EXACTO VALIDADO UTP) -->
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
+                        PASO 4. COMBINAR INCERTIDUMBRES
                     </div>
 
-                    <!-- PASO 4: EVALUAR INCERTIDUMBRE COMBINADA -->
-                    <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
-                        PASO 4. COMBINAR INCERTIDUMBRES (APORTE DE CADA MAGNITUD DE ENTRADA)
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.78rem; margin-bottom:0.25rem; text-transform:uppercase;">
+                        APORTE DE INCERTIDUMBRE DE CADA MAGNITUD DE ENTRADA
                     </div>
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1rem; text-align:center;">
                         <thead>
                             <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:40px;">Xi</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Valor del Coeficiente |c_i|</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Unidad c_i</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Incertidumbre u(x_i)</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Unidad u(x_i)</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Aporte u_i(y) = |c_i|·u(x_i)</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Unidad u_i(y)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:120px;">Magnitud de entrada X_i</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Valor del coeficiente de sensibilidad (abs) |c_i|</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Referencia de c_i</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Incertidumbre de la magnitud u(x_i)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Referencia de u(x_i)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Aporte de incertidumbre u_i(y)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Referencia del aporte u_i(y)</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyPaso4Combinada">
@@ -1490,34 +1569,58 @@
                         </tbody>
                     </table>
 
-                    <!-- RESUMEN COMBINADA -->
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.78rem; margin-bottom:0.25rem; text-transform:uppercase;">
+                        INCERTIDUMBRE COMBINADA
+                    </div>
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.8rem; margin-bottom:1.25rem; text-align:center;">
                         <tr style="background:#f1f5f9; font-weight:800; color:#1e3a8a;">
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Incertidumbre combinada uc(y)</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Grados de libertad efectivos ν_eff</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Factor de cobertura k (95.45%)</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Incertidumbre expandida U</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Grados de libertad combinados ν_eff</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Valor de la incertidumbre combinada u_c</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Referencia de u_c (Unidad)</td>
                         </tr>
                         <tr style="font-weight:900; font-size:1rem; color:#0f172a;">
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem;" id="lblHC012Uc">0.0971 MPa</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem;" id="lblHC012NuEff">1049</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem;" id="lblHC012K">2.00</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.45rem; color:#1e3a8a;" id="lblHC012UExp">± 0.194 MPa</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;" id="lblHC012NuEff">61.1</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; color:#1e3a8a;" id="lblHC012Uc">0.10</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;" id="lblHc012UcUnidad">°F</td>
                         </tr>
                     </table>
 
-                    <!-- PASO 5: EXPANDIR INCERTIDUMBRE Y APORTE CON GRADOS DE LIBERTAD (DEL MASTER) -->
+                    <!-- PASO 5: EXPANDIR INCERTIDUMBRE (FORMATO EXACTO VALIDADO UTP) -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
-                        PASO 5. EXPANDIR INCERTIDUMBRE Y APORTE CON GRADOS DE LIBERTAD (ν_i)
+                        PASO 5. EXPANDIR INCERTIDUMBRE
+                    </div>
+
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.78rem; margin-bottom:0.25rem; text-transform:uppercase;">
+                        INCERTIDUMBRE EXPANDIDA (DISTRIBUCIÓN NORMAL)
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.8rem; margin-bottom:0.75rem; text-align:center;">
+                        <thead>
+                            <tr style="background:#e2e8f0; color:#1e3a8a; font-weight:800;">
+                                <th style="border:1px solid #cbd5e1; padding:0.4rem;">Incertidumbre expandida U</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.4rem;">Factor de cobertura k (Nivel de confianza 95.45%)</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.4rem;">Referencia de U (Unidad)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="font-weight:900; font-size:1.05rem; color:#1e3a8a;">
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHC012UExp">0.21</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHC012K">2.02</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHc012UUnidad">°F</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.78rem; margin-bottom:0.25rem; text-transform:uppercase;">
+                        GRADOS DE LIBERTAD
                     </div>
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1.25rem; text-align:center;">
                         <thead>
                             <tr style="background:#e2e8f0; color:#1e3a8a; font-weight:800;">
-                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:40px;">Xi</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:120px;">Magnitud de entrada X_i</th>
                                 <th style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Fuente de incertidumbre</th>
-                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Incertidumbre al cuadrado u_i(y)^2</th>
-                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Incertidumbre combinada u_c</th>
-                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Grados de libertad ν_i</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Incertidumbre al cuadrado de cada fuente u_i²</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Incertidumbre combinada de la magnitud u_c</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:130px;">Grados de libertad de cada fuente ν_i</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyPaso5ExpandidaFuentes">
@@ -1525,43 +1628,43 @@
                         </tbody>
                     </table>
 
-                    <!-- DECLARACIÓN DE RESULTADO FINAL -->
-                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.85rem; margin-bottom:1.25rem; text-align:center;">
+                    <!-- DECLARACIÓN Y REPORTE DE LA INCERTIDUMBRE DE MEDICIÓN (FORMATO VALIDADO) -->
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
+                        REPORTE DE LA INCERTIDUMBRE DE MEDICIÓN
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.82rem; margin-bottom:0.75rem; text-align:center;">
                         <thead>
                             <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
-                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Lectura Media Final</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Incertidumbre Expandida U</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Factor de Cobertura k</th>
-
-                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Nivel de Confianza P</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Mesurando</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Estimación del mesurando (y) (Unidad de medida)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Incertidumbre expandida (U)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Referencia de la incertidumbre expandida (U)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr style="font-weight:900; font-size:1.05rem; color:#1e3a8a; background:#f8fafc;">
-                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHC012LecturaMedia">28.55 MPa</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHC012UDecl">± 0.194 MPa</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHC012KDecl">2.00</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.5rem;">95.45%</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHc012ReporteMesurando">Temperatura del concreto</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHC012LecturaMedia">93.50</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHC012UDecl">± 0.12</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHc012ReporteUnidad">°F</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <!-- CAJA DE DECLARACIÓN OFICIAL METROLÓGICA -->
-                    <div style="border:2px solid #1e3a8a; background:#1e3a8a; color:#ffffff; padding:0.85rem; border-radius:4px; font-weight:800; font-size:1rem; text-align:center; margin-bottom:2.5rem;" id="lblHC012DeclaracionFinal">
-                        Resultado = 28.55 ± 0.194 MPa (k = 2.00, P = 95.45%)
+                    <!-- CAJA DE DECLARACIÓN OFICIAL METROLÓGICA DEL VALIDADO -->
+                    <div style="border:2px solid #1e3a8a; background:#f8fafc; color:#1e3a8a; padding:0.75rem; border-radius:4px; font-weight:900; font-size:1.05rem; text-align:center; margin-bottom:2rem;" id="lblHC012DeclaracionFinal">
+                        REPORTE DE LA INCERTIDUMBRE DE MEDICIÓN: 93.50 ± 0.12 °F (k = 2.02, P = 95.45%)
                     </div>
 
-                    <!-- FIRMAS DE AUTORIZACIÓN AL PIE -->
-                    <div style="display:flex; justify-content:space-around; text-align:center; font-size:0.85rem; margin-top:3rem;">
-                        <div style="border-top:1.5px solid #0f172a; width:240px; padding-top:0.4rem;">
-                            <div style="font-weight:800; color:#0f172a;">Realizado por:</div>
-                            <div style="font-size:0.75rem; color:#475569;">Técnico / Ensayista Metrológico</div>
-                            <div style="font-size:0.75rem; color:#475569; margin-top:0.25rem;">Fecha: _______________</div>
+                    <!-- FIRMAS DE AUTORIZACIÓN AL PIE EXACTAS AL VALIDADO -->
+                    <div style="display:flex; justify-content:space-around; text-align:center; font-size:0.85rem; margin-top:2.5rem;">
+                        <div style="border-top:1.5px solid #0f172a; width:250px; padding-top:0.4rem;">
+                            <div style="font-weight:800; color:#0f172a;">Realizado por: ___________________</div>
+                            <div style="font-size:0.75rem; color:#475569; margin-top:0.25rem;">Fecha: _________________</div>
                         </div>
-                        <div style="border-top:1.5px solid #0f172a; width:240px; padding-top:0.4rem;">
-                            <div style="font-weight:800; color:#0f172a;">Revisado por:</div>
-                            <div style="font-size:0.75rem; color:#475569;">Jefe de Laboratorio / Resp. Técnico</div>
-                            <div style="font-size:0.75rem; color:#475569; margin-top:0.25rem;">Fecha: _______________</div>
+                        <div style="border-top:1.5px solid #0f172a; width:250px; padding-top:0.4rem;">
+                            <div style="font-weight:800; color:#0f172a;">Revisado por: ___________________</div>
+                            <div style="font-size:0.75rem; color:#475569; margin-top:0.25rem;">Fecha: _________________</div>
                         </div>
                     </div>
 
@@ -2861,9 +2964,10 @@
                 };
             } else if (mod.includes('temperatura') || txt.includes('temperatura') || txt.includes('c1064')) {
                 return {
-                    ecuacion: "T = T_ind + δT_cal + δT_deriva + δT_res + δT_homog",
-                    descripcion: "Modelo de Medición GUM (ISO/IEC Guide 98-3): T es la temperatura del concreto fresco (°C/°F), T_ind es la lectura directa del termómetro probe, δT_cal es la corrección del certificado de calibración, δT_deriva es la deriva metrológica entre recalibraciones, δT_res la resolución digital, y δT_homog el gradiente térmico de la masa de concreto."
+                    ecuacion: "T = I + C",
+                    descripcion: "Modelo de Medición GUM (ISO/IEC Guide 98-3:2008): T es la temperatura del concreto (°F/°C), I es la temperatura indicada por el termómetro, y C es la corrección del termómetro por su certificado de calibración."
                 };
+
             } else if (mod.includes('granulometria') || txt.includes('granulometría') || txt.includes('d6913')) {
                 return {
                     ecuacion: "%Pasa = 100 - [(∑ m_retenida) / M_total] · 100 + δm_balanza + δm_deriva",
@@ -3134,18 +3238,72 @@
                     document.getElementById('lblHc012EcuacionModelo').innerText = modeloInfo.ecuacion;
                     document.getElementById('lblHc012DescripcionModelo').innerText = modeloInfo.descripcion;
 
-                    // Paso 4 y 5 Resumen
-                    document.getElementById('lblHC012Uc').innerText = `${uComb.toFixed(4)} ${unidad}`;
-                    document.getElementById('lblHC012NuEff').innerText = `${typeof nuEff === 'number' ? nuEff.toFixed(1) : nuEff}`;
-                    document.getElementById('lblHC012K').innerText = `${kFactor.toFixed(2)}`;
-                    document.getElementById('lblHC012UExp').innerText = `± ${uExp.toFixed(3)} ${unidad}`;
+                    // Paso 3 Salida y Paso 4/5 Resumen conforme al validado UTP
+                    if (document.getElementById('lblPaso3SalidaMesurando')) document.getElementById('lblPaso3SalidaMesurando').innerText = (mod === 'compresion') ? "f'c" : "T";
+                    if (document.getElementById('lblPaso3SalidaEcuacion')) document.getElementById('lblPaso3SalidaEcuacion').innerText = modeloInfo.ecuacion;
+                    if (document.getElementById('lblPaso3SalidaValorPromedio')) document.getElementById('lblPaso3SalidaValorPromedio').innerText = tempFinal.toFixed(2);
+                    if (document.getElementById('lblPaso3SalidaUnidad')) document.getElementById('lblPaso3SalidaUnidad').innerText = unidad;
 
-                    document.getElementById('lblHC012LecturaMedia').innerText = `${tempFinal.toFixed(2)} ${unidad}`;
-                    document.getElementById('lblHC012UDecl').innerText = `± ${uExp.toFixed(3)} ${unidad}`;
-                    document.getElementById('lblHC012KDecl').innerText = `${kFactor.toFixed(2)}`;
+                    if (document.getElementById('lblHC012Uc')) document.getElementById('lblHC012Uc').innerText = uComb.toFixed(2);
+                    if (document.getElementById('lblHc012UcUnidad')) document.getElementById('lblHc012UcUnidad').innerText = unidad;
+                    if (document.getElementById('lblHC012NuEff')) document.getElementById('lblHC012NuEff').innerText = typeof nuEff === 'number' ? nuEff.toFixed(1) : nuEff;
+                    if (document.getElementById('lblHC012K')) document.getElementById('lblHC012K').innerText = kFactor.toFixed(2);
+                    if (document.getElementById('lblHC012UExp')) document.getElementById('lblHC012UExp').innerText = uExp.toFixed(2);
+                    if (document.getElementById('lblHc012UUnidad')) document.getElementById('lblHc012UUnidad').innerText = unidad;
 
-                    document.getElementById('lblHC012DeclaracionFinal').innerText = 
-                        `Resultado = ${tempFinal.toFixed(2)} ± ${uExp.toFixed(3)} ${unidad} (k = ${kFactor.toFixed(2)}, P = 95.45%)`;
+                    if (document.getElementById('lblHc012ReporteMesurando')) document.getElementById('lblHc012ReporteMesurando').innerText = nombreProceso;
+                    if (document.getElementById('lblHC012LecturaMedia')) document.getElementById('lblHC012LecturaMedia').innerText = tempFinal.toFixed(2);
+                    if (document.getElementById('lblHC012UDecl')) document.getElementById('lblHC012UDecl').innerText = `± ${uExp.toFixed(2)}`;
+                    if (document.getElementById('lblHc012ReporteUnidad')) document.getElementById('lblHc012ReporteUnidad').innerText = unidad;
+
+                    if (document.getElementById('lblHC012DeclaracionFinal')) {
+                        document.getElementById('lblHC012DeclaracionFinal').innerText = 
+                            `REPORTE DE LA INCERTIDUMBRE DE MEDICIÓN: ${tempFinal.toFixed(2)} ± ${uExp.toFixed(2)} ${unidad} (k = ${kFactor.toFixed(2)}, P = 95.45%)`;
+                    }
+
+                    // Paso 3: Sub-tabla Magnitud de Entrada (Master Validado Page 1 / Page 2)
+                    const tbPaso3Mag = document.getElementById('tbodyPaso3MagnitudEntrada');
+                    if (tbPaso3Mag) {
+                        const stdVal = (r.num_lecturas && r.num_lecturas > 1) ? `s(I) = ${(r.desviacion_estandar || 0).toFixed(3)}` : '-';
+                        const lecturasStr = arrLecturas.slice(0, 5).join(', ');
+
+                        if (mod === 'compresion') {
+                            tbPaso3Mag.innerHTML = `
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">P</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Fuerza de ruptura aplicada por prensa</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-size:0.75rem;">[${lecturasStr}]<br><small style="color:#0284c7; font-weight:800;">${stdVal}</small></td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${tempFinal.toFixed(2)}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">d</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Diámetro medio del cilindro de concreto</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">-</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">150.00</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">mm</td>
+                                </tr>
+                            `;
+                        } else {
+                            tbPaso3Mag.innerHTML = `
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">I</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Lectura realizada de la temperatura</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-size:0.75rem;">[${lecturasStr}]<br><small style="color:#0284c7; font-weight:800;">${stdVal}</small></td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${tempFinal.toFixed(2)}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">C</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Valor de la corrección a la temperatura medida</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">-</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">0.00</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
+                                </tr>
+                            `;
+                        }
+                    }
+
 
                     // Llenar Tablas Pasos 2, 3, 4 y 5 conforme al formato Master HC-LSMCH-012 Rev. 01
                     if (r.tabla_presupuesto && Array.isArray(r.tabla_presupuesto)) {
