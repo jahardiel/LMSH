@@ -93,21 +93,34 @@ def calcular_granulometria_astm_d6913(datos):
 
         pct_pasa_raw = 100.0 - cmr_acumulada_raw
         if pct_pasa_raw < 0: pct_pasa_raw = 0.0
-
-        # Redondeo final según Método A (1% en Que Pasa) o Método B (0.1%)
         pct_pasa_final = round(pct_pasa_raw) if metodo == "METODO_A" else round(pct_pasa_raw, 1)
 
-        resultado_tamices.append({
-            "tamiz": nombre,
-            "apertura_mm": apertura,
-            "fgruesa_g": round(m_ret_fgruesa, 2),
-            "ffina_g": round(m_ret_ffina, 2),
-            "factor_tamizado": round(factor_usado, 7),
-            "pct_retenido_ind": round(pct_ret_ind_raw, 2),
-            "pct_acumulado_ret": round(cmr_acumulada_raw, 1),
-            "pct_pasa": pct_pasa_final,
-            "pct_pasa_raw": round(pct_pasa_raw, 2)
-        })
+        if nombre == 'Fondo':
+            resultado_tamices.append({
+                "tamiz": nombre,
+                "apertura_mm": apertura,
+                "fgruesa_g": round(m_ret_fgruesa, 2),
+                "ffina_g": round(m_ret_ffina, 2),
+                "factor_tamizado": "",
+                "pct_retenido_ind": "--",
+                "pct_acumulado_ret": "--",
+                "pct_pasa": "--",
+                "pct_pasa_raw": 0.0
+            })
+        else:
+            resultado_tamices.append({
+                "tamiz": nombre,
+                "apertura_mm": apertura,
+                "fgruesa_g": round(m_ret_fgruesa, 2),
+                "ffina_g": round(m_ret_ffina, 2),
+                "factor_tamizado": round(factor_usado, 7),
+                "pct_retenido_ind": round(pct_ret_ind_raw, 2),
+                "pct_acumulado_ret": round(cmr_acumulada_raw, 1),
+                "pct_pasa": pct_pasa_final,
+                "pct_pasa_raw": round(pct_pasa_raw, 2)
+            })
+
+
 
     # Pérdida aceptable por lavado (CP_L) <= 0.5%
     cp_l = ((s_md - (suma_masas_retenidas + m_fina_fondo)) / s_md) * 100.0 if s_md > 0 else 0.0
