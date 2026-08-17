@@ -266,11 +266,15 @@
                             <div><label>PROYECTO:</label><input type="text" id="hcPry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
                             <div>
                                 <label>ORDEN DE SERVICIO:</label>
-                                <div style="display:flex; gap:0.25rem;">
-                                    <input type="text" id="hcOrden" value="LSMCH-050-2026" onchange="cargarDatosPorSolicitud()" placeholder="Ej. LSMCH-050-2026">
-                                    <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" title="Cargar Datos por Solicitud" onclick="cargarDatosPorSolicitud()"><i class="fa-solid fa-cloud-arrow-down"></i></button>
+                                <div style="display:flex; gap:0.25rem; align-items:center;">
+                                    <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'hc')">
+                                        <option value="">-- Seleccionar --</option>
+                                    </select>
+                                    <input type="text" id="hcOrden" value="LSMCH-050-2026" onchange="cargarDatosPorSolicitud()" placeholder="Ej. LSMCH-050-2026" style="width:120px;">
+                                    <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" title="Llamar Datos de la Orden" onclick="cargarDatosPorSolicitud()"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
                                 </div>
                             </div>
+
                             <div><label>LOC. DE PROYECTO:</label><input type="text" id="hcLoc" value="URBANIZACION EL CARMEN, DAVID, CHIRIQUI"></div>
                             <div>
                                 <label>INFORME:</label>
@@ -491,8 +495,11 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <input type="text" id="hum_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('hum')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('hum')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'hum')">
+                                    <option value="">-- Seleccionar --</option>
+                                </select>
+                                <input type="text" id="hum_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('hum')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('hum')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -523,8 +530,11 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <input type="text" id="att_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('att')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('att')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'att')">
+                                    <option value="">-- Seleccionar --</option>
+                                </select>
+                                <input type="text" id="att_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('att')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('att')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -555,8 +565,11 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <input type="text" id="prc_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('prc')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('prc')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'prc')">
+                                    <option value="">-- Seleccionar --</option>
+                                </select>
+                                <input type="text" id="prc_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('prc')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('prc')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -587,8 +600,11 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <input type="text" id="cbr_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('cbr')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('cbr')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'cbr')">
+                                    <option value="">-- Seleccionar --</option>
+                                </select>
+                                <input type="text" id="cbr_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('cbr')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('cbr')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -619,8 +635,11 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <input type="text" id="den_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('den')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('den')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'den')">
+                                    <option value="">-- Seleccionar --</option>
+                                </select>
+                                <input type="text" id="den_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('den')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('den')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -651,8 +670,11 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <input type="text" id="spt_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('spt')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('spt')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'spt')">
+                                    <option value="">-- Seleccionar --</option>
+                                </select>
+                                <input type="text" id="spt_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('spt')" placeholder="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('spt')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -669,6 +691,7 @@
                     </div>
                 </div>
             </div>
+
 
         </section>
 
@@ -738,10 +761,11 @@
                     </div>
                     
                     <div style="margin-top:1.25rem; display:flex; justify-content:flex-end; gap:0.75rem;">
-                        <button class="btn btn-success" style="padding:0.6rem 1.25rem; font-size:0.9rem;" onclick="crearNuevaSolicitudLSMCH()">
-                            <i class="fa-solid fa-plus-circle"></i> + Crear Orden de Servicio y Cargar Hoja HC-006
+                        <button class="btn btn-success" style="padding:0.6rem 1.25rem; font-size:0.9rem;" onclick="crearNuevaSolicitudLSMCH(false)">
+                            <i class="fa-solid fa-floppy-disk"></i> + Guardar Orden de Servicio
                         </button>
                     </div>
+
                 </div>
             </div>
 
@@ -888,8 +912,11 @@
                         <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                         <div style="display:flex; gap:0.35rem; align-items:center;">
                             <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                            <input type="text" id="cnc_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('cnc')" placeholder="LSMCH-050-2026">
-                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('cnc')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                            <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'cnc')">
+                                <option value="">-- Seleccionar --</option>
+                            </select>
+                            <input type="text" id="cnc_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('cnc')" placeholder="LSMCH-050-2026">
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('cnc')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
                         </div>
                     </div>
                     <div class="form-grid-header">
@@ -920,8 +947,11 @@
                         <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                         <div style="display:flex; gap:0.35rem; align-items:center;">
                             <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                            <input type="text" id="inc_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('inc')" placeholder="LSMCH-050-2026">
-                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('inc')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                            <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'inc')">
+                                <option value="">-- Seleccionar --</option>
+                            </select>
+                            <input type="text" id="inc_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('inc')" placeholder="LSMCH-050-2026">
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('inc')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
                         </div>
                     </div>
                     <div class="form-grid-header">
@@ -952,10 +982,14 @@
                         <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO A REPORTAR</span>
                         <div style="display:flex; gap:0.35rem; align-items:center;">
                             <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                            <input type="text" id="rep_Orden" class="table-input" value="LSMCH-050-2026" style="width:140px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('rep')" placeholder="LSMCH-050-2026">
-                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('rep')"><i class="fa-solid fa-cloud-arrow-down"></i> Buscar Orden</button>
+                            <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'rep')">
+                                <option value="">-- Seleccionar --</option>
+                            </select>
+                            <input type="text" id="rep_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('rep')" placeholder="LSMCH-050-2026">
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('rep')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
                         </div>
                     </div>
+
                     <div class="form-grid-header">
                         <div><label>PROYECTO:</label><input type="text" id="rep_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
                         <div><label>CLIENTE:</label><input type="text" id="rep_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
@@ -1076,6 +1110,9 @@
                 const tbodyCompleta = document.getElementById('tablaSolicitudesCompleta');
 
                 if (!data || data.length === 0) return;
+
+                popularSelectsOrdenServicio(data);
+
 
                 const rowsHtmlDashboard = data.slice(0, 5).map(s => `
                     <tr>
@@ -1329,6 +1366,32 @@
             } catch(e) { console.error(e); }
         }
 
+        function popularSelectsOrdenServicio(data) {
+            if (!data || !Array.isArray(data)) return;
+            const selects = document.querySelectorAll('.select-orden-servicio');
+            selects.forEach(sel => {
+                const valActual = sel.value;
+                sel.innerHTML = `<option value="">-- Seleccionar --</option>` + data.map(s => `
+                    <option value="${s.codigo_solicitud}">${s.codigo_solicitud} - ${s.cliente_nombre}</option>
+                `).join('');
+                if (valActual) sel.value = valActual;
+            });
+        }
+
+        function cargarOrdenSeleccionadaEnModulo(selectElem, prefix) {
+            const cod = selectElem.value;
+            if (!cod) return;
+            
+            const inputOrden = document.getElementById(`${prefix}_Orden`);
+            if (inputOrden) inputOrden.value = cod;
+
+            if (prefix === 'hc') {
+                cargarDatosPorSolicitud(cod);
+            } else {
+                cargarDatosGenericosModulo(prefix);
+            }
+        }
+
         function seleccionarSolicitud(codigo) {
             switchTab('geotecnia');
             switchSubGeo('granulometria-hc006');
@@ -1336,7 +1399,7 @@
             cargarDatosPorSolicitud(codigo);
         }
 
-        async function crearNuevaSolicitudLSMCH() {
+        async function crearNuevaSolicitudLSMCH(redireccionar = false) {
             const pry = document.getElementById('nuevaSolProyecto').value.trim();
             const cli = document.getElementById('nuevaSolCliente').value.trim();
             const ubi = document.getElementById('nuevaSolUbicacion').value.trim();
@@ -1373,19 +1436,21 @@
 
                 const data = await res.json();
                 if (data.success) {
-                    alert(`¡ÉXITO! Solicitud ${data.codigo_solicitud} registrada correctamente.`);
+                    alert(`¡ÉXITO! Orden de Servicio ${data.codigo_solicitud} registrada correctamente en la base de datos.`);
                     cargarSolicitudesTabla();
                     cargarStatsDashboard();
                     
-                    // Seleccionar y cargar datos en la hoja HC-006 inmediatamente
-                    seleccionarSolicitud(data.codigo_solicitud);
+                    if (redireccionar) {
+                        seleccionarSolicitud(data.codigo_solicitud);
+                    }
                 } else {
-                    alert("Error al registrar solicitud: " + (data.error || "Datos no válidos"));
+                    alert("Error al registrar la orden de servicio: " + (data.error || "Datos no válidos"));
                 }
             } catch(e) {
-                alert("Error de conexión al registrar la nueva solicitud.");
+                alert("Error de conexión al registrar la nueva orden de servicio.");
             }
         }
+
 
 
 
