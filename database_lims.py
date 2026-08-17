@@ -57,6 +57,7 @@ class DatabaseLIMS:
             CREATE TABLE IF NOT EXISTS solicitudes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 codigo_solicitud TEXT UNIQUE NOT NULL,
+                numero_informe TEXT,
                 proyecto_id INTEGER NOT NULL,
                 cliente_id INTEGER NOT NULL,
                 anio INTEGER NOT NULL,
@@ -72,6 +73,12 @@ class DatabaseLIMS:
                 FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
             );
             """)
+
+            try:
+                cursor.execute("ALTER TABLE solicitudes ADD COLUMN numero_informe TEXT;")
+            except Exception:
+                pass
+
 
             # Tabla 4: Muestreos
             cursor.execute("""
@@ -251,7 +258,18 @@ class DatabaseLIMS:
             """, (limite,))
             return [dict(row) for row in cursor.fetchall()]
 
+    def actualizar_numero_informe(self, solicitud_id_o_codigo, numero_informe):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE solicitudes SET numero_informe = ?
+                WHERE id = ? OR codigo_solicitud = ?
+            """, (numero_informe, solicitud_id_o_codigo, str(solicitud_id_o_codigo)))
+            conn.commit()
+            return True
+
     def obtener_solicitud_detalle(self, solicitud_id):
+
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""

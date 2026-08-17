@@ -262,9 +262,21 @@
                     <div class="hc006-header-box">
                         <div class="form-grid-header">
                             <div><label>PROYECTO:</label><input type="text" id="hcPry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
-                            <div><label>ORDEN DE SERVICIO:</label><input type="text" id="hcOrden" value="LSMCH-050-2026"></div>
+                            <div>
+                                <label>ORDEN DE SERVICIO:</label>
+                                <div style="display:flex; gap:0.25rem;">
+                                    <input type="text" id="hcOrden" value="LSMCH-050-2026" onchange="cargarDatosPorSolicitud()" placeholder="Ej. LSMCH-050-2026">
+                                    <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" title="Cargar Datos por Solicitud" onclick="cargarDatosPorSolicitud()"><i class="fa-solid fa-cloud-arrow-down"></i></button>
+                                </div>
+                            </div>
                             <div><label>LOC. DE PROYECTO:</label><input type="text" id="hcLoc" value="URBANIZACION EL CARMEN, DAVID, CHIRIQUI"></div>
-                            <div><label>INFORME:</label><input type="text" id="hcInforme" value="LSMCH-098-2026"></div>
+                            <div>
+                                <label>INFORME:</label>
+                                <div style="display:flex; align-items:center; gap:0.35rem;">
+                                    <input type="text" id="hcInforme" value="LSMCH-098-2026" onchange="guardarNumeroInforme()" placeholder="Ej. LSMCH-098-2026">
+                                    <span id="badgeInformeGuardado" style="font-size:0.7rem; color:#15803d; font-weight:700; display:none;">✔ Guardado</span>
+                                </div>
+                            </div>
                             <div><label>CLIENTE:</label><input type="text" id="hcCliente" value="THE KING SCHOOL DAVID, S.A."></div>
                             <div><label>MUESTREADO POR:</label><input type="text" id="hcMuestreado" value="JQ, NS, CO"></div>
                             <div><label>DESCRIPCIÓN:</label><input type="text" id="hcDesc" value="SUELO"></div>
@@ -273,6 +285,7 @@
                             <div><label>IDENT. DEL LSMCH:</label><input type="text" id="hcIdLsmch" value="M5022@023-2026-2"></div>
                         </div>
                     </div>
+
 
                     <!-- 2. PARÁMETROS DE NORMA ASTM D6913 -->
                     <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.25rem;">
@@ -559,11 +572,15 @@
 
                 const rowsHtmlCompleta = data.map(s => `
                     <tr>
-                        <td><span class="badge-solicitud">${s.codigo_solicitud}</span></td>
+                        <td><span class="badge-solicitud" style="cursor:pointer;" title="Cargar en Hoja HC-006" onclick="seleccionarSolicitud('${s.codigo_solicitud}')">${s.codigo_solicitud}</span></td>
+                        <td>
+                            <input type="text" value="${s.numero_informe || ''}" class="table-input" style="width:130px; text-align:left;" placeholder="Ej. LSMCH-098-2026" onchange="guardarInformeDesdeTabla('${s.codigo_solicitud}', this.value)">
+                        </td>
                         <td>${s.cliente_nombre}</td>
                         <td>${s.proyecto_nombre}</td>
                         <td>${s.fecha_recepcion}</td>
                         <td><span class="badge-status badge-en-proceso">${s.estado}</span></td>
+                        <td><button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="seleccionarSolicitud('${s.codigo_solicitud}')"><i class="fa-solid fa-file-excel"></i> Cargar Hoja</button></td>
                     </tr>
                 `).join('');
 
@@ -572,6 +589,81 @@
 
             } catch (e) { console.error(e); }
         }
+
+        async function cargarDatosPorSolicitud(codigoInput) {
+            const cod = codigoInput || document.getElementById('hcOrden').value.trim();
+            if (!cod) return;
+
+            try {
+                const res = await fetch(`/api/lims/solicitudes/${encodeURIComponent(cod)}`);
+                if (!res.ok) {
+                    console.warn("Solicitud no encontrada en base de datos.");
+                    return;
+                }
+                const data = await res.json();
+
+                document.getElementById('hcOrden').value = data.codigo_solicitud || cod;
+                document.getElementById('hcPry').value = data.proyecto_nombre || '';
+                document.getElementById('hcCliente').value = data.cliente_nombre || '';
+                document.getElementById('hcLoc').value = data.proyecto_ubicacion || '';
+                if (data.numero_informe) document.getElementById('hcInforme').value = data.numero_informe;
+
+                if (data.muestreos && data.muestreos.length > 0 && data.muestreos[0].muestras && data.muestreos[0].muestras.length > 0) {
+                    const m = data.muestreos[0].muestras[0];
+                    if (m.codigo_muestra) document.getElementById('hcIdLsmch').value = m.codigo_muestra;
+                    if (m.descripcion) document.getElementById('hcDesc').value = m.descripcion;
+                }
+            } catch(e) {
+                console.error("Error al obtener detalles de solicitud:", e);
+            }
+        }
+
+        async function guardarNumeroInforme() {
+            const cod = document.getElementById('hcOrden').value.trim();
+            const inf = document.getElementById('hcInforme').value.trim();
+            if (!cod) return;
+
+            try {
+                const res = await fetch('/api/lims/solicitudes/actualizar_informe', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        codigo_solicitud: cod,
+                        numero_informe: inf
+                    })
+                });
+                const r = await res.json();
+                if (r.success) {
+                    const badge = document.getElementById('badgeInformeGuardado');
+                    if (badge) {
+                        badge.style.display = 'inline';
+                        setTimeout(() => { badge.style.display = 'none'; }, 2500);
+                    }
+                    cargarSolicitudesTabla();
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function guardarInformeDesdeTabla(codigoSolicitud, numeroInforme) {
+            try {
+                await fetch('/api/lims/solicitudes/actualizar_informe', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        codigo_solicitud: codigoSolicitud,
+                        numero_informe: numeroInforme
+                    })
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        function seleccionarSolicitud(codigo) {
+            switchTab('geotecnia');
+            switchSubGeo('granulometria-hc006');
+            document.getElementById('hcOrden').value = codigo;
+            cargarDatosPorSolicitud(codigo);
+        }
+
 
         async function calcularHojaHC006() {
             const mSecaTotal = parseFloat(document.getElementById('hcMasaSecaTotal').value || 1246.3);

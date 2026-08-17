@@ -120,6 +120,26 @@ def handle_solicitudes():
         limite = int(request.args.get("limite", 50))
         return jsonify(db.obtener_solicitudes(limite=limite))
 
+@app.route('/api/lims/solicitudes/<codigo>', methods=['GET'])
+def get_solicitud_detalle(codigo):
+    sol = db.obtener_solicitud_detalle(codigo)
+    if not sol:
+        return jsonify({"error": f"No se encontró la solicitud {codigo}"}), 404
+    return jsonify(sol)
+
+@app.route('/api/lims/solicitudes/actualizar_informe', methods=['POST'])
+def actualizar_informe_solicitud():
+    data = request.json or {}
+    cod_sol = data.get("codigo_solicitud")
+    num_inf = data.get("numero_informe", "").strip()
+    if not cod_sol:
+        return jsonify({"error": "El código de solicitud es obligatorio"}), 400
+    
+    db.actualizar_numero_informe(cod_sol, num_inf)
+    return jsonify({"success": True, "message": f"Número de informe '{num_inf}' actualizado correctamente para {cod_sol}"})
+
+
+
 # ---------------------------------------------------------
 # API REST: CÁLCULO Y GUARDADO DE ENSAYO DE GRANULOMETRÍA
 # ---------------------------------------------------------
