@@ -99,7 +99,7 @@
                 margin: 10mm;
             }
 
-            .lims-header, .lims-nav, .btn, .chart-controls-bar, .subnav-pills, .global-search-container, .table-input {
+            .lims-header, .lims-nav, .btn, .chart-controls-bar, .subnav-pills, .global-search-container, .no-print {
                 display: none !important;
             }
 
@@ -108,6 +108,16 @@
                 color: #000000 !important;
                 font-size: 9pt;
             }
+
+            .hoja-hc012-format {
+                border: 2px solid #1e3a8a !important;
+                box-shadow: none !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0.5rem !important;
+                width: 100% !important;
+            }
+
 
             .lims-container {
                 max-width: 100% !important;
@@ -975,77 +985,59 @@
                 </div>
 
                 
-                <!-- ENCABEZADO DE ORDEN DE SERVICIO -->
-                <div class="hc006-header-box" style="margin-bottom:1.25rem;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
-                        <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO Y MUESTRA METROLÓGICA</span>
-                        <div style="display:flex; gap:0.35rem; align-items:center;">
-                            <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                            <select class="form-control select-orden-servicio" id="inc_SelectOrden" style="width:190px; font-weight:700; color:#1e3a8a; font-size:0.85rem;" onchange="cargarDatosGenericosModulo('inc', this.value)">
-                                <option value="">-- Seleccionar Orden --</option>
-                            </select>
-                            <input type="hidden" id="inc_Orden" value="LSMCH-050-2026">
-                            <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.78rem;" title="Llamar Datos de la Orden" onclick="cargarDatosGenericosModulo('inc')">
-                                <i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden
-                            </button>
-                        </div>
+            <!-- 1. PANEL DE PRESUPUESTO GUM EN FORMATO OFICIAL HC-LSMCH-012 REV. 01 -->
+            <div id="panelSubIncCalc">
+                <!-- CONTROLES Y PARÁMETROS RÁPIDOS (NO IMPRESO) -->
+                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:8px; padding:1rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;" class="no-print">
+                    <div style="display:flex; gap:0.75rem; align-items:center;">
+                        <label style="font-weight:800; color:#1e3a8a;">Proceso / Medición:</label>
+                        <select id="gumModulo" class="form-control" style="font-weight:700; width:300px;" onchange="ajustarCamposGUM()">
+                            <option value="compresion">CONCRETO: Compresión de Cilindros (ASTM C39)</option>
+                            <option value="temperatura">CONCRETO: Temperatura Mezcla Fresca (ASTM C1064)</option>
+                            <option value="asentamiento">CONCRETO: Asentamiento Slump (ASTM C143)</option>
+                            <option value="granulometria">SUELOS: Granulometría por Tamizado (ASTM D6913)</option>
+                        </select>
                     </div>
-                    <div class="form-grid-header">
-                        <div><label>PROYECTO:</label><input type="text" id="inc_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
-                        <div><label>CLIENTE:</label><input type="text" id="inc_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
-                        <div><label>LOC. DE PROYECTO:</label><input type="text" id="inc_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
-                        <div><label>INFORME:</label><input type="text" id="inc_Informe" value="LSMCH-098-2026" onchange="guardarInformeGenerico('inc')"></div>
-                        <div><label>MUESTREADO POR:</label><input type="text" id="inc_Muestreado" value="JQ, NS, CO"></div>
-                        <div><label>DESCRIPCIÓN:</label><input type="text" id="inc_Desc" value="EVALUACIÓN DE INCERTIDUMBRE GUM"></div>
-                        <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="inc_IdCliente" value="CONCRETO 280 kg/cm2"></div>
-                        <div><label>FUENTE:</label><input type="text" id="inc_Fuente" value="PRENSA HIDRÁULICA Y VERNIER"></div>
-                        <div><label>IDENT. DEL LSMCH:</label><input type="text" id="inc_IdLsmch" value="C5022@023-2026-1"></div>
+                    <div style="display:flex; gap:0.5rem; align-items:center;">
+                        <button class="btn btn-primary" onclick="calcularIncertidumbreGUM()"><i class="fa-solid fa-calculator"></i> Calcular HC-012</button>
+                        <button class="btn btn-success" onclick="guardarHojaCalculoBD('INCERTIDUMBRE_GUM', 'inc')"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar en BD</button>
+                        <button class="btn btn-secondary" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;" onclick="cargarHojaCalculoBD('INCERTIDUMBRE_GUM', 'inc')"><i class="fa-solid fa-folder-open"></i> Cargar BD</button>
+                        <button class="btn btn-secondary" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Reporte PDF (HC-012)</button>
                     </div>
                 </div>
 
-                <!-- CONFIGURACIÓN DE FUENTES Y PARÁMETROS GUM -->
-                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:8px; padding:1.25rem; margin-bottom:1.5rem;">
-                    <div style="font-weight:800; color:#1e3a8a; font-size:0.95rem; margin-bottom:0.85rem; border-bottom:1px solid #cbd5e1; padding-bottom:0.35rem;">
-                        <i class="fa-solid fa-sliders"></i> PARÁMETROS Y PARÁMETROS METROLÓGICOS DEL ENSAYO
+                <div style="background:#f1f5f9; border:1.5px solid #cbd5e1; border-radius:8px; padding:1rem; margin-bottom:1.5rem;" class="no-print">
+                    <div style="font-weight:800; color:#1e3a8a; font-size:0.88rem; margin-bottom:0.75rem; border-bottom:1px solid #cbd5e1; padding-bottom:0.25rem;">
+                        <i class="fa-solid fa-sliders"></i> DATOS DE ENTRADA Y PARÁMETROS METROLÓGICOS
                     </div>
-                    
-                    <div class="grid-3" style="gap:1rem; font-size:0.85rem;">
+                    <div class="grid-4" style="gap:0.75rem; font-size:0.82rem;">
                         <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Ensayo / Magnitud Evaluar:</label>
-                            <select id="gumModulo" class="form-control" style="font-weight:700;" onchange="ajustarCamposGUM()">
-                                <option value="compresion">CONCRETO: Compresión de Cilindros ASTM C39 (Prensa & Vernier)</option>
-                                <option value="temperatura">CONCRETO: Temperatura Mezcla Fresca ASTM C1064 (Termómetro)</option>
-                                <option value="asentamiento">CONCRETO: Asentamiento Slump ASTM C143 (Cono & Regla)</option>
-                                <option value="granulometria">SUELOS: Granulometría por Tamizado ASTM D6913 (Balanza & Tamices)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Lecturas Obtenidas de Campo / Lab:</label>
-                            <input type="text" id="gumLecturas" class="form-control" value="28.5, 28.7, 28.4, 28.6" placeholder="Ej. 28.5, 28.7, 28.4, 28.6">
+                            <label style="font-weight:700; color:#1e3a8a;">Lecturas Obtenidas de Campo/Lab:</label>
+                            <input type="text" id="gumLecturas" class="form-control" value="28.5, 28.7, 28.4, 28.6" placeholder="Ej. 28.5, 28.7, 28.4">
                         </div>
                         <div>
                             <label style="font-weight:700; color:#1e3a8a;">Unidad de Medida:</label>
                             <select id="gumUnidad" class="form-control" style="font-weight:700;">
-                                <option value="MPa">MPa (Esfuerzo)</option>
-                                <option value="psi">psi (Esfuerzo)</option>
-                                <option value="°C">°C (Temperatura)</option>
-                                <option value="mm">mm (Longitud / Slump)</option>
+                                <option value="MPa">MPa</option>
+                                <option value="psi">psi</option>
+                                <option value="°C">°C</option>
+                                <option value="mm">mm</option>
                             </select>
                         </div>
                         <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Resolución del Instrumento (R):</label>
+                            <label style="font-weight:700; color:#1e3a8a;">Resolución Equipo (R):</label>
                             <input type="number" step="0.001" id="gumResolucion" class="form-control" value="0.1">
                         </div>
                         <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Incertidumbre Certificado Patrón (U_cal):</label>
+                            <label style="font-weight:700; color:#1e3a8a;">Incertidumbre Certificado (U_cal):</label>
                             <input type="number" step="0.001" id="gumUCal" class="form-control" value="1.5">
                         </div>
                         <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Factor de Cobertura Certificado (k_cal):</label>
+                            <label style="font-weight:700; color:#1e3a8a;">Factor Cobertura (k_cal):</label>
                             <input type="number" step="0.1" id="gumKCal" class="form-control" value="2.0">
                         </div>
                         <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Deriva Metrológica Estimada (u_deriva):</label>
+                            <label style="font-weight:700; color:#1e3a8a;">Deriva Metrológica Estimada:</label>
                             <input type="number" step="0.001" id="gumDeriva" class="form-control" value="0.2">
                         </div>
                         <div>
@@ -1053,89 +1045,225 @@
                             <input type="number" step="0.001" id="gumHomogeneidad" class="form-control" value="0.1">
                         </div>
                         <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Nivel de Confianza Metrológico:</label>
+                            <label style="font-weight:700; color:#1e3a8a;">Nivel de Confianza (P):</label>
                             <select id="gumConfianza" class="form-control" style="font-weight:700;">
-                                <option value="0.9545">95.45% (k ≈ 2.00 - ISO/IEC 17025)</option>
-                                <option value="0.95">95.00% (k ≈ 1.96)</option>
-                                <option value="0.99">99.00% (k ≈ 2.58)</option>
+                                <option value="0.9545">95.45% (ISO/IEC 17025)</option>
+                                <option value="0.95">95.00%</option>
+                                <option value="0.99">99.00%</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- RESUMEN DE RESULTADOS GUM -->
-                <div class="grid-4" style="gap:1rem; margin-bottom:1.5rem;">
-                    <div style="background:#eff6ff; border:1.5px solid #3b82f6; border-radius:8px; padding:1rem; text-align:center;">
-                        <div style="font-size:0.75rem; font-weight:800; color:#1d4ed8; text-transform:uppercase;">Incertidumbre Expandida (U)</div>
-                        <div id="lblGumUExpandida" style="font-size:1.6rem; font-weight:900; color:#1e3a8a; margin:0.3rem 0;">± 0.82 MPa</div>
-                        <div style="font-size:0.7rem; color:#3b82f6; font-weight:700;">Con Nivel de Confianza del 95.45%</div>
-                    </div>
-                    <div style="background:#f0fdf4; border:1.5px solid #22c55e; border-radius:8px; padding:1rem; text-align:center;">
-                        <div style="font-size:0.75rem; font-weight:800; color:#15803d; text-transform:uppercase;">Factor de Cobertura (k)</div>
-                        <div id="lblGumFactorK" style="font-size:1.6rem; font-weight:900; color:#14532d; margin:0.3rem 0;">k = 2.00</div>
-                        <div style="font-size:0.7rem; color:#16a34a; font-weight:700;">Distribución Student's t (ISO 98-3)</div>
-                    </div>
-                    <div style="background:#fefce8; border:1.5px solid #eab308; border-radius:8px; padding:1rem; text-align:center;">
-                        <div style="font-size:0.75rem; font-weight:800; color:#a16207; text-transform:uppercase;">Grados de Libertad Efectivos (ν_eff)</div>
-                        <div id="lblGumNuEff" style="font-size:1.6rem; font-weight:900; color:#713f12; margin:0.3rem 0;">ν_eff = 54.2</div>
-                        <div style="font-size:0.7rem; color:#ca8a04; font-weight:700;">Ecuación de Welch-Satterthwaite</div>
-                    </div>
-                    <div style="background:#faf5ff; border:1.5px solid #a855f7; border-radius:8px; padding:1rem; text-align:center;">
-                        <div style="font-size:0.75rem; font-weight:800; color:#7e22ce; text-transform:uppercase;">Incertidumbre Combinada (u_c)</div>
-                        <div id="lblGumUCombinada" style="font-size:1.6rem; font-weight:900; color:#581c87; margin:0.3rem 0;">u_c = 0.41 MPa</div>
-                        <div style="font-size:0.7rem; color:#9333ea; font-weight:700;">Suma en Varianza Cuadrática</div>
-                    </div>
-                </div>
+                <!-- HOJA OFICIAL HC-LSMCH-012 REVISIÓN 01 (REPORTE OFICIAL IMPRESO) -->
+                <div class="hoja-hc012-format" id="hojaReporteHC012Format" style="background:#ffffff; border:2px solid #1e3a8a; border-radius:4px; padding:1.25rem; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#0f172a;">
+                    
+                    <!-- ENCABEZADO REPORTE OFICIAL HC-LSMCH-012 REV. 01 -->
+                    <table style="width:100%; border-collapse:collapse; text-align:center; border:2px solid #1e3a8a; margin-bottom:1rem;">
+                        <tr>
+                            <td style="width:22%; border:1px solid #1e3a8a; padding:0.6rem; vertical-align:middle;">
+                                <div style="font-weight:900; font-size:0.75rem; color:#1e3a8a; text-transform:uppercase;">UNIVERSIDAD TECNOLÓGICA DE PANAMÁ</div>
+                                <div style="font-size:0.65rem; color:#475569; font-weight:700;">CENTRO EXPERIMENTAL DE INGENIERÍA</div>
+                            </td>
+                            <td style="width:56%; border:1px solid #1e3a8a; padding:0.5rem; background:#f8fafc;">
+                                <div style="font-weight:900; font-size:0.95rem; color:#1e3a8a; text-transform:uppercase;">LABORATORIO DE SUELOS Y MATERIALES DE CHIRIQUÍ</div>
+                                <div style="font-weight:800; font-size:0.88rem; color:#0f172a;">HOJA DE CÁLCULO</div>
+                                <div style="font-weight:900; font-size:1.05rem; color:#1e3a8a;">HC-LSMCH-012</div>
+                                <div style="font-weight:700; font-size:0.8rem; color:#475569;">Revisión 01</div>
+                            </td>
+                            <td style="width:22%; border:1px solid #1e3a8a; padding:0.6rem; vertical-align:middle;">
+                                <div style="font-weight:900; font-size:1.2rem; color:#1e3a8a; letter-spacing:1px;">LSMCH</div>
+                                <div style="font-size:0.65rem; color:#0369a1; font-weight:800;">ISO/IEC 17025:2017</div>
+                            </td>
+                        </tr>
+                        <tr style="background:#1e3a8a; color:#ffffff;">
+                            <td colspan="3" style="padding:0.45rem; font-weight:900; font-size:0.92rem; letter-spacing:0.5px; text-transform:uppercase;">
+                                ESTIMACIÓN DE LA INCERTIDUMBRE DE MEDICIÓN
+                            </td>
+                        </tr>
+                    </table>
 
-                <!-- DECLARACIÓN DEL RESULTADO OFICIAL ISO/IEC 17025 -->
-                <div style="background:#1e3a8a; color:#ffffff; border-radius:8px; padding:1rem 1.25rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="font-size:0.8rem; font-weight:700; color:#93c5fd; text-transform:uppercase;"><i class="fa-solid fa-certificate"></i> DECLARACIÓN OFICIAL DEL RESULTADO METROLÓGICO (ISO/IEC 17025:2017)</div>
-                        <div id="lblGumDeclaracionOficial" style="font-size:1.2rem; font-weight:800; margin-top:0.25rem; color:#ffffff;">
-                            Resistencia f'c = 28.54 ± 0.82 MPa (k = 2.00, P = 95.45%)
-                        </div>
-                    </div>
-                    <button class="btn btn-success" style="padding:0.5rem 1rem; font-size:0.85rem;" onclick="copiarDeclaracionGUM()"><i class="fa-solid fa-copy"></i> Copiar Declaración</button>
-                </div>
+                    <!-- DATOS DEL PROCESO Y EQUIPOS UTILIZADOS -->
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.82rem; margin-bottom:1.25rem;">
+                        <tr style="background:#f1f5f9;">
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:800; color:#1e3a8a; width:15%;">Proceso:</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#0f172a; width:55%;" id="lblHc012NombreProceso">Resistencia a la Compresión en Cilindros de Concreto (ASTM C39)</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:800; color:#1e3a8a; width:10%;">Fecha:</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#0f172a; width:20%;" id="lblHc012FechaProceso">2026-08-10</td>
+                        </tr>
+                    </table>
 
-                <!-- TABLA PRESUPUESTO DE INCERTIDUMBRE GUM -->
-                <div style="margin-bottom:1.5rem; overflow-x:auto;">
-                    <div style="font-weight:800; color:#1e3a8a; font-size:0.95rem; margin-bottom:0.5rem;">
-                        <i class="fa-solid fa-table-list"></i> TABLA DE PRESUPUESTO DE INCERTIDUMBRE DE MEDIDA (GUM / ISO 98-3)
+                    <!-- SECCIÓN DE EQUIPOS UTILIZADOS -->
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
+                        <i class="fa-solid fa-scale-balanced"></i> EQUIPOS UTILIZADOS
                     </div>
-                    <table class="table-custom" style="font-size:0.8rem;">
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.8rem; margin-bottom:1.25rem; text-align:center;">
                         <thead>
-                            <tr style="background:#1e3a8a; color:#ffffff;">
-                                <th>Fuente de Incertidumbre</th>
-                                <th>Tipo</th>
-                                <th>Valor x_i</th>
-                                <th>Distribución</th>
-                                <th>Divisor</th>
-                                <th>u(x_i) Estándar</th>
-                                <th>Coef. Sensibilidad c_i</th>
-                                <th>u_i(y) Contribución</th>
-                                <th>Grados ν_i</th>
-                                <th>Aporte %</th>
+                            <tr style="background:#e2e8f0; color:#1e3a8a; font-weight:800;">
+                                <th style="border:1px solid #cbd5e1; padding:0.4rem;">Equipo</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.4rem;">Identificación Interna</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.4rem;">Certificado de Calibración N°</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.4rem;">Fecha de Calibración</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyTablaGUM">
+                        <tbody id="tbodyEquiposUtilizadosHC012">
                             <tr>
-                                <td colspan="10" style="text-align:center; padding:1rem; color:#64748b;">Presione "Calcular Presupuesto GUM" para generar la evaluación.</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">Prensa Hidráulica / Vernier Digital</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#1e3a8a;">LSMCH-EM-002</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">03-SI-0356-2025</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">2025-10-23</td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
 
-                <!-- GRÁFICO DE APORTACIÓN DE FUENTES (PARETO) -->
-                <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:8px; padding:1.25rem;">
-                    <div style="font-weight:800; color:#1e3a8a; font-size:0.95rem; margin-bottom:0.75rem; display:flex; justify-content:space-between; align-items:center;">
-                        <span><i class="fa-solid fa-chart-pie"></i> GRÁFICO DE APORTACIÓN DE FUENTES DE INCERTIDUMBRE (PARETO METROLÓGICO)</span>
-                        <span style="font-size:0.75rem; color:#64748b;">GUM / ISO/IEC 17025</span>
+                    <!-- PASO 1: MODELADO DE LA MEDICIÓN -->
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
+                        PASO 1. MODELADO DE LA MEDICIÓN
                     </div>
-                    <div style="height:260px; display:flex; justify-content:center; align-items:center;" id="containerGraficoGUM">
-                        <svg id="svgParetoGUM" width="100%" height="240"></svg>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.8rem; margin-bottom:1.25rem;">
+                        <tr>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc; width:20%;">Magnitud medida:</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:700;" id="lblHc012MagnitudMedida">Resistencia a la Compresión (f'c)</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc; width:20%;">Parametro / Unidad:</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:700;" id="lblHc012UnidadMedida">MPa</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc;">Modelo de medición:</td>
+                            <td colspan="3" style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; font-size:0.9rem;" id="lblHc012EcuacionModelo">
+                                y = f(X1, X2, ..., Xn)
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- PASO 2: IDENTIFICAR FUENTES DE INCERTIDUMBRE -->
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
+                        PASO 2. IDENTIFICAR FUENTES DE INCERTIDUMBRE
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1.25rem;">
+                        <thead>
+                            <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:40px;">Xi</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Fuente de incertidumbre</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Evaluación (Tipo)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Distribución de probabilidad</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Divisor (k)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Unidad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPaso2Fuentes">
+                            <!-- Generado dinámicamente por JS -->
+                        </tbody>
+                    </table>
+
+                    <!-- PASO 3: CUANTIFICAR COMPONENTES DE INCERTIDUMBRE Y GRÁFICO PARETO CIRCULAR -->
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
+                        PASO 3. CUANTIFICAR COMPONENTES DE INCERTIDUMBRE
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1rem;">
+                        <thead>
+                            <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:40px;">Xi</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Fuente de incertidumbre</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Valores de entrada xi</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">u(xi) Incertidumbre estándar</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Porcentaje de contribución (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPaso3Cuantificar">
+                            <!-- Generado dinámicamente por JS -->
+                        </tbody>
+                    </table>
+
+                    <!-- GRÁFICO APORTACIÓN POR CADA FUENTE (DIBUJO DEL MASTER) -->
+                    <div style="text-align:center; padding:0.75rem; border:1.5px solid #cbd5e1; border-radius:6px; margin-bottom:1.25rem; background:#fafafa;">
+                        <div style="font-weight:900; color:#1e3a8a; font-size:0.82rem; margin-bottom:0.5rem; text-transform:uppercase;">
+                            INCERTIDUMBRE APORTADA POR CADA FUENTE
+                        </div>
+                        <div id="containerPieHC012" style="display:flex; justify-content:center; align-items:center; min-height:210px;">
+                            <svg id="svgPieHC012" width="520" height="210"></svg>
+                        </div>
+                    </div>
+
+                    <!-- PASO 4: EVALUAR INCERTIDUMBRE COMBINADA -->
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
+                        PASO 4. EVALUAR INCERTIDUMBRE COMBINADA Y FACTOR DE COBERTURA
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1rem;">
+                        <thead>
+                            <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; width:40px;">Xi</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Fuente de incertidumbre</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Coef. Sensibilidad ci</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">ui(y) Contribución</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">ui(y)^2 Varianza</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Grados νi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPaso4Combinada">
+                            <!-- Generado dinámicamente por JS -->
+                        </tbody>
+                    </table>
+
+                    <!-- RESUMEN COMBINADA -->
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.8rem; margin-bottom:1.25rem; text-align:center;">
+                        <tr style="background:#f1f5f9; font-weight:800; color:#1e3a8a;">
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Incertidumbre combinada uc(y)</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Grados de libertad efectivos ν_eff</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Factor de cobertura k (95.45%)</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;">Incertidumbre expandida U</td>
+                        </tr>
+                        <tr style="font-weight:900; font-size:1rem; color:#0f172a;">
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;" id="lblHC012Uc">0.0971 MPa</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;" id="lblHC012NuEff">1049</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem;" id="lblHC012K">2.00</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.45rem; color:#1e3a8a;" id="lblHC012UExp">± 0.194 MPa</td>
+                        </tr>
+                    </table>
+
+                    <!-- PASO 5: EVALUAR INCERTIDUMBRE EXPANDIDA Y RESULTADO FINAL -->
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
+                        PASO 5. EVALUAR INCERTIDUMBRE EXPANDIDA Y DECLARACIÓN DE RESULTADO
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.85rem; margin-bottom:1.25rem; text-align:center;">
+                        <thead>
+                            <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
+                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Lectura Media Final</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Incertidumbre Expandida U</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Factor de Cobertura k</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.4rem;">Nivel de Confianza P</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="font-weight:900; font-size:1.05rem; color:#1e3a8a; background:#f8fafc;">
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHC012LecturaMedia">28.55 MPa</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHC012UDecl">± 0.194 MPa</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;" id="lblHC012KDecl">2.00</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.5rem;">95.45%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- CAJA DE DECLARACIÓN OFICIAL METROLÓGICA -->
+                    <div style="border:2px solid #1e3a8a; background:#1e3a8a; color:#ffffff; padding:0.85rem; border-radius:4px; font-weight:800; font-size:1rem; text-align:center; margin-bottom:2.5rem;" id="lblHC012DeclaracionFinal">
+                        Resultado = 28.55 ± 0.194 MPa (k = 2.00, P = 95.45%)
+                    </div>
+
+                    <!-- FIRMAS DE AUTORIZACIÓN AL PIE -->
+                    <div style="display:flex; justify-content:space-around; text-align:center; font-size:0.85rem; margin-top:3rem;">
+                        <div style="border-top:1.5px solid #0f172a; width:240px; padding-top:0.4rem;">
+                            <div style="font-weight:800; color:#0f172a;">Realizado por:</div>
+                            <div style="font-size:0.75rem; color:#475569;">Técnico / Ensayista Metrológico</div>
+                            <div style="font-size:0.75rem; color:#475569; margin-top:0.25rem;">Fecha: _______________</div>
+                        </div>
+                        <div style="border-top:1.5px solid #0f172a; width:240px; padding-top:0.4rem;">
+                            <div style="font-weight:800; color:#0f172a;">Revisado por:</div>
+                            <div style="font-size:0.75rem; color:#475569;">Jefe de Laboratorio / Resp. Técnico</div>
+                            <div style="font-size:0.75rem; color:#475569; margin-top:0.25rem;">Fecha: _______________</div>
+                        </div>
                     </div>
                 </div>
+            </div>
+
             </div>
 
             <!-- 2. PANEL DE GESTIÓN DE EQUIPOS Y CERTIFICADOS DE CALIBRACIÓN -->
@@ -2337,33 +2465,69 @@
                     const uComb = r.u_combinada || 0;
                     const tempFinal = r.temp_estimada_final || r.temp_media_indicada || 0;
 
-                    document.getElementById('lblGumUExpandida').innerText = `± ${uExp.toFixed(3)} ${unidad}`;
-                    document.getElementById('lblGumFactorK').innerText = `k = ${kFactor.toFixed(2)}`;
-                    document.getElementById('lblGumNuEff').innerText = `ν_eff = ${typeof nuEff === 'number' ? nuEff.toFixed(1) : nuEff}`;
-                    document.getElementById('lblGumUCombinada').innerText = `u_c = ${uComb.toFixed(4)} ${unidad}`;
+                    // Encabezado Paso 1
+                    const selectMod = document.getElementById('gumModulo');
+                    const nombreProceso = selectMod.options[selectMod.selectedIndex].text;
+                    document.getElementById('lblHc012NombreProceso').innerText = nombreProceso;
+                    document.getElementById('lblHc012MagnitudMedida').innerText = mod.toUpperCase();
+                    document.getElementById('lblHc012UnidadMedida').innerText = unidad;
+                    document.getElementById('lblHc012EcuacionModelo').innerText = `y = f(${r.fuentes ? r.fuentes.map((f,i)=>'X'+(i+1)).join(', ') : 'X1, X2'})`;
 
-                    document.getElementById('lblGumDeclaracionOficial').innerText = 
+                    // Paso 4 y 5 Resumen
+                    document.getElementById('lblHC012Uc').innerText = `${uComb.toFixed(4)} ${unidad}`;
+                    document.getElementById('lblHC012NuEff').innerText = `${typeof nuEff === 'number' ? nuEff.toFixed(1) : nuEff}`;
+                    document.getElementById('lblHC012K').innerText = `${kFactor.toFixed(2)}`;
+                    document.getElementById('lblHC012UExp').innerText = `± ${uExp.toFixed(3)} ${unidad}`;
+
+                    document.getElementById('lblHC012LecturaMedia').innerText = `${tempFinal.toFixed(2)} ${unidad}`;
+                    document.getElementById('lblHC012UDecl').innerText = `± ${uExp.toFixed(3)} ${unidad}`;
+                    document.getElementById('lblHC012KDecl').innerText = `${kFactor.toFixed(2)}`;
+
+                    document.getElementById('lblHC012DeclaracionFinal').innerText = 
                         `Resultado = ${tempFinal.toFixed(2)} ± ${uExp.toFixed(3)} ${unidad} (k = ${kFactor.toFixed(2)}, P = 95.45%)`;
 
-                    const tbody = document.getElementById('tbodyTablaGUM');
+                    // Llenar Tablas Pasos 2, 3 y 4
                     if (r.tabla_presupuesto && Array.isArray(r.tabla_presupuesto)) {
-                        tbody.innerHTML = r.tabla_presupuesto.map(f => `
+                        // Paso 2: Fuentes
+                        document.getElementById('tbodyPaso2Fuentes').innerHTML = r.tabla_presupuesto.map((f, idx) => `
                             <tr>
-                                <td><strong>${f["Fuente de Incertidumbre"] || f["fuente"] || ''}</strong></td>
-                                <td><span class="badge-status ${f["Tipo"] === 'A' ? 'badge-validado' : 'badge-en-proceso'}">${f["Tipo"] || f["tipo"]}</span></td>
-                                <td>${typeof f["Valor xi"] === 'number' ? f["Valor xi"].toFixed(3) : f["Valor xi"]}</td>
-                                <td>${f["Distribución"] || f["distribucion"]}</td>
-                                <td>${typeof f["Divisor"] === 'number' ? f["Divisor"].toFixed(2) : f["Divisor"]}</td>
-                                <td>${typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"].toFixed(4) : f["u(xi) Estándar"]}</td>
-                                <td>${typeof f["Coef. Sensibilidad ci"] === 'number' ? f["Coef. Sensibilidad ci"].toFixed(4) : f["Coef. Sensibilidad ci"]}</td>
-                                <td><strong>${typeof f["ui(y) Contribución"] === 'number' ? f["ui(y) Contribución"].toFixed(4) : f["ui(y) Contribución"]}</strong></td>
-                                <td>${f["Grados νi"] || f["grados_libertad"]}</td>
-                                <td><strong style="color:#1e3a8a;">${typeof f["Aporte %"] === 'number' ? f["Aporte %"].toFixed(1) + '%' : (f["Aporte %"] || '')}</strong></td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">X${idx+1}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;"><span class="badge-status ${f["Tipo"] === 'A' ? 'badge-validado' : 'badge-en-proceso'}">${f["Tipo"] || f["tipo"]}</span></td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${f["Distribución"] || f["distribucion"]}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Divisor"] === 'number' ? f["Divisor"].toFixed(2) : f["Divisor"]}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
                             </tr>
                         `).join('');
+
+                        // Paso 3: Cuantificar
+                        document.getElementById('tbodyPaso3Cuantificar').innerHTML = r.tabla_presupuesto.map((f, idx) => `
+                            <tr>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">X${idx+1}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Valor xi"] === 'number' ? f["Valor xi"].toFixed(3) : f["Valor xi"]}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"].toFixed(4) : f["u(xi) Estándar"]}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${typeof f["Aporte %"] === 'number' ? f["Aporte %"].toFixed(1) + '%' : (f["Aporte %"] || '')}</td>
+                            </tr>
+                        `).join('');
+
+                        // Paso 4: Combinada
+                        document.getElementById('tbodyPaso4Combinada').innerHTML = r.tabla_presupuesto.map((f, idx) => {
+                            const ui = typeof f["ui(y) Contribución"] === 'number' ? f["ui(y) Contribución"] : 0;
+                            const uiSq = ui * ui;
+                            return `
+                            <tr>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">X${idx+1}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Coef. Sensibilidad ci"] === 'number' ? f["Coef. Sensibilidad ci"].toFixed(4) : f["Coef. Sensibilidad ci"]}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${ui.toFixed(4)}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${uiSq.toExponential(3)}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${f["Grados νi"] || f["grados_libertad"]}</td>
+                            </tr>
+                        `}).join('');
                     }
 
-                    dibujarGraficoParetoGUM(r.tabla_presupuesto || []);
+                    dibujarPieHC012(r.tabla_presupuesto || []);
                 } else {
                     alert("Error en el cálculo GUM: " + (data.error || "Datos no válidos"));
                 }
@@ -2371,6 +2535,58 @@
                 alert("Error de conexión al calcular la Incertidumbre GUM.");
             }
         }
+
+        function dibujarPieHC012(fuentes) {
+            const svg = document.getElementById('svgPieHC012');
+            if (!svg || !fuentes || fuentes.length === 0) return;
+
+            const width = 520;
+            const height = 210;
+            const cx = 120;
+            const cy = 105;
+            const radius = 75;
+
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            let items = fuentes.map(f => ({
+                nombre: f["Fuente de Incertidumbre"] || f["fuente"] || '',
+                aporte: parseFloat(f["Aporte %"]) || 0
+            })).filter(it => it.aporte > 0.01).sort((a,b) => b.aporte - a.aporte);
+
+            const colors = ['#1e3a8a', '#2563eb', '#0284c7', '#14b8a6', '#eab308', '#64748b'];
+            let html = `<rect width="${width}" height="${height}" fill="#fafafa"/>`;
+
+            let currentAngle = -Math.PI / 2;
+            items.forEach((it, idx) => {
+                const sliceAngle = (it.aporte / 100.0) * 2 * Math.PI;
+                const endAngle = currentAngle + sliceAngle;
+
+                const x1 = cx + radius * Math.cos(currentAngle);
+                const y1 = cy + radius * Math.sin(currentAngle);
+                const x2 = cx + radius * Math.cos(endAngle);
+                const y2 = cy + radius * Math.sin(endAngle);
+
+                const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
+                const pathData = `M ${cx} ${cy} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+
+                const col = colors[idx % colors.length];
+                html += `<path d="${pathData}" fill="${col}" stroke="#ffffff" stroke-width="1.5"/>`;
+
+                // Leyenda a la derecha
+                const legY = 25 + idx * 28;
+                html += `
+                    <rect x="230" y="${legY}" width="14" height="14" fill="${col}" rx="3"/>
+                    <text x="252" y="${legY + 11}" font-size="11" font-weight="700" fill="#0f172a">
+                        X${idx+1}: ${it.nombre.length > 32 ? it.nombre.substring(0,32)+'...' : it.nombre} (${it.aporte.toFixed(1)}%)
+                    </text>
+                `;
+
+                currentAngle = endAngle;
+            });
+
+            svg.innerHTML = html;
+        }
+
 
         function dibujarGraficoParetoGUM(fuentes) {
             const svg = document.getElementById('svgParetoGUM');
