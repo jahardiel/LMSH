@@ -1187,13 +1187,14 @@
             <div id="panelSubIncCalc">
                 <!-- CONTROLES Y PARÁMETROS RÁPIDOS (NO IMPRESO) -->
                 <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:8px; padding:1rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;" class="no-print">
-                    <div style="display:flex; gap:0.75rem; align-items:center;">
-                        <label style="font-weight:800; color:#1e3a8a;">Proceso / Medición:</label>
-                        <select id="gumModulo" class="form-control" style="font-weight:700; width:300px;" onchange="ajustarCamposGUM()">
-                            <option value="compresion">CONCRETO: Compresión de Cilindros (ASTM C39)</option>
-                            <option value="temperatura">CONCRETO: Temperatura Mezcla Fresca (ASTM C1064)</option>
-                            <option value="asentamiento">CONCRETO: Asentamiento Slump (ASTM C143)</option>
-                            <option value="granulometria">SUELOS: Granulometría por Tamizado (ASTM D6913)</option>
+                    <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+                        <label style="font-weight:800; color:#1e3a8a;">ENSAYO:</label>
+                        <input type="text" id="incNombreEnsayoInput" class="form-control" style="font-weight:700; width:340px; color:#1e3a8a;" value="Resistencia a la Compresión en Cilindros de Concreto (ASTM C39)" oninput="document.getElementById('lblHc012NombreProceso').innerText = this.value">
+                        <select id="gumModulo" class="form-control" style="font-weight:700; width:170px;" onchange="ajustarCamposGUM()">
+                            <option value="compresion">CONCRETO: ASTM C39</option>
+                            <option value="temperatura">CONCRETO: ASTM C1064</option>
+                            <option value="asentamiento">CONCRETO: ASTM C143</option>
+                            <option value="granulometria">SUELOS: ASTM D6913</option>
                         </select>
                     </div>
                     <div style="display:flex; gap:0.5rem; align-items:center;">
@@ -1281,15 +1282,18 @@
                         </tr>
                     </table>
 
-                    <!-- DATOS DEL PROCESO Y EQUIPOS UTILIZADOS -->
+                    <!-- DATOS DEL ENSAYO Y EQUIPOS UTILIZADOS -->
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.82rem; margin-bottom:1.25rem;">
                         <tr style="background:#f1f5f9;">
-                            <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:800; color:#1e3a8a; width:15%;">Proceso:</td>
-                            <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#0f172a; width:55%;" id="lblHc012NombreProceso">Resistencia a la Compresión en Cilindros de Concreto (ASTM C39)</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:800; color:#1e3a8a; width:12%;">ENSAYO:</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#0f172a; width:58%;">
+                                <span id="lblHc012NombreProceso" contenteditable="true" style="border-bottom:1px dashed #1e3a8a; padding:0.1rem 0.3rem;" onblur="document.getElementById('incNombreEnsayoInput').value = this.innerText" title="Haga clic para editar el nombre del ensayo directamente">Resistencia a la Compresión en Cilindros de Concreto (ASTM C39)</span>
+                            </td>
                             <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:800; color:#1e3a8a; width:10%;">Fecha:</td>
                             <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#0f172a; width:20%;" id="lblHc012FechaProceso">2026-08-10</td>
                         </tr>
                     </table>
+
 
                     <!-- SECCIÓN DE EQUIPOS UTILIZADOS -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
@@ -2664,6 +2668,8 @@
         function ajustarCamposGUM() {
             const mod = document.getElementById('gumModulo').value;
             const selectUnidad = document.getElementById('gumUnidad');
+            const inpEnsayo = document.getElementById('incNombreEnsayoInput');
+            const lblEnsayo = document.getElementById('lblHc012NombreProceso');
             
             if (mod === 'compresion') {
                 selectUnidad.value = 'MPa';
@@ -2672,6 +2678,8 @@
                 document.getElementById('gumKCal').value = '2.0';
                 document.getElementById('gumDeriva').value = '0.2';
                 document.getElementById('gumLecturas').value = '28.5, 28.7, 28.4, 28.6';
+                if (inpEnsayo) inpEnsayo.value = "Resistencia a la Compresión en Cilindros de Concreto (ASTM C39)";
+                if (lblEnsayo) lblEnsayo.innerText = "Resistencia a la Compresión en Cilindros de Concreto (ASTM C39)";
             } else if (mod === 'temperatura') {
                 selectUnidad.value = '°C';
                 document.getElementById('gumResolucion').value = '0.1';
@@ -2679,6 +2687,8 @@
                 document.getElementById('gumKCal').value = '2.0';
                 document.getElementById('gumDeriva').value = '0.05';
                 document.getElementById('gumLecturas').value = '24.5, 24.6, 24.5, 24.7';
+                if (inpEnsayo) inpEnsayo.value = "Temperatura de la Mezcla de Concreto Fresco (ASTM C1064)";
+                if (lblEnsayo) lblEnsayo.innerText = "Temperatura de la Mezcla de Concreto Fresco (ASTM C1064)";
             } else if (mod === 'asentamiento') {
                 selectUnidad.value = 'mm';
                 document.getElementById('gumResolucion').value = '1.0';
@@ -2686,6 +2696,8 @@
                 document.getElementById('gumKCal').value = '2.0';
                 document.getElementById('gumDeriva').value = '0.5';
                 document.getElementById('gumLecturas').value = '100, 105, 100, 95';
+                if (inpEnsayo) inpEnsayo.value = "Asentamiento del Concreto de Cemento Hidráulico - Slump (ASTM C143)";
+                if (lblEnsayo) lblEnsayo.innerText = "Asentamiento del Concreto de Cemento Hidráulico - Slump (ASTM C143)";
             } else if (mod === 'granulometria') {
                 selectUnidad.value = 'mm';
                 document.getElementById('gumResolucion').value = '0.01';
@@ -2693,8 +2705,11 @@
                 document.getElementById('gumKCal').value = '2.0';
                 document.getElementById('gumDeriva').value = '0.02';
                 document.getElementById('gumLecturas').value = '4.75, 2.0, 0.425, 0.075';
+                if (inpEnsayo) inpEnsayo.value = "Análisis Granulométrico por Tamizado (ASTM D6913)";
+                if (lblEnsayo) lblEnsayo.innerText = "Análisis Granulométrico por Tamizado (ASTM D6913)";
             }
         }
+
 
         async function calcularIncertidumbreGUM() {
             const lecturasRaw = document.getElementById('gumLecturas').value;
@@ -2739,11 +2754,12 @@
 
                     // Encabezado Paso 1
                     const selectMod = document.getElementById('gumModulo');
-                    const nombreProceso = selectMod.options[selectMod.selectedIndex].text;
+                    const nombreProceso = document.getElementById('incNombreEnsayoInput')?.value || selectMod.options[selectMod.selectedIndex].text;
                     document.getElementById('lblHc012NombreProceso').innerText = nombreProceso;
                     document.getElementById('lblHc012MagnitudMedida').innerText = mod.toUpperCase();
                     document.getElementById('lblHc012UnidadMedida').innerText = unidad;
                     document.getElementById('lblHc012EcuacionModelo').innerText = `y = f(${r.fuentes ? r.fuentes.map((f,i)=>'X'+(i+1)).join(', ') : 'X1, X2'})`;
+
 
                     // Paso 4 y 5 Resumen
                     document.getElementById('lblHC012Uc').innerText = `${uComb.toFixed(4)} ${unidad}`;
