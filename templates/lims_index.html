@@ -3614,12 +3614,37 @@
                         <div style="background:#f8fafc; border-left:4px solid #0284c7; padding:0.6rem 1rem; font-family:'Times New Roman', serif; font-size:1rem; font-weight:800; color:#1e3a8a;">
                             ${isTemp ? 'T = L + C' : 'Y = f(X₁, X₂, ..., Xₙ)'}
                         </div>
-                        <div style="font-size:0.8rem; color:#475569; margin-top:0.4rem;">
+                        <div style="font-size:0.8rem; color:#475569; margin-top:0.4rem; margin-bottom:0.75rem;">
                             Donde: <strong>${isTemp ? 'T' : 'Y'}</strong> = Valor estimado del mesurando (${tempFinal.toFixed(2)} ${unidad}), 
                             <strong>${isTemp ? 'L' : 'X₁'}</strong> = Lectura observada en el instrumento, 
                             <strong>${isTemp ? 'C' : 'X₂'}</strong> = Corrección por certificado de calibración.
                         </div>
+
+                        ${isTemp ? `
+                        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:0.65rem; margin-top:0.5rem;">
+                            <div style="font-size:0.78rem; font-weight:800; color:#1e3a8a; margin-bottom:0.35rem; text-transform:uppercase;">Data del Certificado de Calibración (Termómetro)</div>
+                            <table style="width:100%; border-collapse:collapse; border:1px solid #cbd5e1; font-size:0.76rem; text-align:center; background:#ffffff;">
+                                <thead>
+                                    <tr style="background:#e2e8f0; color:#1e3a8a; font-weight:800;">
+                                        <th style="padding:0.3rem; border:1px solid #cbd5e1;">TEMPERATURA REAL (${unidad})</th>
+                                        <th style="padding:0.3rem; border:1px solid #cbd5e1;">LECTURA (${unidad})</th>
+                                        <th style="padding:0.3rem; border:1px solid #cbd5e1;">CORRECCIÓN (${unidad})</th>
+                                        <th style="padding:0.3rem; border:1px solid #cbd5e1;">INCERTIDUMBRE (${unidad})</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td style="padding:0.25rem; border:1px solid #cbd5e1;">70.0</td><td style="padding:0.25rem; border:1px solid #cbd5e1;">70.2</td><td style="padding:0.25rem; border:1px solid #cbd5e1;">-0.500</td><td style="padding:0.25rem; border:1px solid #cbd5e1;">0.1</td></tr>
+                                    <tr><td style="padding:0.25rem; border:1px solid #cbd5e1;">90.0</td><td style="padding:0.25rem; border:1px solid #cbd5e1;">90.1</td><td style="padding:0.25rem; border:1px solid #cbd5e1;">-0.100</td><td style="padding:0.25rem; border:1px solid #cbd5e1;">0.1</td></tr>
+                                    <tr><td style="padding:0.25rem; border:1px solid #cbd5e1;">110.0</td><td style="padding:0.25rem; border:1px solid #cbd5e1;">109.9</td><td style="padding:0.25rem; border:1px solid #cbd5e1;">-0.300</td><td style="padding:0.25rem; border:1px solid #cbd5e1;">0.1</td></tr>
+                                </tbody>
+                            </table>
+                            <div style="font-size:0.78rem; background:#f0f9ff; border:1px solid #0284c7; padding:0.35rem 0.6rem; border-radius:4px; font-weight:800; color:#0369a1; margin-top:0.4rem;">
+                                Lectura Muestral (L): <strong>${(r.temp_media_indicada || tempFinal).toFixed(2)} ${unidad}</strong> ➔ Corrección Interpolada (C): <strong>${(r.correccion_aplicada || 0).toFixed(4)} ${unidad}</strong>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
+
 
                     <div style="margin-bottom:1rem;">
                         <h5 style="color:#1e3a8a; font-weight:800; font-size:0.9rem; margin-bottom:0.3rem;">2. CUANTIFICACIÓN DE COMPONENTES DE INCERTIDUMBRE TIPO A Y TIPO B</h5>

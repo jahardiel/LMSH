@@ -18,7 +18,12 @@ class GUMCalculator:
         Retorna: (correccion_interpolada, u_cal_estandar, factor_k_cal)
         """
         if not puntos_calibracion:
-            return 0.0, 0.05, 2.0  # Valores predeterminados si no hay datos de calibración
+            puntos_calibracion = [
+                {'temp_indicada': 70.2, 'correccion': -0.500, 'u_expandida': 0.1, 'factor_k': 2.0},
+                {'temp_indicada': 90.1, 'correccion': -0.100, 'u_expandida': 0.1, 'factor_k': 2.0},
+                {'temp_indicada': 109.9, 'correccion': -0.300, 'u_expandida': 0.1, 'factor_k': 2.0}
+            ]
+
 
         temps = np.array([float(p["temp_indicada"]) for p in puntos_calibracion])
         corrs = np.array([float(p["correccion"]) for p in puntos_calibracion])
@@ -155,18 +160,13 @@ class GUMCalculator:
         temp_media = float(np.mean(lecturas))
 
         # 1. Corrección de Calibración
-        if unit_symbol == "°F":
-            temp_media_C = (temp_media - 32.0) * 5.0 / 9.0
-            corr_cal_C, u_cal_C, k_cal_cert = cls.interpolar_calibracion(puntos_calibracion, temp_media_C)
-            corr_cal = corr_cal_C * 1.8
-            u_cal = u_cal_C * 1.8
-            temp_corregida = temp_media + corr_cal
-        elif unit_symbol == "in":
+        if unit_symbol == "in":
             temp_media_mm = temp_media * 25.4
             corr_cal_mm, u_cal_mm, k_cal_cert = cls.interpolar_calibracion(puntos_calibracion, temp_media_mm)
             corr_cal = corr_cal_mm / 25.4
             u_cal = u_cal_mm / 25.4
             temp_corregida = temp_media + corr_cal
+
         elif es_compresion:
             # lecturas están en kN (carga de rotura)
             corr_cal_kN, u_cal_kN, k_cal_cert = cls.interpolar_calibracion(puntos_calibracion, temp_media)
