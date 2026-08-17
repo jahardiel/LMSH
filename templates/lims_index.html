@@ -3305,19 +3305,55 @@
                     }
 
 
-                    // Llenar Tablas Pasos 2, 3, 4 y 5 conforme al formato Master HC-LSMCH-012 Rev. 01
+                    // Llenar Tablas Pasos 1, 2, 3, 4 y 5 conforme al formato Master HC-LSMCH-012 Rev. 01
+                    const tbPaso1Ent = document.getElementById('tbodyPaso1Entradas');
+                    if (tbPaso1Ent) {
+                        if (mod === 'compresion') {
+                            tbPaso1Ent.innerHTML = `
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">Magnitud de entrada X₁</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Fuerza de ruptura aplicada por la prensa hidráulica</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; font-family:'Times New Roman', serif;">P</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">kN</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">Magnitud de entrada X₂</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Diámetro medio de la probeta cilíndrica de concreto</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; font-family:'Times New Roman', serif;">d</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">mm</td>
+                                </tr>
+                            `;
+                        } else {
+                            tbPaso1Ent.innerHTML = `
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">Magnitud de entrada X₁</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Lectura realizada de la temperatura</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; font-family:'Times New Roman', serif;">L</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">Magnitud de entrada X₂</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Valor de la corrección a la temperatura medida</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; font-family:'Times New Roman', serif;">C</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
+                                </tr>
+                            `;
+                        }
+                    }
+
                     if (r.tabla_presupuesto && Array.isArray(r.tabla_presupuesto)) {
                         // Paso 2: Fuentes (7 columnas exactas del Master UTP)
                         const tbPaso2 = document.getElementById('tbodyPaso2Fuentes');
                         if (tbPaso2) {
                             tbPaso2.innerHTML = r.tabla_presupuesto.map((f, idx) => {
+                                const xiTag = (mod === 'compresion') ? (idx === 0 ? 'P' : (idx === 1 ? 'CP' : 'd')) : (idx === 0 ? 'L' : (idx === 1 ? 'C' : `X${idx+1}`));
                                 const simboloXi = f["simbolo"] || (f["Tipo"] === 'A' ? 'u_rep' : (idx === 1 ? 'Ucal' : (idx === 2 ? 'res' : 'u_deriva')));
                                 const parametroCuant = f["parametro"] || (f["Tipo"] === 'A' ? 'Variación de lecturas' : (f["fuente"].toLowerCase().includes('calibr') ? 'Incertidumbre del certificado' : (f["fuente"].toLowerCase().includes('resolución') || f["fuente"].toLowerCase().includes('resolucion') ? 'Resolución' : 'Deriva instrumental')));
                                 const valorConst = typeof f["Valor xi"] === 'number' ? f["Valor xi"].toFixed(3) : (typeof f["valor_xi"] === 'number' ? f["valor_xi"].toFixed(3) : (f["Valor xi"] || f["valor_xi"] || '-'));
 
                                 return `
                                     <tr>
-                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">X${idx+1}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${xiTag}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem;">${parametroCuant}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem;">${f["Distribución"] || f["distribucion"]}</td>
@@ -3329,48 +3365,67 @@
                             }).join('');
                         }
 
+                        // Paso 3: Fuentes de Incertidumbre por Magnitud (4 columnas exactas del Master)
+                        const tbPaso3Cuant = document.getElementById('tbodyPaso3Cuantificar');
+                        if (tbPaso3Cuant) {
+                            tbPaso3Cuant.innerHTML = r.tabla_presupuesto.map((f, idx) => {
+                                const xiTag = (mod === 'compresion') ? (idx === 0 ? 'P' : (idx === 1 ? 'CP' : 'd')) : (idx === 0 ? 'L' : (idx === 1 ? 'C' : `X${idx+1}`));
+                                const fuenteNombre = f["Fuente de Incertidumbre"] || f["fuente"];
+                                let ecuacionUncert = "";
+                                if (f["tipo"] === 'A') {
+                                    ecuacionUncert = "u(rep) = s(L) / √n";
+                                } else if (fuenteNombre.toLowerCase().includes('calibr')) {
+                                    ecuacionUncert = "u(Cal) = U / k";
+                                } else if (fuenteNombre.toLowerCase().includes('resoluc') || fuenteNombre.toLowerCase().includes('resolución')) {
+                                    ecuacionUncert = "u(res) = Resolución / (2·√3)";
+                                } else if (fuenteNombre.toLowerCase().includes('deriva')) {
+                                    ecuacionUncert = "u(deriva) = d / √3";
+                                } else {
+                                    ecuacionUncert = "u(xᵢ) = Δx / √3";
+                                }
 
-                        // Paso 3: Cuantificar Variables
-                        const tbPaso3 = document.getElementById('tbodyPaso3Cuantificar');
-                        if (tbPaso3) {
-                            tbPaso3.innerHTML = r.tabla_presupuesto.map((f, idx) => `
-                                <tr>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${idx+1}</td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Valor xi"] === 'number' ? f["Valor xi"].toFixed(3) : (f["Valor xi"] || f["valor_xi"] || '-')}</td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${typeof f["u_std"] === 'number' ? f["u_std"].toFixed(4) : (typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"].toFixed(4) : f["u_std"])}</td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${typeof f["contribucion_pct"] === 'number' ? f["contribucion_pct"].toFixed(1) + '%' : (f["contribucion_pct"] || '')}</td>
-                                </tr>
-                            `).join('');
+                                const uxiVal = typeof f["u_std"] === 'number' ? f["u_std"].toFixed(4) : (typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"].toFixed(4) : (f["u_std"] || '0.0000'));
+
+                                return `
+                                    <tr>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${xiTag}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${fuenteNombre}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-family:'Times New Roman', serif; font-weight:700; color:#0369a1;">${ecuacionUncert}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${uxiVal}</td>
+                                    </tr>
+                                `;
+                            }).join('');
                         }
 
-                        // Paso 3: Tabla Coeficientes de Sensibilidad (Master Page 2)
+                        // Paso 3: Tabla Coeficientes de Sensibilidad (4 columnas del Master Page 2)
                         const tbPaso3Coef = document.getElementById('tbodyPaso3Coeficientes');
                         if (tbPaso3Coef) {
                             tbPaso3Coef.innerHTML = r.tabla_presupuesto.map((f, idx) => {
+                                const xiTag = (mod === 'compresion') ? (idx === 0 ? 'P' : (idx === 1 ? 'CP' : 'd')) : (idx === 0 ? 'L' : (idx === 1 ? 'C' : `X${idx+1}`));
                                 const ci = typeof f["coef_sensibilidad"] === 'number' ? f["coef_sensibilidad"] : (typeof f["Coef. Sensibilidad ci"] === 'number' ? f["Coef. Sensibilidad ci"] : 1.0);
                                 return `
                                     <tr>
-                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${idx+1}</td>
-                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left; font-family:'Times New Roman', serif; font-weight:700;">c_${idx+1} = ∂y / ∂X_${idx+1} (${f["Fuente de Incertidumbre"] || f["fuente"]})</td>
-                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${ci.toFixed(4)}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${xiTag}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left; font-family:'Times New Roman', serif; font-weight:700;">c_${idx+1} = ∂T / ∂${xiTag} = 1</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${ci.toFixed(2)}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
                                     </tr>
                                 `;
                             }).join('');
                         }
 
-                        // Paso 4: Combinar Incertidumbres (Master Page 3)
+                        // Paso 4: Aporte de Incertidumbre Combinada (7 columnas del Master Page 3)
                         const tbPaso4 = document.getElementById('tbodyPaso4Combinada');
                         if (tbPaso4) {
                             tbPaso4.innerHTML = r.tabla_presupuesto.map((f, idx) => {
+                                const xiTag = (mod === 'compresion') ? (idx === 0 ? 'P' : (idx === 1 ? 'CP' : 'd')) : (idx === 0 ? 'L' : (idx === 1 ? 'C' : `X${idx+1}`));
                                 const ci = typeof f["coef_sensibilidad"] === 'number' ? f["coef_sensibilidad"] : (typeof f["Coef. Sensibilidad ci"] === 'number' ? f["Coef. Sensibilidad ci"] : 1.0);
                                 const uxi = typeof f["u_std"] === 'number' ? f["u_std"] : (typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"] : 0.0);
                                 const uiy = typeof f["u_i_y"] === 'number' ? f["u_i_y"] : (typeof f["ui(y) Contribución"] === 'number' ? f["ui(y) Contribución"] : (Math.abs(ci) * uxi));
                                 return `
                                     <tr>
-                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${idx+1}</td>
-                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${Math.abs(ci).toFixed(4)}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${xiTag}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${Math.abs(ci).toFixed(3)}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${uxi.toFixed(4)}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
@@ -3381,26 +3436,28 @@
                             }).join('');
                         }
 
-                        // Paso 5: Expandir Incertidumbre y Grados por Fuente (Master Page 3)
+                        // Paso 5: Expandir Incertidumbre y Grados de Libertad (5 columnas del Master Page 3)
                         const tbPaso5 = document.getElementById('tbodyPaso5ExpandidaFuentes');
                         if (tbPaso5) {
                             tbPaso5.innerHTML = r.tabla_presupuesto.map((f, idx) => {
+                                const xiTag = (mod === 'compresion') ? (idx === 0 ? 'P' : (idx === 1 ? 'CP' : 'd')) : (idx === 0 ? 'L' : (idx === 1 ? 'C' : `X${idx+1}`));
                                 const uiy = typeof f["u_i_y"] === 'number' ? f["u_i_y"] : (typeof f["ui(y) Contribución"] === 'number' ? f["ui(y) Contribución"] : 0.0);
                                 const uiySq = uiy * uiy;
-                                const nui = f["grados_libertad"] || f["Grados νi"] || (f["tipo"] === 'A' ? (r.num_lecturas ? r.num_lecturas - 1 : 5) : 1000);
-                                const nuiDisp = (nui >= 500) ? '∞ (Tipo B)' : nui;
+                                const nui = f["grados_libertad"] || f["Grados νi"] || (f["tipo"] === 'A' ? (r.num_lecturas ? r.num_lecturas - 1 : 5) : 200);
+                                const nuiDisp = (nui >= 500) ? '200' : nui;
                                 return `
                                     <tr>
-                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${idx+1}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${xiTag}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
-                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-family:monospace; font-weight:700;">${uiySq.toFixed(6)}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-family:monospace; font-weight:700;">${uiySq.toFixed(4)}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${uComb.toFixed(4)}</td>
-                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:${nuiDisp.includes('∞') ? '#059669' : '#1e3a8a'};">${nuiDisp}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${nuiDisp}</td>
                                     </tr>
                                 `;
                             }).join('');
                         }
                     }
+
 
 
                     // Generar Anexo Técnico Memoria de Cálculo Paso a Paso
