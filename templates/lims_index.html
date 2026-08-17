@@ -1182,19 +1182,23 @@
                     <button class="btn btn-secondary" id="btnSubIncEquipos" style="padding:0.4rem 0.8rem; font-size:0.82rem;" onclick="switchSubTabIncertidumbre('equipos')"><i class="fa-solid fa-scale-balanced"></i> Equipos y Certificados de Calibración</button>
                 </div>
 
-                
-            <!-- 1. PANEL DE PRESUPUESTO GUM EN FORMATO OFICIAL HC-LSMCH-012 REV. 01 -->
-            <div id="panelSubIncCalc">
-                <!-- CONTROLES Y PARÁMETROS RÁPIDOS (NO IMPRESO) -->
-                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:8px; padding:1rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;" class="no-print">
-                    <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+                <!-- 1. PANEL DE PRESUPUESTO GUM EN FORMATO OFICIAL HC-LSMCH-012 REV. 01 -->
+                <div id="panelSubIncCalc">
+                    <!-- CONTROLES Y PARÁMETROS RÁPIDOS (NO IMPRESO) -->
+                    <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:8px; padding:1rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;" class="no-print">
+                        <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
+
                         <label style="font-weight:800; color:#1e3a8a;">ENSAYO:</label>
-                        <input type="text" id="incNombreEnsayoInput" class="form-control" style="font-weight:700; width:340px; color:#1e3a8a;" value="Resistencia a la Compresión en Cilindros de Concreto (ASTM C39)" oninput="document.getElementById('lblHc012NombreProceso').innerText = this.value">
-                        <select id="gumModulo" class="form-control" style="font-weight:700; width:170px;" onchange="ajustarCamposGUM()">
+                        <input type="text" id="incNombreEnsayoInput" class="form-control" style="font-weight:700; width:280px; color:#1e3a8a;" value="Resistencia a la Compresión en Cilindros de Concreto (ASTM C39)" oninput="document.getElementById('lblHc012NombreProceso').innerText = this.value">
+                        <select id="gumModulo" class="form-control" style="font-weight:700; width:150px;" onchange="ajustarCamposGUM()">
                             <option value="compresion">CONCRETO: ASTM C39</option>
                             <option value="temperatura">CONCRETO: ASTM C1064</option>
                             <option value="asentamiento">CONCRETO: ASTM C143</option>
                             <option value="granulometria">SUELOS: ASTM D6913</option>
+                        </select>
+                        <label style="font-weight:800; color:#1e3a8a; margin-left:0.4rem;"><i class="fa-solid fa-scale-balanced"></i> EQUIPO BD:</label>
+                        <select id="selectEquipoMetrologicoBD" class="form-control" style="font-weight:700; width:200px; color:#1e3a8a;" onchange="seleccionarEquipoEnGUMDesdeSelect(this.value)">
+                            <option value="">-- Cargar Equipo de BD --</option>
                         </select>
                     </div>
                     <div style="display:flex; gap:0.5rem; align-items:center;">
@@ -1294,10 +1298,17 @@
                         </tr>
                     </table>
 
-
-                    <!-- SECCIÓN DE EQUIPOS UTILIZADOS -->
-                    <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
-                        <i class="fa-solid fa-scale-balanced"></i> EQUIPOS UTILIZADOS
+                    <!-- SECCIÓN DE EQUIPOS UTILIZADOS CON CONEXIÓN A BASE DE DATOS -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+                        <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; text-transform:uppercase;">
+                            <i class="fa-solid fa-scale-balanced"></i> EQUIPOS UTILIZADOS
+                        </div>
+                        <div class="no-print" style="display:flex; gap:0.4rem; align-items:center;">
+                            <label style="font-weight:700; font-size:0.75rem; color:#1e3a8a;"><i class="fa-solid fa-database"></i> Seleccionar Equipo Registrado:</label>
+                            <select id="selectEquipoHC012Sheet" class="form-control" style="font-weight:700; font-size:0.78rem; padding:0.2rem 0.4rem; width:260px;" onchange="seleccionarEquipoEnGUMDesdeSelect(this.value)">
+                                <option value="">-- Seleccionar de la BD --</option>
+                            </select>
+                        </div>
                     </div>
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.8rem; margin-bottom:1.25rem; text-align:center;">
                         <thead>
@@ -1317,6 +1328,7 @@
                             </tr>
                         </tbody>
                     </table>
+
 
                     <!-- PASO 1: MODELADO DE LA MEDICIÓN -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
@@ -3090,13 +3102,6 @@
                     if (tbodyHC) {
                         tbodyHC.innerHTML = `
                             <tr>
-                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">${document.getElementById('eqMarca').value} ${document.getElementById('eqModelo').value}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#1e3a8a;">${data.codigo || cod}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">${document.getElementById('eqCertificado').value}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">${document.getElementById('eqFecha').value}</td>
-                            </tr>
-                        `;
-                    }
                     return true;
                 } else {
                     if (!silencioso) alert("Error al guardar equipo: " + (data.error || "Datos no válidos"));
@@ -3111,32 +3116,44 @@
 
         async function cargarEquiposRegistradosBD() {
             const tbody = document.getElementById('tbodyEquiposRegistrados');
-            if (!tbody) return;
+            const selTop = document.getElementById('selectEquipoMetrologicoBD');
+            const selSheet = document.getElementById('selectEquipoHC012Sheet');
 
             try {
                 const res = await fetch('/api/termometros');
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                    if (data.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:1rem; color:#64748b;">No hay equipos metrológicos registrados en la base de datos.</td></tr>`;
-                        return;
-                    }
+                    window.equiposMetrologicosBDCache = data;
 
-                    tbody.innerHTML = data.map(eq => `
-                        <tr>
-                            <td><strong style="color:#1e3a8a;">${eq.codigo}</strong></td>
-                            <td>${eq.marca || ''} ${eq.modelo || ''}</td>
-                            <td>${eq.numero_serie || ''}</td>
-                            <td>${eq.resolucion || 0.01}</td>
-                            <td><span class="badge-status badge-validado">${eq.numero_certificado || 'Certificado'}</span></td>
-                            <td>${eq.deriva_estimada || 0}</td>
-                            <td>${eq.fecha_calibracion || ''}</td>
-                            <td>
-                                <button class="btn btn-primary" style="padding:0.2rem 0.4rem; font-size:0.75rem;" onclick="seleccionarEquipoEnGUM(${eq.id})" title="Usar en Presupuesto GUM"><i class="fa-solid fa-check"></i> Usar</button>
-                                <button class="btn btn-secondary" style="padding:0.2rem 0.4rem; font-size:0.75rem;" onclick="eliminarEquipoMetrologicoBD(${eq.id})"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `).join('');
+                    // Poblar Selectores de Equipos en el Presupuesto GUM y en la Hoja HC-012
+                    const optionsHTML = '<option value="">-- Seleccionar Equipo de la BD --</option>' +
+                        data.map(e => `<option value="${e.id}">${e.codigo} - ${e.marca || ''} ${e.modelo || ''} (Cert: ${e.numero_certificado || 'N/A'})</option>`).join('');
+
+                    if (selTop) selTop.innerHTML = optionsHTML;
+                    if (selSheet) selSheet.innerHTML = optionsHTML;
+
+                    if (tbody) {
+                        if (data.length === 0) {
+                            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:1rem; color:#64748b;">No hay equipos metrológicos registrados en la base de datos.</td></tr>`;
+                            return;
+                        }
+
+                        tbody.innerHTML = data.map(eq => `
+                            <tr>
+                                <td><strong style="color:#1e3a8a;">${eq.codigo}</strong></td>
+                                <td>${eq.marca || ''} ${eq.modelo || ''}</td>
+                                <td>${eq.numero_serie || ''}</td>
+                                <td>${eq.resolucion || 0.01}</td>
+                                <td><span class="badge-status badge-validado">${eq.numero_certificado || 'Certificado'}</span></td>
+                                <td>${eq.deriva_estimada || 0}</td>
+                                <td>${eq.fecha_calibracion || ''}</td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding:0.2rem 0.4rem; font-size:0.75rem;" onclick="seleccionarEquipoEnGUMDesdeSelect(${eq.id})" title="Usar en Presupuesto GUM"><i class="fa-solid fa-check"></i> Usar</button>
+                                    <button class="btn btn-secondary" style="padding:0.2rem 0.4rem; font-size:0.75rem;" onclick="eliminarEquipoMetrologicoBD(${eq.id})"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
                 }
             } catch(e) { console.error(e); }
         }
@@ -3155,28 +3172,54 @@
             } catch(e) { alert("Error de conexión."); }
         }
 
-        function seleccionarEquipoEnGUM(id) {
-            fetch('/api/termometros')
-                .then(r => r.json())
-                .then(data => {
-                    const eq = data.find(t => t.id === id);
-                    if (eq) {
-                        document.getElementById('gumResolucion').value = eq.resolucion || 0.01;
-                        document.getElementById('gumDeriva').value = eq.deriva_estimada || 0.0;
-                        if (eq.puntos_calibracion && eq.puntos_calibracion.length > 0) {
-                            const p0 = eq.puntos_calibracion[0];
-                            document.getElementById('gumUCal').value = p0.u_expandida || 1.0;
-                            document.getElementById('gumKCal').value = p0.factor_k || 2.0;
-                        }
-                        switchSubTabIncertidumbre('calc');
-                        alert(` ¡EQUIPO CADO AL PRESUPUESTO GUM! Se aplicó Resolución=${eq.resolucion} y Deriva=${eq.deriva_estimada}.`);
-                    }
-                });
+        function seleccionarEquipoEnGUMDesdeSelect(id) {
+            if (!id) return;
+            const eqId = parseInt(id);
+            const eq = (window.equiposMetrologicosBDCache || []).find(t => t.id === eqId);
+            
+            if (eq) {
+                // Sincronizar selectores de UI
+                const selTop = document.getElementById('selectEquipoMetrologicoBD');
+                const selSheet = document.getElementById('selectEquipoHC012Sheet');
+                if (selTop) selTop.value = eqId;
+                if (selSheet) selSheet.value = eqId;
+
+                // Cargar valores metrológicos en los inputs del presupuesto GUM
+                document.getElementById('gumResolucion').value = eq.resolucion || 0.01;
+                document.getElementById('gumDeriva').value = eq.deriva_estimada || 0.0;
+                if (eq.puntos_calibracion && eq.puntos_calibracion.length > 0) {
+                    const p0 = eq.puntos_calibracion[0];
+                    document.getElementById('gumUCal').value = p0.u_expandida || 1.0;
+                    document.getElementById('gumKCal').value = p0.factor_k || 2.0;
+                }
+
+                // Cargar directamente en la tabla EQUIPOS UTILIZADOS de la Hoja Oficial HC-LSMCH-012
+                const tbodyHC = document.getElementById('tbodyEquiposUtilizadosHC012');
+                if (tbodyHC) {
+                    tbodyHC.innerHTML = `
+                        <tr>
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem;">${eq.marca || ''} ${eq.modelo || ''}</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#1e3a8a;">${eq.codigo}</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem;">${eq.numero_certificado || 'Certificado'}</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem;">${eq.fecha_calibracion || ''}</td>
+                        </tr>
+                    `;
+                }
+
+                // Recalcular instantáneamente el Presupuesto GUM
+                calcularIncertidumbreGUM();
+            }
         }
+
+        // Cargar equipos registrados automáticamente al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarEquiposRegistradosBD();
+        });
 
         function cerrarBusqueda() {
             document.getElementById('searchResultsPanel').style.display = 'none';
         }
+
 
     </script>
 </body>
