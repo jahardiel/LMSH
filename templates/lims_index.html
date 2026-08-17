@@ -1251,7 +1251,8 @@
                                 <div class="grid-3" style="gap:0.4rem; font-size:0.75rem;">
                                     <div><label style="color:#cbd5e1;">Resolución (R):</label><input type="number" step="0.001" id="gumResolucion" class="form-control" value="0.1" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
                                     <div><label style="color:#cbd5e1;">Uncert Cert (U_cal):</label><input type="number" step="0.001" id="gumUCal" class="form-control" value="1.5" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
-                                    <div><label style="color:#cbd5e1;">Factor Cobertura (k):</label><input type="number" step="0.1" id="gumKCal" class="form-control" value="2.0" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
+                                    <div><label style="color:#cbd5e1; font-weight:800;">Factor Cobertura (k_cert):</label><input type="number" step="0.1" id="gumKCal" class="form-control" value="2.0" readonly style="padding:0.15rem 0.35rem; font-size:0.78rem; background:#e2e8f0; color:#0f172a; font-weight:800;" title="El factor de cobertura k para certificados de calibración siempre es 2.00 conforme a metrología ISO 17025"></div>
+
                                     <div><label style="color:#cbd5e1;">Deriva Estimada (d):</label><input type="number" step="0.001" id="gumDeriva" class="form-control" value="0.2" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
                                     <div><label style="color:#cbd5e1;">Variación Amb (h):</label><input type="number" step="0.001" id="gumHomogeneidad" class="form-control" value="0.1" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
                                     <div><label style="color:#cbd5e1;">Nivel Confianza (P):</label>
@@ -3195,8 +3196,9 @@
             const unidadOrigen = document.getElementById('gumUnidadOrigen')?.value || unidad;
             const resolucion = parseFloat(document.getElementById('gumResolucion').value) || 0.1;
             const uCal = parseFloat(document.getElementById('gumUCal').value) || 1.0;
-            const kCal = parseFloat(document.getElementById('gumKCal').value) || 2.0;
+            const kCal = 2.0; // El factor de cobertura para el certificado de calibración siempre es 2.0
             const deriva = parseFloat(document.getElementById('gumDeriva').value) || 0.1;
+
             const homog = parseFloat(document.getElementById('gumHomogeneidad').value) || 0.0;
 
 
