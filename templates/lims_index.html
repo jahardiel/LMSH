@@ -80,6 +80,37 @@
             align-items: center;
             gap: 0.75rem;
         }
+
+        /* Estilos de Impresión de la Hoja HC-LSMCH-006 */
+        @media print {
+            .lims-header, .lims-nav, .btn, .chart-controls-bar, .subnav-pills, .global-search-container {
+                display: none !important;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .lims-container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .card-panel {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+            .hc006-header-box {
+                border: 2px solid #000 !important;
+            }
+            .table-lims th {
+                background: #e2e8f0 !important;
+                color: #000 !important;
+            }
+            #svgCurvaHC006 {
+                height: 280px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -160,14 +191,16 @@
                 </button>
             </div>
 
-            <!-- ENSAYO DE GRANULOMETRÍA ASTM D6913 - HC-LSMCH-006 -->
+            <!-- HOJA DE CÁLCULO ENSAYO DE GRANULOMETRÍA ASTM D6913 - HC-LSMCH-006 -->
             <div id="sub-granulometria-hc006" class="subgeo-content active">
-                <div class="card-panel">
+                <div class="card-panel" id="seccionHojaHC006">
                     <div class="panel-header">
                         <span class="panel-title"><i class="fa-solid fa-flask-vial"></i> ENSAYO DE GRANULOMETRÍA (GRADACIÓN) DE SUELOS MEDIANTE ANÁLISIS DE TAMIZ (ASTM D6913 / D6913M - 17)</span>
-                        <div>
-                            <span class="badge-solicitud" style="margin-right:1rem;">HC-LSMCH-006 | Rev. 02</span>
-                            <button class="btn btn-primary" onclick="calcularHojaHC006()"><i class="fa-solid fa-calculator"></i> Calcular según ASTM D6913</button>
+                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                            <span class="badge-solicitud">HC-LSMCH-006 | Rev. 02</span>
+                            <button class="btn btn-primary" onclick="calcularHojaHC006()"><i class="fa-solid fa-calculator"></i> Calcular</button>
+                            <button class="btn btn-success" onclick="guardarEnsayoEnBD()"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar en BD</button>
+                            <button class="btn btn-secondary" onclick="imprimirHojaHC006()"><i class="fa-solid fa-print"></i> Imprimir Hoja</button>
                         </div>
                     </div>
 
@@ -279,16 +312,17 @@
                         <div>
                             <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-chart-area"></i> Curva Granulométrica (ASTM D6913)</h4>
                             
+                            <!-- CONTROLES DE ESCALA CON AUTO-AJUSTE -->
                             <div class="chart-controls-bar">
                                 <div class="chart-controls-group">
-                                    <label><strong>Escala Y (%):</strong></label>
+                                    <label><strong>Ajuste Escala Y (%):</strong></label>
                                     <span>Mín:</span>
                                     <input type="number" id="zoomYMin" value="0" min="0" max="100" style="width:55px;" onchange="reRenderChart()"> %
                                     <span>Máx:</span>
                                     <input type="number" id="zoomYMax" value="100" min="0" max="100" style="width:55px;" onchange="reRenderChart()"> %
                                 </div>
                                 <div class="chart-controls-group">
-                                    <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.78rem;" onclick="autoAjustarEscalaY()"><i class="fa-solid fa-expand"></i> Auto-Ajustar</button>
+                                    <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.78rem;" onclick="autoAjustarEscalaY()"><i class="fa-solid fa-expand"></i> Auto-Ajustar Mínimo</button>
                                     <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.78rem;" onclick="restablecerEscalaY()"><i class="fa-solid fa-rotate-left"></i> 0-100%</button>
                                 </div>
                             </div>
@@ -326,7 +360,7 @@
                 </div>
             </div>
 
-            <!-- OTROS SUB-MÓDULOS DE GEOTECNIA -->
+            <!-- SUB-MÓDULOS DE GEOTECNIA ADICIONALES -->
             <div id="sub-humedad" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Humedad (ASTM D2216)</h3></div></div>
             <div id="sub-atterberg" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Límites Atterberg & SUCS (ASTM D4318 / D2487)</h3></div></div>
             <div id="sub-proctor" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Proctor (ASTM D698 / D1557)</h3></div></div>
@@ -361,6 +395,7 @@
 
     <script>
         let ultimoDataTamices = [];
+        let ultimoCalculoCompleto = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             cargarStatsDashboard();
@@ -465,6 +500,7 @@
                     })
                 });
                 const data = await res.json();
+                ultimoCalculoCompleto = data;
                 ultimoDataTamices = data.tamices || [];
 
                 if (data.tamices) {
@@ -504,8 +540,53 @@
                 document.getElementById('valCu').innerText = data.cu || '-';
                 document.getElementById('valCc').innerText = data.cc || '-';
 
-                dibujarCurvaSVG(ultimoDataTamices);
+                // AUTO-AJUSTE AUTOMÁTICO DE ESCALA Y SEGÚN MÍNIMO Y MÁXIMO % QUE PASA
+                autoAjustarEscalaY();
+
             } catch(e) { console.error(e); }
+        }
+
+        async function guardarEnsayoEnBD() {
+            if (!ultimoCalculoCompleto) {
+                alert("Por favor calcule la hoja de ensayo primero.");
+                return;
+            }
+
+            const codOrden = document.getElementById('hcOrden').value.trim() || "LSMCH-050-2026";
+            
+            try {
+                const res = await fetch('/api/lims/ensayos/guardar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        codigo_solicitud: codOrden,
+                        tipo_ensayo: "GRANULOMETRIA_ASTM_D6913",
+                        norma: "ASTM D6913 / D2487 (HC-LSMCH-006)",
+                        fecha_ensayo: new Date().toISOString().split('T')[0],
+                        datos_entrada: {
+                            proyecto: document.getElementById('hcPry').value,
+                            cliente: document.getElementById('hcCliente').value,
+                            fuente: document.getElementById('hcFuente').value,
+                            ensayado_por: "N.S."
+                        },
+                        resultados: ultimoCalculoCompleto
+                    })
+                });
+
+                const r = await res.json();
+                if (r.success) {
+                    alert(`¡ÉXITO! ${r.message}`);
+                    cargarStatsDashboard();
+                } else {
+                    alert("Error al guardar en BD: " + r.error);
+                }
+            } catch(e) {
+                alert("Error de conexión al guardar en la base de datos.");
+            }
+        }
+
+        function imprimirHojaHC006() {
+            window.print();
         }
 
         function reRenderChart() {

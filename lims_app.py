@@ -5,6 +5,7 @@ Laboratorio de Suelos, Materiales y Concreto Hidráulico
 
 import os
 import json
+import math
 from flask import Flask, request, jsonify, render_template
 from database_lims import DatabaseLIMS
 import geotechnics_engine
@@ -119,187 +120,79 @@ def handle_solicitudes():
         limite = int(request.args.get("limite", 50))
         return jsonify(db.obtener_solicitudes(limite=limite))
 
-@app.route('/api/lims/solicitudes/<int:solicitud_id>', methods=['GET'])
-def get_solicitud_detalle(solicitud_id):
-    detalle = db.obtener_solicitud_detalle(solicitud_id)
-    if not detalle:
-        return jsonify({"error": "Solicitud no encontrada"}), 404
-    return jsonify(detalle)
-
 # ---------------------------------------------------------
-# API REST: MUESTREOS Y MUESTRAS
-# ---------------------------------------------------------
-@app.route('/api/lims/muestreos', methods=['POST'])
-def crear_muestreo():
-    data = request.json or {}
-    solicitud_id = data.get("solicitud_id")
-    codigo_muestreo = data.get("codigo_muestreo", "MUE-01")
-    fecha_muestreo = data.get("fecha_muestreo")
-    responsable = data.get("responsable_muestreo", "Técnico LSMCH")
-    ubicacion = data.get("ubicacion_muestreo", "")
-    
-    mid = db.agregar_muestreo(solicitud_id, codigo_muestreo, fecha_muestreo, responsable, ubicacion)
-    return jsonify({"success": True, "muestreo_id": mid, "message": "Muestreo registrado exitosamente"})
-
-@app.route('/api/lims/muestras', methods=['POST'])
-def crear_muestra():
-    data = request.json or {}
-    muestreo_id = data.get("muestreo_id")
-    codigo_muestra = data.get("codigo_muestra")
-    tipo_material = data.get("tipo_material", "Suelo Limoso Arcilloso")
-    
-    mu_id = db.agregar_muestra(
-        muestreo_id=muestreo_id,
-        codigo_muestra=codigo_muestra,
-        tipo_material=tipo_material,
-        descripcion=data.get("descripcion", ""),
-        profundidad_elemento=data.get("profundidad_elemento", "")
-    )
-    return jsonify({"success": True, "muestra_id": mu_id, "message": "Muestra creada exitosamente"})
-
-# ---------------------------------------------------------
-# API REST: CÁLCULOS METROLÓGICOS & GEOTÉCNICOS
+# API REST: CÁLCULO Y GUARDADO DE ENSAYO DE GRANULOMETRÍA
 # ---------------------------------------------------------
 @app.route('/api/lims/ensayos/geotecnia/granulometria', methods=['POST'])
 def calcular_granulometria_api():
     data = request.json or {}
     tamices = data.get("tamices", [])
-    ll = data.get("ll")
-    lp = data.get("lp")
-    
     if not tamices:
         return jsonify({"error": "No se enviaron tamices para procesar"}), 400
         
-    res_gran = geotechnics_engine.calcular_granulometria(tamices)
-    
-    ip = None
-    if ll is not None and lp is not None:
-        try:
-            ip = round(float(ll) - float(lp), 2)
-        except Exception:
-            pass
-
-    sucs = geotechnics_engine.clasificar_sucs(
-        pct_finos=res_gran.get("pct_finos"),
-        pct_grava=res_gran.get("pct_grava"),
-        pct_arena=res_gran.get("pct_arena"),
-        ll=float(ll) if ll is not None else None,
-        ip=ip,
-        cu=res_gran.get("cu"),
-        cc=res_gran.get("cc")
-    )
-    
-    res_gran["clasificacion_sucs"] = sucs
-    res_gran["ll"] = ll
-    res_gran["lp"] = lp
-    res_gran["ip"] = ip
-    
-    # Guardar en base de datos si viene muestra_id
-    muestra_id = data.get("muestra_id")
-    if muestra_id:
-        db.guardar_ensayo(
-            muestra_id=muestra_id,
-            tipo_ensayo="GRANULOMETRIA_SUCS",
-            norma="ASTM D6913 / ASTM D2487",
-            fecha_ensayo=data.get("fecha_ensayo", "2026-02-17"),
-            datos_json=data,
-            resultados_json=res_gran
-        )
-        
+    res_gran = geotechnics_engine.calcular_granulometria_astm_d6913(data)
     return jsonify(res_gran)
 
-@app.route('/api/lims/ensayos/geotecnia/proctor', methods=['POST'])
-def calcular_proctor_api():
-    data = request.json or {}
-    puntos = data.get("puntos", [])
-    volumen = float(data.get("volumen_molde_cm3", 943.3))
-    
-    res = geotechnics_engine.calcular_proctor(puntos, volumen_molde_cm3=volumen)
-    
-    muestra_id = data.get("muestra_id")
-    if muestra_id:
-        db.guardar_ensayo(
-            muestra_id=muestra_id,
-            tipo_ensayo="PROCTOR",
-            norma="ASTM D698 / D1557",
-            fecha_ensayo=data.get("fecha_ensayo", "2026-02-17"),
-            datos_json=data,
-            resultados_json=res
-        )
-        
-    return jsonify(res)
+@app.route('/api/lims/ensayos/guardar', methods=['POST'])
+def guardar_ensayo_bd():
+    try:
+        data = request.json or {}
+        solicitud_codigo = data.get("codigo_solicitud", "LSMCH-050-2026")
+        tipo_ensayo = data.get("tipo_ensayo", "GRANULOMETRIA_ASTM_D6913")
+        norma = data.get("norma", "ASTM D6913 / D2487")
+        fecha_ensayo = data.get("fecha_ensayo", "2026-08-10")
+        datos_json = data.get("datos_entrada", {})
+        resultados_json = data.get("resultados", {})
 
-@app.route('/api/lims/ensayos/concreto/compresion', methods=['POST'])
-def calcular_concreto_compresion():
-    data = request.json or {}
-    especimenes = data.get("especimenes", [])
-    # especimenes: [{'codigo': 'C1', 'diametro_cm': 15.0, 'carga_kg': 35000, 'edad_dias': 28}]
-    res_especimenes = []
-    for esp in especimenes:
-        d = float(esp.get("diametro_cm", 15.0))
-        c = float(esp.get("carga_kg", 0.0))
-        edad = int(esp.get("edad_dias", 28))
-        area_cm2 = math.pi * ((d / 2.0) ** 2)
-        res_kgcm2 = c / area_cm2 if area_cm2 > 0 else 0.0
-        res_mpa = res_kgcm2 * 0.0980665
-        
-        res_especimenes.append({
-            "codigo": esp.get("codigo", ""),
-            "diametro_cm": round(d, 2),
-            "area_cm2": round(area_cm2, 2),
-            "carga_kg": c,
-            "edad_dias": edad,
-            "resistencia_kgcm2": round(res_kgcm2, 1),
-            "resistencia_mpa": round(res_mpa, 2)
+        # Buscar o crear muestra por defecto vinculada a solicitud
+        with db.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM solicitudes WHERE codigo_solicitud = ?", (solicitud_codigo,))
+            row_sol = cursor.fetchone()
+            if row_sol:
+                sol_id = row_sol["id"]
+            else:
+                # Si no existe la solicitud exacta, usamos la primera solicitud activa o creamos una
+                cursor.execute("SELECT id FROM solicitudes ORDER BY id DESC LIMIT 1")
+                row_first = cursor.fetchone()
+                sol_id = row_first["id"] if row_first else 1
+
+            # Muestreo
+            cursor.execute("SELECT id FROM muestreos WHERE solicitud_id = ?", (sol_id,))
+            row_mues = cursor.fetchone()
+            if row_mues:
+                mues_id = row_mues["id"]
+            else:
+                mues_id = db.agregar_muestreo(sol_id, "MUE-01", fecha_ensayo, "Técnico LSMCH")
+
+            # Muestra
+            cod_muestra = f"{solicitud_codigo}-M01"
+            cursor.execute("SELECT id FROM muestras WHERE codigo_muestra = ?", (cod_muestra,))
+            row_mu = cursor.fetchone()
+            if row_mu:
+                mu_id = row_mu["id"]
+            else:
+                mu_id = db.agregar_muestra(mues_id, cod_muestra, "Suelo Granular")
+
+        ensayo_id = db.guardar_ensayo(
+            muestra_id=mu_id,
+            tipo_ensayo=tipo_ensayo,
+            norma=norma,
+            fecha_ensayo=fecha_ensayo,
+            datos_json=datos_json,
+            resultados_json=resultados_json,
+            usuario=datos_json.get("ensayado_por", "Técnico LSMCH")
+        )
+
+        return jsonify({
+            "success": True,
+            "ensayo_id": ensayo_id,
+            "codigo_solicitud": solicitud_codigo,
+            "message": f"Ensayo de Granulometría (HC-LSMCH-006) guardado exitosamente en la base de datos vinculado a {solicitud_codigo}."
         })
 
-    res_final = {
-        "especimenes": res_especimenes,
-        "promedio_28dias_kgcm2": round(sum(e["resistencia_kgcm2"] for e in res_especimenes) / len(res_especimenes), 1) if res_especimenes else 0.0
-    }
-    
-    muestra_id = data.get("muestra_id")
-    if muestra_id:
-        db.guardar_ensayo(
-            muestra_id=muestra_id,
-            tipo_ensayo="CONCRETO_COMPRESION",
-            norma="ASTM C39",
-            fecha_ensayo=data.get("fecha_ensayo", "2026-02-17"),
-            datos_json=data,
-            resultados_json=res_final
-        )
-        
-    return jsonify(res_final)
-
-@app.route('/api/lims/incertidumbre/calcular', methods=['POST'])
-def calcular_incertidumbre_gum():
-    data = request.json or {}
-    # Presupuesto GUM ISO 17025
-    # u_A (repetibilidad), u_B1 (calibracion), u_B2 (resolucion)
-    u_a = float(data.get("u_repetibilidad", 0.05))
-    u_b1 = float(data.get("u_calibracion", 0.08)) / 2.0  # k=2
-    u_b2 = float(data.get("u_resolucion", 0.01)) / math.sqrt(3)  # Rectangular
-    
-    u_combinada = math.sqrt(u_a**2 + u_b1**2 + u_b2**2)
-    u_expandida = u_combinada * 2.0  # k=2 (95.45% confianza)
-    
-    # Porcentajes de contribución
-    var_total = u_combinada**2 if u_combinada > 0 else 1.0
-    contrib_a = round(((u_a**2) / var_total) * 100.0, 1)
-    contrib_b1 = round(((u_b1**2) / var_total) * 100.0, 1)
-    contrib_b2 = round(((u_b2**2) / var_total) * 100.0, 1)
-
-    return jsonify({
-        "incertidumbre_combinada": round(u_combinada, 4),
-        "incertidumbre_expandida": round(u_expandida, 4),
-        "factor_k": 2.0,
-        "nivel_confianza": "95.45%",
-        "contribuciones": {
-            "repetibilidad_pct": contrib_a,
-            "calibracion_balanza_pct": contrib_b1,
-            "resolucion_equipo_pct": contrib_b2
-        }
-    })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
 
 if __name__ == '__main__':
     print("Iniciando Sistema LIMS LSMCH (ISO/IEC 17025) en http://localhost:5050")
