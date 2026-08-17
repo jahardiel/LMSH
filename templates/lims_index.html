@@ -1404,7 +1404,7 @@
                             <td style="border:1px solid #cbd5e1; padding:0.45rem; font-weight:800; color:#1e3a8a; background:#f8fafc; width:30%;">Modelo matemático f(X₁, X₂, ..., X_N):</td>
                             <td style="border:1px solid #cbd5e1; padding:0.45rem; background:#ffffff;">
                                 <div style="font-weight:900; color:#dc2626; font-size:1.05rem; font-family:'Times New Roman', serif; letter-spacing:0.5px;" id="lblHc012EcuacionModelo">
-                                    T = I + C
+                                    T = L + C
                                 </div>
                             </td>
                         </tr>
@@ -1422,8 +1422,8 @@
                         <tbody id="tbodyPaso1Entradas">
                             <tr>
                                 <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">Magnitud de entrada X₁</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Temperatura indicada por el termómetro</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; font-family:'Times New Roman', serif;">I</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Lectura realizada de la temperatura</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; font-family:'Times New Roman', serif;">L</td>
                                 <td style="border:1px solid #cbd5e1; padding:0.35rem;">°F</td>
                             </tr>
                             <tr>
@@ -1494,7 +1494,7 @@
                         <tbody>
                             <tr style="font-weight:700;">
                                 <td style="border:1px solid #cbd5e1; padding:0.35rem; color:#1e3a8a; font-weight:800;" id="lblPaso3SalidaMesurando">T</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-family:'Times New Roman', serif;" id="lblPaso3SalidaEcuacion">T = I + C</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-family:'Times New Roman', serif;" id="lblPaso3SalidaEcuacion">T = L + C</td>
                                 <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;" id="lblPaso3SalidaValorPromedio">93.72</td>
                                 <td style="border:1px solid #cbd5e1; padding:0.35rem;" id="lblPaso3SalidaUnidad">°F</td>
                             </tr>
@@ -2965,8 +2965,8 @@
                 };
             } else if (mod.includes('temperatura') || txt.includes('temperatura') || txt.includes('c1064')) {
                 return {
-                    ecuacion: "T = I + C",
-                    descripcion: "Modelo de Medición GUM (ISO/IEC Guide 98-3:2008): T es la temperatura del concreto (°F/°C), I es la temperatura indicada por el termómetro, y C es la corrección del termómetro por su certificado de calibración."
+                    ecuacion: "T = L + C",
+                    descripcion: "Modelo de Medición GUM (ISO/IEC Guide 98-3:2008): T es la temperatura del concreto (°F/°C), L es la lectura realizada de la temperatura (°F/°C), y C es el valor de la corrección a la temperatura medida por certificado."
                 };
 
             } else if (mod.includes('granulometria') || txt.includes('granulometría') || txt.includes('d6913')) {
@@ -3288,9 +3288,11 @@
                                 </tr>
                             `;
                         } else {
+                            const stdVal = (r.num_lecturas && r.num_lecturas > 1) ? `s(L) = ${(r.desviacion_estandar || 0).toFixed(3)}` : '-';
+                            const lecturasStr = arrLecturas.slice(0, 5).join(', ');
                             tbPaso3Mag.innerHTML = `
                                 <tr>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">I</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">L</td>
                                     <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Lectura realizada de la temperatura</td>
                                     <td style="border:1px solid #cbd5e1; padding:0.35rem; font-size:0.75rem;">[${lecturasStr}]<br><small style="color:#0284c7; font-weight:800;">${stdVal}</small></td>
                                     <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${tempFinal.toFixed(2)}</td>
