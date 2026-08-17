@@ -94,7 +94,6 @@
 
         /* ESTILOS DE IMPRESIÓN REPORTE CARTA (TABLA PRIMERO, GRÁFICO SEGUNDO) */
         @media print {
-
             @page {
                 size: letter portrait;
                 margin: 10mm;
@@ -107,7 +106,7 @@
             body {
                 background: #ffffff !important;
                 color: #000000 !important;
-                font-size: 10pt;
+                font-size: 9pt;
             }
 
             .lims-container {
@@ -150,13 +149,13 @@
             .table-lims th {
                 background: #f1f5f9 !important;
                 color: #1e3a8a !important;
-                font-size: 8.5pt !important;
-                padding: 3px 5px !important;
+                font-size: 8pt !important;
+                padding: 3px 4px !important;
             }
 
             .table-lims td {
-                font-size: 8.5pt !important;
-                padding: 2px 5px !important;
+                font-size: 8pt !important;
+                padding: 2px 4px !important;
             }
 
             .print-signatures-block {
@@ -309,64 +308,61 @@
                         </div>
                     </div>
 
-                    <!-- PRIMERO: TABLA DE RESULTADOS DE TAMIZADO Y PARÁMETROS -->
-                    <div class="grid-2" style="margin-bottom: 1.5rem;">
-                        <!-- TABLA DE TAMIZADO -->
-                        <div>
-                            <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-table-cells"></i> Resultados de Tamizado E11 (ASTM D6913)</h4>
-                            <div class="table-responsive">
-                                <table class="table-lims" id="tablaHC006">
-                                    <thead>
-                                        <tr>
-                                            <th>Tamiz</th>
-                                            <th>Abertura (mm)</th>
-                                            <th>Masa Retenida (g)</th>
-                                            <th>% Retenido</th>
-                                            <th>% Acumulado</th>
-                                            <th>% Que Pasa</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr><td>3"</td><td>75.000</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>2"</td><td>50.000</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>1 1/2"</td><td>38.100</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>1"</td><td>25.000</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>3/4"</td><td>19.000</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>3/8"</td><td>9.500</td><td><input type="number" class="table-input hc-mret" value="0.0" onchange="calcularHojaHC006()"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                        <tr><td>No. 4</td><td>4.750</td><td><input type="number" class="table-input hc-mret" value="77.9" onchange="calcularHojaHC006()"></td><td class="r-ind">6.25</td><td class="r-acu">6.25</td><td class="r-pasa">93.75</td></tr>
-                                        <tr><td>No. 10</td><td>2.000</td><td><input type="number" class="table-input hc-mret" value="1.25" onchange="calcularHojaHC006()"></td><td class="r-ind">1.39</td><td class="r-acu">7.64</td><td class="r-pasa">92.36</td></tr>
-                                        <tr><td>No. 20</td><td>0.850</td><td><input type="number" class="table-input hc-mret" value="5.92" onchange="calcularHojaHC006()"></td><td class="r-ind">6.56</td><td class="r-acu">14.20</td><td class="r-pasa">85.80</td></tr>
-                                        <tr><td>No. 40</td><td>0.425</td><td><input type="number" class="table-input hc-mret" value="13.32" onchange="calcularHojaHC006()"></td><td class="r-ind">14.76</td><td class="r-acu">28.96</td><td class="r-pasa">71.04</td></tr>
-                                        <tr><td>No. 60</td><td>0.250</td><td><input type="number" class="table-input hc-mret" value="12.18" onchange="calcularHojaHC006()"></td><td class="r-ind">13.50</td><td class="r-acu">42.46</td><td class="r-pasa">57.54</td></tr>
-                                        <tr><td>No. 100</td><td>0.150</td><td><input type="number" class="table-input hc-mret" value="11.16" onchange="calcularHojaHC006()"></td><td class="r-ind">12.37</td><td class="r-acu">54.83</td><td class="r-pasa">45.17</td></tr>
-                                        <tr><td>No. 140</td><td>0.106</td><td><input type="number" class="table-input hc-mret" value="17.41" onchange="calcularHojaHC006()"></td><td class="r-ind">19.29</td><td class="r-acu">74.12</td><td class="r-pasa">25.88</td></tr>
-                                        <tr><td>No. 200</td><td>0.075</td><td><input type="number" class="table-input hc-mret" value="12.77" onchange="calcularHojaHC006()"></td><td class="r-ind">14.15</td><td class="r-acu">88.27</td><td class="r-pasa">11.73</td></tr>
-                                        <tr><td>Fondo</td><td>0.000</td><td><input type="number" class="table-input hc-mret" value="10.34" onchange="calcularHojaHC006()"></td><td class="r-ind">--</td><td class="r-acu">--</td><td class="r-pasa">--</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                    <!-- PRIMERO: TABLA DE RESULTADOS DE TAMIZADO OFICIAL Y PARÁMETROS -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-table-cells"></i> Tabla de Tamizado Oficial (ASTM D6913 / HC-LSMCH-006)</h4>
+                        <div class="table-responsive">
+                            <table class="table-lims" id="tablaHC006">
+                                <thead>
+                                    <tr>
+                                        <th>Tamiz</th>
+                                        <th>Abertura (mm)</th>
+                                        <th>Fracción Gruesa de separación g</th>
+                                        <th>Fracción Fina Tamizado Simple g</th>
+                                        <th>Factor de Tamizado</th>
+                                        <th>% Retenido</th>
+                                        <th>% Acumulado Retenido</th>
+                                        <th>% Que Pasa (Redondeado Final)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>3"</td><td>75.000</td><td><input type="number" class="table-input hc-fgruesa" value="0.0" onchange="calcularHojaHC006()"></td><td><input type="number" class="table-input hc-ffina" value="" disabled></td><td class="r-factor">0.0802375</td><td class="r-ind">0.00</td><td class="r-acu">0.0</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">100</td></tr>
+                                    <tr><td>2"</td><td>50.000</td><td><input type="number" class="table-input hc-fgruesa" value="0.0" onchange="calcularHojaHC006()"></td><td><input type="number" class="table-input hc-ffina" value="" disabled></td><td class="r-factor">0.0802375</td><td class="r-ind">0.00</td><td class="r-acu">0.0</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">100</td></tr>
+                                    <tr><td>1 1/2"</td><td>38.100</td><td><input type="number" class="table-input hc-fgruesa" value="0.0" onchange="calcularHojaHC006()"></td><td><input type="number" class="table-input hc-ffina" value="" disabled></td><td class="r-factor">0.0802375</td><td class="r-ind">0.00</td><td class="r-acu">0.0</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">100</td></tr>
+                                    <tr><td>1"</td><td>25.000</td><td><input type="number" class="table-input hc-fgruesa" value="0.0" onchange="calcularHojaHC006()"></td><td><input type="number" class="table-input hc-ffina" value="" disabled></td><td class="r-factor">0.0802375</td><td class="r-ind">0.00</td><td class="r-acu">0.0</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">100</td></tr>
+                                    <tr><td>3/4"</td><td>19.000</td><td><input type="number" class="table-input hc-fgruesa" value="0.0" onchange="calcularHojaHC006()"></td><td><input type="number" class="table-input hc-ffina" value="" disabled></td><td class="r-factor">0.0802375</td><td class="r-ind">0.00</td><td class="r-acu">0.0</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">100</td></tr>
+                                    <tr><td>3/8"</td><td>9.500</td><td><input type="number" class="table-input hc-fgruesa" value="0.0" onchange="calcularHojaHC006()"></td><td><input type="number" class="table-input hc-ffina" value="" disabled></td><td class="r-factor">0.0802375</td><td class="r-ind">0.00</td><td class="r-acu">0.0</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">100</td></tr>
+                                    <tr><td>No. 4</td><td>4.750</td><td><input type="number" class="table-input hc-fgruesa" value="77.9" onchange="calcularHojaHC006()"></td><td><input type="number" class="table-input hc-ffina" value="0.00" onchange="calcularHojaHC006()"></td><td class="r-factor">0.0802375</td><td class="r-ind">6.25</td><td class="r-acu">6.3</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">94</td></tr>
+                                    <tr><td>No. 10</td><td>2.000</td><td><input type="number" class="table-input hc-fgruesa" value="" disabled></td><td><input type="number" class="table-input hc-ffina" value="1.25" onchange="calcularHojaHC006()"></td><td class="r-factor">1.1081406</td><td class="r-ind">1.39</td><td class="r-acu">7.6</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">92</td></tr>
+                                    <tr><td>No. 20</td><td>0.850</td><td><input type="number" class="table-input hc-fgruesa" value="" disabled></td><td><input type="number" class="table-input hc-ffina" value="5.92" onchange="calcularHojaHC006()"></td><td class="r-factor">1.1081406</td><td class="r-ind">6.56</td><td class="r-acu">14.2</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">86</td></tr>
+                                    <tr><td>No. 40</td><td>0.425</td><td><input type="number" class="table-input hc-fgruesa" value="" disabled></td><td><input type="number" class="table-input hc-ffina" value="13.32" onchange="calcularHojaHC006()"></td><td class="r-factor">1.1081406</td><td class="r-ind">14.76</td><td class="r-acu">29.0</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">71</td></tr>
+                                    <tr><td>No. 60</td><td>0.250</td><td><input type="number" class="table-input hc-fgruesa" value="" disabled></td><td><input type="number" class="table-input hc-ffina" value="12.18" onchange="calcularHojaHC006()"></td><td class="r-factor">1.1081406</td><td class="r-ind">13.50</td><td class="r-acu">42.5</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">58</td></tr>
+                                    <tr><td>No. 100</td><td>0.150</td><td><input type="number" class="table-input hc-fgruesa" value="" disabled></td><td><input type="number" class="table-input hc-ffina" value="11.16" onchange="calcularHojaHC006()"></td><td class="r-factor">1.1081406</td><td class="r-ind">12.37</td><td class="r-acu">54.8</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">45</td></tr>
+                                    <tr><td>No. 140</td><td>0.105</td><td><input type="number" class="table-input hc-fgruesa" value="" disabled></td><td><input type="number" class="table-input hc-ffina" value="17.41" onchange="calcularHojaHC006()"></td><td class="r-factor">1.1081406</td><td class="r-ind">19.29</td><td class="r-acu">74.1</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">26</td></tr>
+                                    <tr><td>No. 200</td><td>0.075</td><td><input type="number" class="table-input hc-fgruesa" value="" disabled></td><td><input type="number" class="table-input hc-ffina" value="12.77" onchange="calcularHojaHC006()"></td><td class="r-factor">1.1081406</td><td class="r-ind">14.15</td><td class="r-acu">88.3</td><td class="r-pasa" style="font-weight:700; color:#1e3a8a;">12</td></tr>
+                                    <tr><td>Fondo</td><td>0.000</td><td><input type="number" class="table-input hc-fgruesa" value="0.0" onchange="calcularHojaHC006()"></td><td><input type="number" class="table-input hc-ffina" value="10.34" onchange="calcularHojaHC006()"></td><td class="r-factor">--</td><td class="r-ind">--</td><td class="r-acu">--</td><td class="r-pasa">--</td></tr>
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
 
-                        <!-- CUADRO DE PARÁMETROS -->
-                        <div>
-                            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem;">
-                                <h5 style="color:#1e3a8a; font-size:0.88rem; font-weight:700; margin-bottom:0.75rem;"><i class="fa-solid fa-calculator"></i> RESULTADOS Y DIÁMETROS CARACTERÍSTICOS</h5>
-                                <div class="grid-3" style="font-size:0.85rem; row-gap:0.5rem; margin-bottom:1rem;">
-                                    <div>% Grava = <strong id="valPctGrava">6.25%</strong></div>
-                                    <div>D10 mm = <strong id="valD10">0.08</strong></div>
-                                    <div>D15 mm = <strong id="valD15">0.08</strong></div>
-                                    <div>% Arena = <strong id="valPctArena">82.02%</strong></div>
-                                    <div>D30 mm = <strong id="valD30">0.12</strong></div>
-                                    <div>D50 mm = <strong id="valD50">0.20</strong></div>
-                                    <div>% Fino = <strong id="valPctFino">11.73%</strong></div>
-                                    <div>D60 mm = <strong id="valD60">0.28</strong></div>
-                                    <div>D85 mm = <strong id="valD85">0.82</strong></div>
-                                </div>
-                                <div style="padding-top:0.75rem; border-top:1px dashed #cbd5e1; display:flex; justify-content:space-between; font-size:0.9rem;">
-                                    <div>Cu (Coeficiente de Uniformidad): <strong id="valCu" style="color:#1e3a8a;">3.50</strong></div>
-                                    <div>Cc (Coeficiente de Curvatura): <strong id="valCc" style="color:#1e3a8a;">0.64</strong></div>
-                                </div>
-                            </div>
+                    <!-- CUADRO DE PARÁMETROS Y DIÁMETROS -->
+                    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.5rem;">
+                        <h5 style="color:#1e3a8a; font-size:0.88rem; font-weight:700; margin-bottom:0.75rem;"><i class="fa-solid fa-calculator"></i> RESULTADOS Y DIÁMETROS CARACTERÍSTICOS (CONSERVA PRECISIÓN INTERNA)</h5>
+                        <div class="grid-3" style="font-size:0.85rem; row-gap:0.5rem; margin-bottom:1rem;">
+                            <div>% Grava = <strong id="valPctGrava">6.25%</strong></div>
+                            <div>D10 mm = <strong id="valD10">0.08</strong></div>
+                            <div>D15 mm = <strong id="valD15">0.08</strong></div>
+                            <div>% Arena = <strong id="valPctArena">82.02%</strong></div>
+                            <div>D30 mm = <strong id="valD30">0.12</strong></div>
+                            <div>D50 mm = <strong id="valD50">0.20</strong></div>
+                            <div>% Fino = <strong id="valPctFino">11.73%</strong></div>
+                            <div>D60 mm = <strong id="valD60">0.28</strong></div>
+                            <div>D85 mm = <strong id="valD85">0.82</strong></div>
+                        </div>
+                        <div style="padding-top:0.75rem; border-top:1px dashed #cbd5e1; display:flex; justify-content:space-between; font-size:0.9rem;">
+                            <div>Cu (Coeficiente de Uniformidad): <strong id="valCu" style="color:#1e3a8a;">3.50</strong></div>
+                            <div>Cc (Coeficiente de Curvatura): <strong id="valCc" style="color:#1e3a8a;">0.64</strong></div>
                         </div>
                     </div>
 
@@ -516,6 +512,7 @@
 
         async function calcularHojaHC006() {
             const mSecaTotal = parseFloat(document.getElementById('hcMasaSecaTotal').value || 1246.3);
+            const mHumedaTotal = parseFloat(document.getElementById('hcMasaHumedaTotal').value || 1942.7);
             const metodo = document.getElementById('hcMetodoASTM').value || "METODO_A";
             const procedimiento = document.getElementById('hcProcedimientoASTM').value || "HUMEDO";
 
@@ -524,8 +521,17 @@
             
             rows.forEach(r => {
                 const nombre = r.cells[0].innerText;
-                const mRet = parseFloat(r.querySelector('.hc-mret').value || 0.0);
-                tamices.push({tamiz: nombre, masa_retenida: mRet});
+                const fgInput = r.querySelector('.hc-fgruesa');
+                const ffInput = r.querySelector('.hc-ffina');
+                
+                const mFg = (fgInput && !fgInput.disabled) ? parseFloat(fgInput.value || 0.0) : 0.0;
+                const mFf = (ffInput && !ffInput.disabled) ? parseFloat(ffInput.value || 0.0) : 0.0;
+                
+                tamices.push({
+                    tamiz: nombre,
+                    fgruesa_g: mFg,
+                    ffina_g: mFf
+                });
             });
 
             try {
@@ -536,6 +542,7 @@
                         metodo_ensayo: metodo,
                         procedimiento: procedimiento,
                         masa_total_seca_g: mSecaTotal,
+                        masa_total_humeda_g: mHumedaTotal,
                         tamices: tamices
                     })
                 });
@@ -546,9 +553,11 @@
                 if (data.tamices) {
                     rows.forEach((r, idx) => {
                         if (data.tamices[idx]) {
-                            r.querySelector('.r-ind').innerText = data.tamices[idx].pct_retenido_ind + '%';
-                            r.querySelector('.r-acu').innerText = data.tamices[idx].pct_acumulado_ret + '%';
-                            r.querySelector('.r-pasa').innerText = data.tamices[idx].pct_pasa + '%';
+                            const t = data.tamices[idx];
+                            if (r.querySelector('.r-factor')) r.querySelector('.r-factor').innerText = t.factor_tamizado;
+                            if (r.querySelector('.r-ind')) r.querySelector('.r-ind').innerText = t.pct_retenido_ind;
+                            if (r.querySelector('.r-acu')) r.querySelector('.r-acu').innerText = t.pct_acumulado_ret;
+                            if (r.querySelector('.r-pasa')) r.querySelector('.r-pasa').innerText = t.pct_pasa;
                         }
                     });
                 }
@@ -598,7 +607,7 @@
                     body: JSON.stringify({
                         codigo_solicitud: codOrden,
                         tipo_ensayo: "GRANULOMETRIA_ASTM_D6913",
-                        norma: "ASTM D6913 / D2487 (HC-LSMCH-006)",
+                        norma: "ASTM D6913 (HC-LSMCH-006)",
                         fecha_ensayo: new Date().toISOString().split('T')[0],
                         datos_entrada: {
                             proyecto: document.getElementById('hcPry').value,
@@ -640,7 +649,7 @@
                 const rows = document.querySelectorAll('#tablaHC006 tbody tr');
                 rows.forEach(r => {
                     const ap = parseFloat(r.cells[1].innerText || 0);
-                    const pasaStr = r.cells[5]?.innerText.replace('%','') || '100';
+                    const pasaStr = r.cells[7]?.innerText.replace('%','') || '100';
                     const pasa = parseFloat(pasaStr);
                     if (ap > 0 && !isNaN(pasa)) pasas.push(pasa);
                 });
@@ -675,7 +684,7 @@
                 tamices = [];
                 rows.forEach(r => {
                     const ap = parseFloat(r.cells[1].innerText || 0);
-                    const pasaStr = r.cells[5]?.innerText.replace('%','') || '100';
+                    const pasaStr = r.cells[7]?.innerText.replace('%','') || '100';
                     const pasa = parseFloat(pasaStr);
                     if (ap > 0 && !isNaN(pasa)) {
                         tamices.push({ apertura_mm: ap, pct_pasa: pasa });
