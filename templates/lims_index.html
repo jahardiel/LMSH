@@ -92,7 +92,7 @@
             text-align: right;
         }
 
-        /* ESTILOS DE IMPRESIÓN REPORTE CARTA (TABLA PRIMERO, GRÁFICO SEGUNDO) */
+        /* ESTILOS DE IMPRESIÓN REPORTE CARTA (FLUJO 100% VERTICAL) */
         @media print {
             @page {
                 size: letter portrait;
@@ -136,13 +136,13 @@
 
             .chart-print-container {
                 width: 100% !important;
-                height: 420px !important;
+                height: 440px !important;
                 margin-top: 1rem !important;
                 page-break-inside: avoid;
             }
 
             #svgCurvaHC006 {
-                height: 410px !important;
+                height: 430px !important;
                 width: 100% !important;
             }
 
@@ -258,7 +258,7 @@
                         </div>
                     </div>
 
-                    <!-- ENCABEZADO OFICIAL TIPO REPORTE HC-LSMCH-006 -->
+                    <!-- 1. ENCABEZADO OFICIAL TIPO REPORTE HC-LSMCH-006 -->
                     <div class="hc006-header-box">
                         <div class="form-grid-header">
                             <div><label>PROYECTO:</label><input type="text" id="hcPry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
@@ -274,14 +274,14 @@
                         </div>
                     </div>
 
-                    <!-- PARÁMETROS DE NORMA ASTM D6913 Y MASAS -->
-                    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.5rem;">
+                    <!-- 2. PARÁMETROS DE NORMA ASTM D6913 -->
+                    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.25rem;">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #cbd5e1; padding-bottom:0.5rem; margin-bottom:0.75rem;">
                             <span style="font-size:0.85rem; font-weight:700; color:#1e3a8a;"><i class="fa-solid fa-book-bookmark"></i> Parámetros de Norma ASTM D6913 / D6913M - 17 (2025)</span>
                             <span id="badgeCPL" class="badge-status badge-validado">Criterio Pérdida por Lavado: Cumple (CP_L &le; 0.5%)</span>
                         </div>
                         
-                        <div class="grid-4">
+                        <div class="grid-2">
                             <div class="form-group">
                                 <label class="form-label">Método de Ensayo</label>
                                 <select id="hcMetodoASTM" class="form-control" onchange="calcularHojaHC006()">
@@ -297,16 +297,11 @@
                                     <option value="SECADO_HORNO">Secado al Horno (Oven-Dried)</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Masa Total Húmeda, g</label>
-                                <input type="number" id="hcMasaHumedaTotal" class="form-control" value="1942.7" step="0.1">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Masa Total Seca (S,Md), g</label>
-                                <input type="number" id="hcMasaSecaTotal" class="form-control" value="1246.3" step="0.1">
-                            </div>
-                    <!-- TABLA DE TAMIZADO COMPUESTO - 1 (REDUCCIÓN DE FRACCIÓN FINA) -->
-                    <div style="background:#ffffff; border:1.5px solid #1e3a8a; border-radius:6px; padding:0.85rem; margin-bottom:1.25rem;">
+                        </div>
+                    </div>
+
+                    <!-- 3. TABLA 1: TAMIZADO COMPUESTO - 1 (REDUCCIÓN DE FRACCIÓN FINA) -->
+                    <div style="background:#ffffff; border:1.5px solid #1e3a8a; border-radius:6px; padding:0.85rem; margin-bottom:1.25rem; width:100%;">
                         <h4 style="color:#1e3a8a; font-size:0.88rem; font-weight:700; margin-bottom:0.6rem;"><i class="fa-solid fa-layer-group"></i> Método de Ensayo Utilizado: Tamizado Compuesto - 1 (Reducción de Fracción Fina)</h4>
                         <div class="table-responsive">
                             <table class="table-lims" style="font-size:0.82rem;">
@@ -334,10 +329,9 @@
                         </div>
                     </div>
 
-                    <!-- PRIMERO: TABLA DE RESULTADOS DE TAMIZADO OFICIAL Y PARÁMETROS -->
-                    <div style="margin-bottom: 1.5rem;">
-
-                        <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-table-cells"></i> Tabla de Tamizado Oficial (ASTM D6913 / HC-LSMCH-006)</h4>
+                    <!-- 4. TABLA 2: RESULTADOS DE TAMIZADO OFICIAL (ASTM D6913 / E11) -->
+                    <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:6px; padding:0.85rem; margin-bottom:1.25rem; width:100%;">
+                        <h4 style="color:#1e3a8a; font-size:0.9rem; font-weight:700; margin-bottom:0.5rem;"><i class="fa-solid fa-table-cells"></i> Tabla de Tamizado Oficial (ASTM D6913 / HC-LSMCH-006)</h4>
                         <div class="table-responsive">
                             <table class="table-lims" id="tablaHC006">
                                 <thead>
@@ -373,8 +367,8 @@
                         </div>
                     </div>
 
-                    <!-- CUADRO DE PARÁMETROS Y DIÁMETROS CARACTERÍSTICOS -->
-                    <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.5rem; width:100%;">
+                    <!-- 5. CUADRO DE PARÁMETROS Y DIÁMETROS CARACTERÍSTICOS -->
+                    <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.25rem; width:100%;">
                         <h4 style="color:#1e3a8a; font-size:0.9rem; font-weight:700; margin-bottom:0.75rem;"><i class="fa-solid fa-calculator"></i> Diámetros Característicos y Coeficientes de Gradación (ASTM D6913)</h4>
                         <div class="grid-3" style="font-size:0.85rem; row-gap:0.6rem; margin-bottom:1rem;">
                             <div>% Grava = <strong id="valPctGrava">6.25%</strong></div>
@@ -393,9 +387,8 @@
                         </div>
                     </div>
 
-
-                    <!-- SEGUNDO: GRÁFICO GRANULOMÉTRICO AMPLIADO -->
-                    <div style="margin-bottom: 1.5rem;">
+                    <!-- 6. GRÁFICO GRANULOMÉTRICO (AL FINAL, VERTICAL FULL-WIDTH) -->
+                    <div style="margin-bottom: 1.5rem; width:100%;">
                         <h4 style="color:#1e3a8a; font-size:0.95rem; font-weight:700; margin-bottom:0.5rem;"><i class="fa-solid fa-chart-area"></i> CURVA GRANULOMÉTRICA (ASTM D6913 / HC-LSMCH-006)</h4>
                         
                         <!-- CONTROLES DE ZOOM -->
@@ -413,13 +406,13 @@
                             </div>
                         </div>
 
-                        <!-- CONTENEDOR DE GRÁFICO SVG -->
+                        <!-- CONTENEDOR DE GRÁFICO SVG VERTICAL FULL-WIDTH -->
                         <div class="chart-print-container" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; width:100%;">
-                            <svg id="svgCurvaHC006" viewBox="0 0 840 450" style="width:100%; height:420px; background:#fafafa; border-radius:4px; border:1px solid #e2e8f0;"></svg>
+                            <svg id="svgCurvaHC006" viewBox="0 0 840 450" style="width:100%; height:440px; background:#fafafa; border-radius:4px; border:1px solid #e2e8f0;"></svg>
                         </div>
                     </div>
 
-                    <!-- PIE DE FIRMAS DE REPORTE CARTA -->
+                    <!-- 7. PIE DE FIRMAS DE REPORTE CARTA -->
                     <div class="print-signatures-block" style="display:flex; justify-content:space-between; margin-top:2.5rem; padding-top:1rem; border-top:1px solid #cbd5e1; font-size:0.85rem;">
                         <div>ENSAYADO POR: <strong>N.S.</strong></div>
                         <div>REVISADO POR: <strong>A.A.</strong></div>
@@ -612,7 +605,6 @@
                     });
                 }
 
-
                 // Criterio de pérdida por lavado ASTM D6913
                 const badgeCPL = document.getElementById('badgeCPL');
                 if (data.cp_l_aceptable) {
@@ -729,7 +721,6 @@
             const svg = document.getElementById('svgCurvaHC006');
             if (!svg) return;
 
-            // Extraer puntos si viene vacío
             if (!tamices || tamices.length === 0) {
                 const rows = document.querySelectorAll('#tablaHC006 tbody tr');
                 tamices = [];
@@ -839,9 +830,9 @@
             let pts = [];
             if (tamices && tamices.length > 0) {
                 tamices.forEach(t => {
-                    if (t.apertura_mm > 0 && t.pct_pasa !== undefined) {
+                    if (t.apertura_mm > 0 && t.pct_pasa !== undefined && t.pct_pasa !== '--') {
                         const x = xLog(t.apertura_mm);
-                        const y = yPct(t.pct_pasa);
+                        const y = yPct(parseFloat(t.pct_pasa));
                         pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
                     }
                 });
