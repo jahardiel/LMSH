@@ -197,23 +197,19 @@
 
     <!-- NAVEGACIÓN PRINCIPAL -->
     <nav class="lims-nav">
-        <button class="nav-tab active" onclick="switchTab('solicitudes')">
-            <i class="fa-solid fa-folder-open"></i> Órdenes de Servicio (LSMCH-NNN-AAAA)
+        <button class="nav-tab active" id="btnTabInicio" onclick="switchTab('inicio')">
+            <i class="fa-solid fa-house"></i> Inicio / Módulos
         </button>
-
-        <button class="nav-tab" onclick="switchTab('geotecnia')">
-            <i class="fa-solid fa-mountain"></i> Módulo de Geotecnia
+        <button class="nav-tab" id="btnTabSolicitudes" onclick="switchTab('solicitudes')">
+            <i class="fa-solid fa-folder-open"></i> Órdenes de Servicio
         </button>
-        <button class="nav-tab" onclick="switchTab('dashboard')">
-            <i class="fa-solid fa-chart-line"></i> Dashboard
+        <button class="nav-tab" id="btnTabEnsayos" onclick="switchTab('ensayos')">
+            <i class="fa-solid fa-flask-vial"></i> Módulo de Ensayos
         </button>
-        <button class="nav-tab" onclick="switchTab('concreto')">
-            <i class="fa-solid fa-cubes"></i> Módulo de Concreto
+        <button class="nav-tab" id="btnTabIncertidumbre" onclick="switchTab('incertidumbre')">
+            <i class="fa-solid fa-calculator"></i> Incertidumbre GUM (HC-012)
         </button>
-        <button class="nav-tab" onclick="switchTab('incertidumbre')">
-            <i class="fa-solid fa-calculator"></i> Incertidumbre GUM
-        </button>
-        <button class="nav-tab" onclick="switchTab('reportes')">
+        <button class="nav-tab" id="btnTabReportes" onclick="switchTab('reportes')">
             <i class="fa-solid fa-print"></i> Reportes PDF
         </button>
     </nav>
@@ -230,32 +226,165 @@
             <div id="searchResultsContent"></div>
         </div>
 
-        <!-- 1. MÓDULO DE GEOTECNIA -->
-        <section id="tab-geotecnia" class="tab-content">
-
-            <div class="subnav-pills">
-                <button class="subnav-pill active" onclick="switchSubGeo('granulometria-hc006')">
-                    <i class="fa-solid fa-file-excel"></i> Granulometría (ASTM D6913 / HC-LSMCH-006)
-                </button>
-                <button class="subnav-pill" onclick="switchSubGeo('humedad')">
-                    <i class="fa-solid fa-droplet"></i> Humedad (ASTM D2216)
-                </button>
-                <button class="subnav-pill" onclick="switchSubGeo('atterberg')">
-                    <i class="fa-solid fa-vial"></i> Límites Atterberg & SUCS (ASTM D4318 / D2487)
-                </button>
-                <button class="subnav-pill" onclick="switchSubGeo('proctor')">
-                    <i class="fa-solid fa-weight-hanging"></i> Proctor E/M (ASTM D698 / D1557)
-                </button>
-                <button class="subnav-pill" onclick="switchSubGeo('cbr')">
-                    <i class="fa-solid fa-gauge-high"></i> CBR (ASTM D1883)
-                </button>
-                <button class="subnav-pill" onclick="switchSubGeo('densidad-campo')">
-                    <i class="fa-solid fa-circle-dot"></i> Densidad de Campo
-                </button>
-                <button class="subnav-pill" onclick="switchSubGeo('spt')">
-                    <i class="fa-solid fa-arrows-down-to-line"></i> SPT (ASTM D1586)
-                </button>
+        <!-- 0. PRIMERA PÁGINA: PORTAL PRINCIPAL DE MÓDULOS CON ICONOS -->
+        <section id="tab-inicio" class="tab-content active">
+            <div class="card-panel" style="margin-bottom:1.5rem; background:linear-gradient(135deg, #1e3a8a 0%, #0369a1 100%); color:#ffffff; padding:1.75rem; border-radius:12px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.2);">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                    <div>
+                        <span style="background:rgba(255,255,255,0.2); padding:0.3rem 0.75rem; border-radius:20px; font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">SISTEMA LIMS ISO/IEC 17025</span>
+                        <h2 style="font-size:1.8rem; font-weight:900; margin:0.5rem 0 0.25rem 0;">PORTAL DE MÓDULOS DE LABORATORIO</h2>
+                        <p style="font-size:0.9rem; color:#e0f2fe; margin:0;">Laboratorio de Suelos, Materiales y Concreto Hidráulico (LSMCH) - UTP Chiriquí</p>
+                    </div>
+                    <button class="btn btn-success" style="padding:0.6rem 1.2rem; font-size:0.9rem;" onclick="abrirModalNuevaSolicitud()"><i class="fa-solid fa-plus-circle"></i> + Nueva Orden de Servicio</button>
+                </div>
             </div>
+
+            <!-- GRID PRINCIPAL DE MÓDULOS CON ICONOS -->
+            <div class="grid-3" style="gap:1.5rem; margin-bottom:2rem;">
+                
+                <!-- TARJETA 1: ÓRDENES DE SERVICIO -->
+                <div style="background:#ffffff; border:2px solid #e2e8f0; border-radius:12px; padding:1.5rem; transition:all 0.2s ease; cursor:pointer; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'" onclick="switchTab('solicitudes')">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+                        <div style="width:54px; height:54px; border-radius:12px; background:#eff6ff; color:#2563eb; display:flex; justify-content:center; align-items:center; font-size:1.6rem;">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size:1.1rem; font-weight:800; color:#1e3a8a; margin:0;">ÓRDENES DE SERVICIO</h3>
+                            <span style="font-size:0.75rem; color:#64748b; font-weight:700;">REGISTRO Y RECEPCIÓN DE MUESTRAS</span>
+                        </div>
+                    </div>
+                    <p style="font-size:0.82rem; color:#475569; margin-bottom:1rem;">
+                        Gestión completa de Órdenes de Servicio (ej. LSMCH-001-2026), clientes, proyectos, cadenas de custodia y correlativos.
+                    </p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:0.75rem;">
+                        <span style="font-size:0.8rem; font-weight:800; color:#2563eb;">Acceder a Órdenes <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- TARJETA 2: MÓDULO DE ENSAYOS -->
+                <div style="background:#ffffff; border:2px solid #e2e8f0; border-radius:12px; padding:1.5rem; transition:all 0.2s ease; cursor:pointer; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='#0284c7'; this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'" onclick="switchTab('ensayos')">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+                        <div style="width:54px; height:54px; border-radius:12px; background:#e0f2fe; color:#0284c7; display:flex; justify-content:center; align-items:center; font-size:1.6rem;">
+                            <i class="fa-solid fa-flask-vial"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size:1.1rem; font-weight:800; color:#1e3a8a; margin:0;">MÓDULO DE ENSAYOS</h3>
+                            <span style="font-size:0.75rem; color:#0369a1; font-weight:700;">SUELOS / GEOTECNIA Y CONCRETO</span>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:1rem;">
+                        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:0.5rem; text-align:center;" onclick="event.stopPropagation(); switchTab('ensayos'); switchSubEnsayos('concreto');">
+                            <i class="fa-solid fa-cubes" style="color:#0284c7; font-size:1.1rem;"></i>
+                            <div style="font-size:0.75rem; font-weight:800; color:#1e3a8a; margin-top:0.2rem;">Ensayos Concreto</div>
+                        </div>
+                        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:0.5rem; text-align:center;" onclick="event.stopPropagation(); switchTab('ensayos'); switchSubEnsayos('geotecnia');">
+                            <i class="fa-solid fa-mountain" style="color:#d97706; font-size:1.1rem;"></i>
+                            <div style="font-size:0.75rem; font-weight:800; color:#1e3a8a; margin-top:0.2rem;">Ensayos Suelos</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:0.75rem;">
+                        <span style="font-size:0.8rem; font-weight:800; color:#0284c7;">Acceder a Ensayos <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- TARJETA 3: MÓDULO INCERTIDUMBRE (DESVINCULADO DE ENSAYOS) -->
+                <div style="background:#ffffff; border:2px solid #e2e8f0; border-radius:12px; padding:1.5rem; transition:all 0.2s ease; cursor:pointer; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='#7e22ce'; this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'" onclick="switchTab('incertidumbre')">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+                        <div style="width:54px; height:54px; border-radius:12px; background:#faf5ff; color:#7e22ce; display:flex; justify-content:center; align-items:center; font-size:1.6rem;">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size:1.1rem; font-weight:800; color:#1e3a8a; margin:0;">MÓDULO INCERTIDUMBRE</h3>
+                            <span style="font-size:0.75rem; color:#7e22ce; font-weight:700;">GUM / HC-LSMCH-012 REV. 01</span>
+                        </div>
+                    </div>
+                    <p style="font-size:0.82rem; color:#475569; margin-bottom:1rem;">
+                        <strong style="color:#7e22ce;">Desvinculado de Ensayos:</strong> Estimador Metrológico Acreditado ISO 17025, Presupuesto GUM, Gráfico Pareto y Registro de Equipos.
+                    </p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:0.75rem;">
+                        <span style="font-size:0.8rem; font-weight:800; color:#7e22ce;">Acceder a Incertidumbre <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- TARJETA 4: PERSONAL AUTORIZADO ISO 17025 -->
+                <div style="background:#ffffff; border:2px solid #e2e8f0; border-radius:12px; padding:1.5rem; transition:all 0.2s ease; cursor:pointer; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='#15803d'; this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'" onclick="abrirModalPersonalAutorizado()">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+                        <div style="width:54px; height:54px; border-radius:12px; background:#f0fdf4; color:#15803d; display:flex; justify-content:center; align-items:center; font-size:1.6rem;">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size:1.1rem; font-weight:800; color:#1e3a8a; margin:0;">PERSONAL AUTORIZADO</h3>
+                            <span style="font-size:0.75rem; color:#15803d; font-weight:700;">ROLES & PIN DE SEGURIDAD</span>
+                        </div>
+                    </div>
+                    <p style="font-size:0.82rem; color:#475569; margin-bottom:1rem;">
+                        Administración de usuarios oficiales: Responsable Técnico, Técnico de Lab, Jefe de Lab y Supervisor de Calidad.
+                    </p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:0.75rem;">
+                        <span style="font-size:0.8rem; font-weight:800; color:#15803d;">Gestionar Usuarios <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- TARJETA 5: REPORTEADOR UNIFICADO PDF -->
+                <div style="background:#ffffff; border:2px solid #e2e8f0; border-radius:12px; padding:1.5rem; transition:all 0.2s ease; cursor:pointer; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='#dc2626'; this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)'" onclick="switchTab('reportes')">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+                        <div style="width:54px; height:54px; border-radius:12px; background:#fef2f2; color:#dc2626; display:flex; justify-content:center; align-items:center; font-size:1.6rem;">
+                            <i class="fa-solid fa-print"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size:1.1rem; font-weight:800; color:#1e3a8a; margin:0;">REPORTES E IMPRESIÓN PDF</h3>
+                            <span style="font-size:0.75rem; color:#dc2626; font-weight:700;">CONSOLIDADOR DE ENSAYOS</span>
+                        </div>
+                    </div>
+                    <p style="font-size:0.82rem; color:#475569; margin-bottom:1rem;">
+                        Emisión de informes finales consolidados por orden de servicio para entrega a clientes o auditorías.
+                    </p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:0.75rem;">
+                        <span style="font-size:0.8rem; font-weight:800; color:#dc2626;">Generar Reportes <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 2. MÓDULO UNIFICADO DE ENSAYOS DE LABORATORIO -->
+        <section id="tab-ensayos" class="tab-content">
+            <div class="card-panel" style="margin-bottom:1.5rem;">
+                <div class="panel-header">
+                    <span class="panel-title"><i class="fa-solid fa-flask-vial"></i> MÓDULO DE ENSAYOS DE LABORATORIO</span>
+                    <div style="display:flex; gap:0.5rem; align-items:center;">
+                        <button class="btn btn-primary" id="btnSubCatGeotecnia" onclick="switchSubEnsayos('geotecnia')"><i class="fa-solid fa-mountain"></i> Ensayos de Suelos o Geotecnia</button>
+                        <button class="btn btn-secondary" id="btnSubCatConcreto" onclick="switchSubEnsayos('concreto')"><i class="fa-solid fa-cubes"></i> Ensayos de Concreto</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR SUB-CATEGORÍA: ENSAYOS DE SUELOS / GEOTECNIA -->
+            <div id="containerSubEnsayosGeotecnia">
+                <div class="subnav-pills" style="margin-bottom:1.25rem;">
+                    <button class="subnav-pill active" onclick="switchSubGeo('granulometria-hc006')">
+                        <i class="fa-solid fa-file-excel"></i> Granulometría (ASTM D6913 / HC-LSMCH-006)
+                    </button>
+                    <button class="subnav-pill" onclick="switchSubGeo('humedad')">
+                        <i class="fa-solid fa-droplet"></i> Humedad (ASTM D2216)
+                    </button>
+                    <button class="subnav-pill" onclick="switchSubGeo('atterberg')">
+                        <i class="fa-solid fa-vial"></i> Límites Atterberg & SUCS (ASTM D4318 / D2487)
+                    </button>
+                    <button class="subnav-pill" onclick="switchSubGeo('proctor')">
+                        <i class="fa-solid fa-weight-hanging"></i> Proctor E/M (ASTM D698 / D1557)
+                    </button>
+                    <button class="subnav-pill" onclick="switchSubGeo('cbr')">
+                        <i class="fa-solid fa-gauge-high"></i> CBR (ASTM D1883)
+                    </button>
+                    <button class="subnav-pill" onclick="switchSubGeo('densidad-campo')">
+                        <i class="fa-solid fa-circle-dot"></i> Densidad de Campo
+                    </button>
+                    <button class="subnav-pill" onclick="switchSubGeo('spt')">
+                        <i class="fa-solid fa-arrows-down-to-line"></i> SPT (ASTM D1586)
+                    </button>
+                </div>
+
 
             <!-- HOJA DE CÁLCULO Y REPORTE TIPO INFORME HC-LSMCH-006 -->
             <div id="sub-granulometria-hc006" class="subgeo-content active">
@@ -715,13 +844,82 @@
                             <div><label>FUENTE:</label><input type="text" id="spt_Fuente" value="SPT 1 Y 2 / 7m @ 8m"></div>
                             <div><label>IDENT. DEL LSMCH:</label><input type="text" id="spt_IdLsmch" value="M5022@023-2026-2"></div>
                         </div>
+                </div>
+            </div> <!-- CIERRE DE containerSubEnsayosGeotecnia -->
+
+            <!-- CONTENEDOR SUB-CATEGORÍA: ENSAYOS DE CONCRETO -->
+            <div id="containerSubEnsayosConcreto" style="display:none;">
+                <div class="subnav-pills" style="margin-bottom:1.25rem;">
+                    <button class="subnav-pill active" onclick="switchSubCnc('compresion-c01')">
+                        <i class="fa-solid fa-cubes"></i> Compresión de Cilindros (ASTM C39 / HC-C01)
+                    </button>
+                    <button class="subnav-pill" onclick="switchSubCnc('temperatura-c02')">
+                        <i class="fa-solid fa-temperature-three-quarters"></i> Temperatura Mezcla Fresca (ASTM C1064 / HC-C02)
+                    </button>
+                    <button class="subnav-pill" onclick="switchSubCnc('asentamiento-c03')">
+                        <i class="fa-solid fa-ruler-vertical"></i> Asentamiento Slump (ASTM C143 / HC-C03)
+                    </button>
+                </div>
+
+                <!-- HOJA C01: COMPRESIÓN DE CILINDROS DE CONCRETO ASTM C39 -->
+                <div id="sub-compresion-c01" class="subcnc-content active">
+                    <div class="card-panel">
+                        <div class="panel-header">
+                            <span class="panel-title"><i class="fa-solid fa-cubes"></i> RESISTENCIA A LA COMPRESIÓN DE PROBETAS CILÍNDRICAS DE CONCRETO (ASTM C39)</span>
+                            <span class="badge-solicitud">HC-LSMCH-C01</span>
+                        </div>
+                        <div class="hc006-header-box" style="margin-bottom:1.25rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1e3a8a; padding-bottom:0.4rem; margin-bottom:0.75rem;">
+                                <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO Y MUESTRA</span>
+                                <div style="display:flex; gap:0.35rem; align-items:center;">
+                                    <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
+                                    <select class="form-control select-orden-servicio" id="cnc_SelectOrden" style="width:180px; font-weight:700; color:#1e3a8a; font-size:0.85rem;" onchange="cargarDatosGenericosModulo('cnc', this.value)">
+                                        <option value="">-- Seleccionar --</option>
+                                    </select>
+                                    <input type="hidden" id="cnc_Orden" value="LSMCH-050-2026">
+                                    <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.78rem;" title="Llamar Orden" onclick="cargarDatosGenericosModulo('cnc')">
+                                        <i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-grid-header">
+                                <div><label>PROYECTO:</label><input type="text" id="cnc_Pry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                                <div><label>CLIENTE:</label><input type="text" id="cnc_Cliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                                <div><label>LOC. DE PROYECTO:</label><input type="text" id="cnc_Loc" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI"></div>
+                                <div><label>INFORME:</label><input type="text" id="cnc_Informe" value="LSMCH-098-2026"></div>
+                                <div><label>MUESTREADO POR:</label><input type="text" id="cnc_Muestreado" value="JQ, NS, CO"></div>
+                                <div><label>DESCRIPCIÓN:</label><input type="text" id="cnc_Desc" value="CONCRETO F'C 280 kg/cm2"></div>
+                                <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="cnc_IdCliente" value="COLUMNA C1"></div>
+                                <div><label>FUENTE:</label><input type="text" id="cnc_Fuente" value="MEZCLADORA 02"></div>
+                                <div><label>IDENT. DEL LSMCH:</label><input type="text" id="cnc_IdLsmch" value="C5022@023-2026-1"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+                <!-- HOJA C02: TEMPERATURA DE MEZCLA FRESCA ASTM C1064 -->
+                <div id="sub-temperatura-c02" class="subcnc-content" style="display:none;">
+                    <div class="card-panel">
+                        <div class="panel-header">
+                            <span class="panel-title"><i class="fa-solid fa-temperature-three-quarters"></i> TEMPERATURA DE MEZCLA DE CONCRETO FRESCO (ASTM C1064)</span>
+                            <span class="badge-solicitud">HC-LSMCH-C02</span>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- HOJA C03: ASENTAMIENTO / SLUMP ASTM C143 -->
+                <div id="sub-asentamiento-c03" class="subcnc-content" style="display:none;">
+                    <div class="card-panel">
+                        <div class="panel-header">
+                            <span class="panel-title"><i class="fa-solid fa-ruler-vertical"></i> ASENTAMIENTO DEL CONCRETO DE CEMENTO HIDRÁULICO (SLUMP - ASTM C143)</span>
+                            <span class="badge-solicitud">HC-LSMCH-C03</span>
+                        </div>
+                    </div>
+                </div>
 
+            </div> <!-- CIERRE DE containerSubEnsayosConcreto -->
         </section>
+
 
         <!-- DASHBOARD, SOLICITUDES, CONCRETO, INCERTIDUMBRE, REPORTES -->
         <section id="tab-dashboard" class="tab-content">
@@ -1432,12 +1630,68 @@
             document.querySelectorAll('.subnav-pill').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.subgeo-content').forEach(sc => sc.style.display = 'none');
             
-            const btn = Array.from(document.querySelectorAll('.subnav-pill')).find(b => b.getAttribute('onclick').includes(subId));
+            const btn = Array.from(document.querySelectorAll('.subnav-pill')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(subId));
             if (btn) btn.classList.add('active');
             
             const subObj = document.getElementById(`sub-${subId}`);
             if (subObj) subObj.style.display = 'block';
         }
+
+        function switchSubEnsayos(cat) {
+            const btnGeo = document.getElementById('btnSubCatGeotecnia');
+            const btnCnc = document.getElementById('btnSubCatConcreto');
+            const cntGeo = document.getElementById('containerSubEnsayosGeotecnia');
+            const cntCnc = document.getElementById('containerSubEnsayosConcreto');
+
+            if (cat === 'geotecnia') {
+                if (btnGeo) { btnGeo.className = 'btn btn-primary'; }
+                if (btnCnc) { btnCnc.className = 'btn btn-secondary'; }
+                if (cntGeo) cntGeo.style.display = 'block';
+                if (cntCnc) cntCnc.style.display = 'none';
+            } else if (cat === 'concreto') {
+                if (btnGeo) { btnGeo.className = 'btn btn-secondary'; }
+                if (btnCnc) { btnCnc.className = 'btn btn-primary'; }
+                if (cntGeo) cntGeo.style.display = 'none';
+                if (cntCnc) cntCnc.style.display = 'block';
+            }
+        }
+
+        function switchSubCnc(subId) {
+            const container = document.getElementById('containerSubEnsayosConcreto');
+            if (container) {
+                container.querySelectorAll('.subnav-pill').forEach(p => p.classList.remove('active'));
+                container.querySelectorAll('.subcnc-content').forEach(sc => sc.style.display = 'none');
+                
+                const btn = Array.from(container.querySelectorAll('.subnav-pill')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(subId));
+                if (btn) btn.classList.add('active');
+                
+                const subObj = document.getElementById(`sub-${subId}`);
+                if (subObj) subObj.style.display = 'block';
+            }
+        }
+
+        function switchSubTabIncertidumbre(subId) {
+            const btnCalc = document.getElementById('btnSubIncCalc');
+            const btnEquipos = document.getElementById('btnSubIncEquipos');
+            const panelCalc = document.getElementById('panelSubIncCalc');
+            const panelEquipos = document.getElementById('panelSubIncEquipos');
+
+            if (subId === 'calc') {
+                if (btnCalc) btnCalc.className = 'btn btn-primary';
+                if (btnEquipos) btnEquipos.className = 'btn btn-secondary';
+                if (panelCalc) panelCalc.style.display = 'block';
+                if (panelEquipos) panelEquipos.style.display = 'none';
+            } else if (subId === 'equipos') {
+                if (btnCalc) btnCalc.className = 'btn btn-secondary';
+                if (btnEquipos) btnEquipos.className = 'btn btn-primary';
+                if (panelCalc) panelCalc.style.display = 'none';
+                if (panelEquipos) panelEquipos.style.display = 'block';
+                cargarEquiposRegistradosBD();
+            }
+        }
+
+
+
 
         async function cargarDatosGenericosModulo(prefix, codOverride = null) {
             let cod = codOverride;
