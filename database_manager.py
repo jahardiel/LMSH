@@ -57,6 +57,12 @@ class DatabaseManager:
             except sqlite3.OperationalError:
                 pass
 
+            try:
+                cursor.execute("ALTER TABLE termometros ADD COLUMN nombre TEXT DEFAULT 'Equipo Metrológico';")
+            except sqlite3.OperationalError:
+                pass
+
+
             # Tabla de puntos de calibración
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS puntos_calibracion (
@@ -294,13 +300,13 @@ class DatabaseManager:
                 
         return float(round(dif_max, 4))
 
-    def agregar_termometro(self, codigo: str, marca: str, modelo: str, serie: str, resolucion: float, deriva: float, fecha: str, lab: str, homogeneidad: float = 0.10, numero_certificado: str = "CERT-17025", modulo: str = "temperatura") -> int:
+    def agregar_termometro(self, codigo: str, marca: str, modelo: str, serie: str, resolucion: float, deriva: float, fecha: str, lab: str, homogeneidad: float = 0.10, numero_certificado: str = "CERT-17025", modulo: str = "temperatura", nombre: str = "Equipo Metrológico") -> int:
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO termometros (codigo, marca, modelo, numero_serie, resolucion, deriva_estimada, homogeneidad_concreto, fecha_calibracion, laboratorio, numero_certificado, modulo)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (codigo, marca, modelo, serie, resolucion, deriva, homogeneidad, fecha, lab, numero_certificado, modulo))
+                INSERT INTO termometros (codigo, marca, modelo, numero_serie, resolucion, deriva_estimada, homogeneidad_concreto, fecha_calibracion, laboratorio, numero_certificado, modulo, nombre)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (codigo, marca, modelo, serie, resolucion, deriva, homogeneidad, fecha, lab, numero_certificado, modulo, nombre))
             conn.commit()
             return cursor.lastrowid
 
@@ -318,9 +324,9 @@ class DatabaseManager:
         with self._get_connection() as conn:
             cursor = conn.cursor()
             if modulo:
-                cursor.execute("SELECT id, codigo, marca, modelo, numero_serie, resolucion, deriva_estimada, homogeneidad_concreto, fecha_calibracion, laboratorio, numero_certificado, modulo FROM termometros WHERE modulo = ?", (modulo,))
+                cursor.execute("SELECT id, codigo, marca, modelo, numero_serie, resolucion, deriva_estimada, homogeneidad_concreto, fecha_calibracion, laboratorio, numero_certificado, modulo, nombre FROM termometros WHERE modulo = ?", (modulo,))
             else:
-                cursor.execute("SELECT id, codigo, marca, modelo, numero_serie, resolucion, deriva_estimada, homogeneidad_concreto, fecha_calibracion, laboratorio, numero_certificado, modulo FROM termometros")
+                cursor.execute("SELECT id, codigo, marca, modelo, numero_serie, resolucion, deriva_estimada, homogeneidad_concreto, fecha_calibracion, laboratorio, numero_certificado, modulo, nombre FROM termometros")
             rows = cursor.fetchall()
             termometros = []
             for r in rows:
@@ -334,6 +340,7 @@ class DatabaseManager:
                     "homogeneidad_concreto": r[7], "fecha_calibracion": r[8], "laboratorio": r[9],
                     "numero_certificado": r[10] if len(r) > 10 and r[10] else "CERT-17025",
                     "modulo": r[11] if len(r) > 11 and r[11] else "temperatura",
+                    "nombre": r[12] if len(r) > 12 and r[12] else (f"{r[2]} {r[3]}".strip() or "Equipo Metrológico"),
                     "puntos_calibracion": ptos_act,
                     "puntos_calibracion_anteriores": ptos_ant
                 })
@@ -342,7 +349,7 @@ class DatabaseManager:
     def obtener_termometro(self, termometro_id: int) -> Optional[Dict]:
         with self._get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, codigo, marca, modelo, numero_serie, resolucion, deriva_estimada, homogeneidad_concreto, fecha_calibracion, laboratorio, numero_certificado, modulo FROM termometros WHERE id = ?", (termometro_id,))
+            cursor.execute("SELECT id, codigo, marca, modelo, numero_serie, resolucion, deriva_estimada, homogeneidad_concreto, fecha_calibracion, laboratorio, numero_certificado, modulo, nombre FROM termometros WHERE id = ?", (termometro_id,))
             r = cursor.fetchone()
             if not r:
                 return None
@@ -354,6 +361,7 @@ class DatabaseManager:
                 "homogeneidad_concreto": r[7], "fecha_calibracion": r[8], "laboratorio": r[9],
                 "numero_certificado": r[10] if len(r) > 10 and r[10] else "CERT-17025",
                 "modulo": r[11] if len(r) > 11 and r[11] else "temperatura",
+                "nombre": r[12] if len(r) > 12 and r[12] else (f"{r[2]} {r[3]}".strip() or "Equipo Metrológico"),
                 "puntos_calibracion": ptos_act,
                 "puntos_calibracion_anteriores": ptos_ant
             }
@@ -380,14 +388,17 @@ class DatabaseManager:
             conn.commit()
             return cursor.rowcount > 0
 
-    def actualizar_termometro(self, termometro_id: int, codigo: str, marca: str, modelo: str, serie: str, resolucion: float, deriva: float, fecha: str, lab: str, homogeneidad: float = 0.10, numero_certificado: str = "CERT-17025") -> bool:
+    def actualizar_termometro(self, termometro_id: int, codigo: str, marca: str, modelo: str, serie: str, resolucion: float, deriva: float, fecha: str, lab: str, homogeneidad: float = 0.10, numero_certificado: str = "CERT-17025", nombre: str = "Equipo Metrológico") -> bool:
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 UPDATE termometros
-                SET codigo = ?, marca = ?, modelo = ?, numero_serie = ?, resolucion = ?, deriva_estimada = ?, homogeneidad_concreto = ?, fecha_calibracion = ?, laboratorio = ?, numero_certificado = ?
+                SET codigo = ?, marca = ?, modelo = ?, numero_serie = ?, resolucion = ?, deriva_estimada = ?, homogeneidad_concreto = ?, fecha_calibracion = ?, laboratorio = ?, numero_certificado = ?, nombre = ?
                 WHERE id = ?
-            """, (codigo, marca, modelo, serie, resolucion, deriva, homogeneidad, fecha, lab, numero_certificado, termometro_id))
+            """, (codigo, marca, modelo, serie, resolucion, deriva, homogeneidad, fecha, lab, numero_certificado, nombre, termometro_id))
+            conn.commit()
+            return cursor.rowcount > 0
+
             conn.commit()
             return cursor.rowcount > 0
 

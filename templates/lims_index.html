@@ -1508,15 +1508,17 @@
 
                     <div class="grid-3" style="gap:1rem; font-size:0.85rem; margin-bottom:1rem;">
                         <div><label style="font-weight:700; color:#1e3a8a;">Código Equipo Interno:</label><input type="text" id="eqCodigo" class="form-control" value="LSMCH-EM-05" placeholder="LSMCH-EM-05"></div>
-                        <div><label style="font-weight:700; color:#1e3a8a;">Marca del Instrumento:</label><input type="text" id="eqMarca" class="form-control" value="Fluke / Testo / ELE" placeholder="Ej. Fluke"></div>
-                        <div><label style="font-weight:700; color:#1e3a8a;">Modelo:</label><input type="text" id="eqModelo" class="form-control" value="52 II Dual Input" placeholder="Ej. 52 II"></div>
-                        <div><label style="font-weight:700; color:#1e3a8a;">Número de Serie:</label><input type="text" id="eqSerie" class="form-control" value="SN-984210" placeholder="Ej. SN-984210"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Nombre del Equipo / Instrumento:</label><input type="text" id="eqNombre" class="form-control" value="Prensa Hidráulica Ensayo Compresión" placeholder="Ej. Prensa Hidráulica 2000 kN"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Marca del Instrumento:</label><input type="text" id="eqMarca" class="form-control" value="ELE International / Fluke" placeholder="Ej. ELE International"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Modelo:</label><input type="text" id="eqModelo" class="form-control" value="36-0690/02" placeholder="Ej. 36-0690/02"></div>
+                        <div><label style="font-weight:700; color:#1e3a8a;">Número de Serie:</label><input type="text" id="eqSerie" class="form-control" value="SN-ELE-900" placeholder="Ej. SN-ELE-900"></div>
                         <div><label style="font-weight:700; color:#1e3a8a;">Resolución (R):</label><input type="number" step="0.001" id="eqResolucion" class="form-control" value="0.01"></div>
                         <div><label style="font-weight:700; color:#1e3a8a;">Número de Certificado:</label><input type="text" id="eqCertificado" class="form-control" value="CEI-UTP-03-SI-145-2026" placeholder="03-SI-145-2026"></div>
                         <div><label style="font-weight:700; color:#1e3a8a;">Laboratorio de Calibración:</label><input type="text" id="eqLaboratorio" class="form-control" value="Centro Experimental de Ingeniería - UTP"></div>
                         <div><label style="font-weight:700; color:#1e3a8a;">Fecha de Calibración:</label><input type="date" id="eqFecha" class="form-control" value="2026-02-10"></div>
                         <div><label style="font-weight:700; color:#1e3a8a;">Deriva Estimada (u_deriva):</label><input type="number" step="0.001" id="eqDeriva" class="form-control" value="0.05"></div>
                     </div>
+
 
                     <div style="font-weight:800; color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-table-list"></i> PUNTOS DEL CERTIFICADO DE CALIBRACIÓN</div>
                     <table class="table-custom" style="font-size:0.8rem; margin-bottom:1rem;">
@@ -2994,6 +2996,7 @@
                     }
 
                     document.getElementById('eqCodigo').value = codFinal;
+                    document.getElementById('eqNombre').value = d.nombre || (d.marca ? `${d.marca} ${d.modelo || ''}` : 'Prensa Hidráulica Ensayo Compresión');
                     document.getElementById('eqMarca').value = d.marca || 'GENÉRICO';
                     document.getElementById('eqModelo').value = d.modelo || 'LAB-17025';
                     document.getElementById('eqSerie').value = d.numero_serie || 'S/N';
@@ -3023,6 +3026,7 @@
 
                     if (guardadoExitoso) {
                         alert(` ¡CERTIFICADO ABSORBIDO Y GUARDADO EN LA BASE DE DATOS EXITOSAMENTE!\n\n` +
+                              `• Equipo: ${document.getElementById('eqNombre').value}\n` +
                               `• Código Registrado: ${codFinal}\n` +
                               `• Marca/Modelo: ${d.marca || 'N/A'} ${d.modelo || ''}\n` +
                               `• Certificado N°: ${d.numero_certificado || 'N/A'}\n` +
@@ -3054,6 +3058,7 @@
 
         async function guardarEquipoMetrologicoBD(silencioso = false) {
             const cod = document.getElementById('eqCodigo').value.trim();
+            const nom = document.getElementById('eqNombre').value.trim() || 'Equipo Metrológico';
             if (!cod) {
                 if (!silencioso) alert("Por favor ingrese el Código del Equipo Interno.");
                 return false;
@@ -3080,6 +3085,7 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         codigo: cod,
+                        nombre: nom,
                         marca: document.getElementById('eqMarca').value,
                         modelo: document.getElementById('eqModelo').value,
                         numero_serie: document.getElementById('eqSerie').value,
@@ -3102,6 +3108,13 @@
                     if (tbodyHC) {
                         tbodyHC.innerHTML = `
                             <tr>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">${nom} (${document.getElementById('eqMarca').value} ${document.getElementById('eqModelo').value})</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#1e3a8a;">${data.codigo || cod}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">${document.getElementById('eqCertificado').value}</td>
+                                <td style="border:1px solid #cbd5e1; padding:0.4rem;">${document.getElementById('eqFecha').value}</td>
+                            </tr>
+                        `;
+                    }
                     return true;
                 } else {
                     if (!silencioso) alert("Error al guardar equipo: " + (data.error || "Datos no válidos"));
@@ -3113,6 +3126,7 @@
             }
         }
 
+        window.equiposMetrologicosBDCache = [];
 
         async function cargarEquiposRegistradosBD() {
             const tbody = document.getElementById('tbodyEquiposRegistrados');
@@ -3125,9 +3139,9 @@
                 if (Array.isArray(data)) {
                     window.equiposMetrologicosBDCache = data;
 
-                    // Poblar Selectores de Equipos en el Presupuesto GUM y en la Hoja HC-012
+                    // Poblar Selectores de Equipos con Nombre, Código y Certificado
                     const optionsHTML = '<option value="">-- Seleccionar Equipo de la BD --</option>' +
-                        data.map(e => `<option value="${e.id}">${e.codigo} - ${e.marca || ''} ${e.modelo || ''} (Cert: ${e.numero_certificado || 'N/A'})</option>`).join('');
+                        data.map(e => `<option value="${e.id}">${e.codigo} - ${e.nombre || (e.marca + ' ' + e.modelo)} (Cert: ${e.numero_certificado || 'N/A'})</option>`).join('');
 
                     if (selTop) selTop.innerHTML = optionsHTML;
                     if (selSheet) selSheet.innerHTML = optionsHTML;
@@ -3141,7 +3155,7 @@
                         tbody.innerHTML = data.map(eq => `
                             <tr>
                                 <td><strong style="color:#1e3a8a;">${eq.codigo}</strong></td>
-                                <td>${eq.marca || ''} ${eq.modelo || ''}</td>
+                                <td><strong style="color:#0f172a;">${eq.nombre || 'Equipo Metrológico'}</strong><br><small style="color:#64748b;">${eq.marca || ''} ${eq.modelo || ''}</small></td>
                                 <td>${eq.numero_serie || ''}</td>
                                 <td>${eq.resolucion || 0.01}</td>
                                 <td><span class="badge-status badge-validado">${eq.numero_certificado || 'Certificado'}</span></td>
@@ -3198,7 +3212,8 @@
                 if (tbodyHC) {
                     tbodyHC.innerHTML = `
                         <tr>
-                            <td style="border:1px solid #cbd5e1; padding:0.4rem;">${eq.marca || ''} ${eq.modelo || ''}</td>
+                            <td style="border:1px solid #cbd5e1; padding:0.4rem;">${eq.nombre || (eq.marca + ' ' + eq.modelo)} (${eq.marca || ''} ${eq.modelo || ''})</td>
+
                             <td style="border:1px solid #cbd5e1; padding:0.4rem; font-weight:700; color:#1e3a8a;">${eq.codigo}</td>
                             <td style="border:1px solid #cbd5e1; padding:0.4rem;">${eq.numero_certificado || 'Certificado'}</td>
                             <td style="border:1px solid #cbd5e1; padding:0.4rem;">${eq.fecha_calibracion || ''}</td>

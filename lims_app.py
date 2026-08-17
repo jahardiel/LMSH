@@ -436,6 +436,7 @@ def crear_termometro():
         lab = data.get("laboratorio", "")
         num_cert = data.get("numero_certificado", "CERT-17025")
 
+        nombre = data.get("nombre", f"{marca} {modelo}".strip() or "Equipo Metrológico")
         puntos = data.get("puntos_calibracion", [])
         puntos_anteriores = data.get("puntos_calibracion_anteriores", [])
         tiene_anterior = data.get("tiene_calibracion_anterior", len(puntos_anteriores) > 0)
@@ -447,8 +448,9 @@ def crear_termometro():
         else:
             deriva = 0.0
 
-        term_id = db_manager.agregar_termometro(codigo, marca, modelo, numero_serie, resolucion, deriva, fecha, lab, homogeneidad=homogeneidad, numero_certificado=num_cert)
+        term_id = db_manager.agregar_termometro(codigo, marca, modelo, numero_serie, resolucion, deriva, fecha, lab, homogeneidad=homogeneidad, numero_certificado=num_cert, nombre=nombre)
         db_manager.actualizar_puntos_calibracion(term_id, puntos, puntos_anteriores)
+
 
         return jsonify({
             "success": True, 
