@@ -18,22 +18,28 @@ class GUMCalculator:
         Retorna: (correccion_interpolada, u_cal_estandar, factor_k_cal)
         """
         if not puntos_calibracion:
-            return 0.0, 0.05, 2.0  # Valores predeterminados si no hay datos
+            return 0.0, 0.05, 2.0  # Valores predeterminados si no hay datos de calibración
 
-        temps = np.array([p["temp_indicada"] for p in puntos_calibracion])
-        corrs = np.array([p["correccion"] for p in puntos_calibracion])
-        u_exp = np.array([p["u_expandida"] for p in puntos_calibracion])
-        k_fact = np.array([p["factor_k"] for p in puntos_calibracion])
+        temps = np.array([float(p["temp_indicada"]) for p in puntos_calibracion])
+        corrs = np.array([float(p["correccion"]) for p in puntos_calibracion])
+        u_exp = np.array([float(p.get("u_expandida", 0.1)) for p in puntos_calibracion])
 
-        # Interpolación lineal fuera o dentro de rango (extrapolación constante en bordes)
+        # Ordenar por magnitud/temperatura indicada ascendente para interpolación exacta np.interp
+        idx = np.argsort(temps)
+        temps = temps[idx]
+        corrs = corrs[idx]
+        u_exp = u_exp[idx]
+
+        # Interpolación lineal metrológica exacta dentro del rango de medición
         corr_interp = float(np.interp(temp_medida, temps, corrs))
         u_exp_interp = float(np.interp(temp_medida, temps, u_exp))
-        k_interp = float(np.interp(temp_medida, temps, k_fact))
+        k_interp = 2.0  # Factor de cobertura k para certificados es 2.00 constante
 
-        # Incertidumbre estándar del certificado u_cal = U_cal / k
-        u_cal_std = u_exp_interp / k_interp if k_interp > 0 else u_exp_interp / 2.0
+        # Incertidumbre estándar del certificado u_cal = U_cal / 2.0
+        u_cal_std = u_exp_interp / k_interp
 
         return corr_interp, u_cal_std, k_interp
+
 
     @staticmethod
     def convertir_valor(val: float, orig: str, dest: str, es_delta: bool = False) -> float:

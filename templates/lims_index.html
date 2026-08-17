@@ -1250,11 +1250,11 @@
 
                                 <div class="grid-3" style="gap:0.4rem; font-size:0.75rem;">
                                     <div><label style="color:#cbd5e1;">Resolución (R):</label><input type="number" step="0.001" id="gumResolucion" class="form-control" value="0.1" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
-                                    <div><label style="color:#cbd5e1;">Uncert Cert (U_cal):</label><input type="number" step="0.001" id="gumUCal" class="form-control" value="1.5" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
+                                    <div><label style="color:#cbd5e1;">Uncert Cert (U_cal):</label><input type="number" step="0.001" id="gumUCal" class="form-control" value="0.05" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
                                     <div><label style="color:#cbd5e1; font-weight:800;">Factor Cobertura (k_cert):</label><input type="number" step="0.1" id="gumKCal" class="form-control" value="2.0" readonly style="padding:0.15rem 0.35rem; font-size:0.78rem; background:#e2e8f0; color:#0f172a; font-weight:800;" title="El factor de cobertura k para certificados de calibración siempre es 2.00 conforme a metrología ISO 17025"></div>
 
-                                    <div><label style="color:#cbd5e1;">Deriva Estimada (d):</label><input type="number" step="0.001" id="gumDeriva" class="form-control" value="0.2" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
-                                    <div><label style="color:#cbd5e1;">Variación Amb (h):</label><input type="number" step="0.001" id="gumHomogeneidad" class="form-control" value="0.1" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
+                                    <div><label style="color:#cbd5e1; font-weight:800;">Corrección Cert (C):</label><input type="number" step="0.01" id="gumCorreccion" class="form-control" value="0.00" style="padding:0.15rem 0.35rem; font-size:0.78rem; font-weight:800; color:#0284c7;" title="Valor de la corrección del certificado interpolado para el rango de medición"></div>
+                                    <div><label style="color:#cbd5e1;">Deriva Estimada (d):</label><input type="number" step="0.001" id="gumDeriva" class="form-control" value="0.05" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
                                     <div><label style="color:#cbd5e1;">Nivel Confianza (P):</label>
                                         <select id="gumConfianza" class="form-control" style="padding:0.15rem 0.25rem; font-size:0.75rem;">
                                             <option value="0.9545">95.45% (ISO 17025)</option>
@@ -1262,6 +1262,7 @@
                                         </select>
                                     </div>
                                 </div>
+
                             </div>
 
                             <!-- COLUMNA 2: SECCIÓN DE LECTURAS MUESTRALES (TABLA BASE 5 REGISTROS + BOTÓN AÑADIR) -->
@@ -3197,10 +3198,9 @@
             const resolucion = parseFloat(document.getElementById('gumResolucion').value) || 0.1;
             const uCal = parseFloat(document.getElementById('gumUCal').value) || 1.0;
             const kCal = 2.0; // El factor de cobertura para el certificado de calibración siempre es 2.0
-            const deriva = parseFloat(document.getElementById('gumDeriva').value) || 0.1;
-
-            const homog = parseFloat(document.getElementById('gumHomogeneidad').value) || 0.0;
-
+            const correccion = parseFloat(document.getElementById('gumCorreccion')?.value) || 0.0;
+            const deriva = parseFloat(document.getElementById('gumDeriva')?.value) || 0.05;
+            const homog = parseFloat(document.getElementById('gumHomogeneidad')?.value) || 0.0;
 
             try {
                 const res = await fetch('/api/lims/incertidumbre/evaluar', {
@@ -3211,6 +3211,7 @@
                         resolucion: resolucion,
                         u_calibracion: uCal,
                         k_calibracion: kCal,
+                        correccion: correccion,
                         deriva: deriva,
                         homogeneidad: homog,
                         modulo: mod,
@@ -3218,6 +3219,7 @@
                         unidad_origen: unidadOrigen
                     })
                 });
+
 
 
                 const data = await res.json();
@@ -3300,11 +3302,12 @@
                                 </tr>
                                 <tr>
                                     <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">C</td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Valor de la corrección a la temperatura medida</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Valor de la corrección a la temperatura medida (interpolada del certificado)</td>
                                     <td style="border:1px solid #cbd5e1; padding:0.35rem;">-</td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">0.00</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#0284c7;">${(r.correccion_aplicada !== undefined ? r.correccion_aplicada : correccion).toFixed(2)}</td>
                                     <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
                                 </tr>
+
                             `;
                         }
                     }

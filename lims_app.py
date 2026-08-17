@@ -367,13 +367,17 @@ def api_evaluar_incertidumbre():
         unidad = data.get("unidad", "MPa")
         unidad_origen = data.get("unidad_origen", unidad)
         
-        puntos_cal = [{
-            'temp_indicada': float(np.mean(lecturas)),
-            'temp_patron': float(np.mean(lecturas)),
-            'correccion': 0.0,
-            'u_expandida': u_cal,
-            'factor_k': k_cal
-        }]
+        correccion_req = float(data.get("correccion", 0.0))
+        puntos_cal = data.get("puntos_calibracion")
+        if not puntos_cal:
+            puntos_cal = [{
+                'temp_indicada': float(np.mean(lecturas)),
+                'temp_patron': float(np.mean(lecturas)),
+                'correccion': correccion_req,
+                'u_expandida': u_cal,
+                'factor_k': 2.0
+            }]
+
 
         from gum_calculator import GUMCalculator
         res = GUMCalculator.evaluar_incertidumbre(
