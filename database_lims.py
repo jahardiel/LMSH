@@ -223,11 +223,70 @@ class DatabaseLIMS:
                 """)
             return [dict(row) for row in cursor.fetchall()]
 
-    # ----------------------------------------------------
-    # OPERACIONES SOLICITUDES (LSMCH-NNN-AAAA)
-    # ----------------------------------------------------
+    def crear_solicitud_completa(self, cliente_nombre, proyecto_nombre, ubicacion="", numero_informe="", 
+                                 muestreado_por="", descripcion="SUELO", ident_cliente="SUELO", fuente="", ident_lsmch="",
+                                 fecha_recepcion=None, fecha_entrega_estimada=None, observaciones=""):
+        if not fecha_recepcion:
+            fecha_recepcion = datetime.now().strftime("%Y-%m-%d")
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # 1. Buscar o Crear Cliente
+            cursor.execute("SELECT id FROM clientes WHERE nombre = ?", (cliente_nombre.strip(),))
+            row_c = cursor.fetchone()
+            if row_c:
+                cliente_id = row_c["id"]
+            else:
+                cursor.execute("INSERT INTO clientes (nombre) VALUES (?)", (cliente_nombre.strip(),))
+                cliente_id = cursor.lastrowid
+                
+            # 2. Buscar o Crear Proyecto
+            cursor.execute("SELECT id FROM proyectos WHERE nombre = ? AND cliente_id = ?", (proyecto_nombre.strip(), cliente_id))
+            row_p = cursor.fetchone()
+            if row_p:
+                proyecto_id = row_p["id"]
+            else:
+                cursor.execute("INSERT INTO proyectos (cliente_id, nombre, ubicacion) VALUES (?, ?, ?)", 
+                               (cliente_id, proyecto_nombre.strip(), ubicacion.strip()))
+                proyecto_id = cursor.lastrowid
+
+            # 3. Generar Solicitud LSMCH-NNN-AAAA
+            anio_actual = datetime.now().year
+            cursor.execute("SELECT MAX(numero_correlativo) FROM solicitudes WHERE anio = ?", (anio_actual,))
+            max_num = cursor.fetchone()[0]
+            siguiente_num = 1 if max_num is None else max_num + 1
+            codigo_solicitud = f"LSMCH-{siguiente_num:03d}-{anio_actual}"
+
+            cursor.execute("""
+                INSERT INTO solicitudes (codigo_solicitud, numero_informe, proyecto_id, cliente_id, anio, numero_correlativo,
+                                        fecha_recepcion, fecha_entrega_estimada, responsable_tecnico, observaciones)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (codigo_solicitud, numero_informe.strip() or f"LSMCH-{siguiente_num:03d}-{anio_actual}",
+                  proyecto_id, cliente_id, anio_actual, siguiente_num,
+                  fecha_recepcion, fecha_entrega_estimada, muestreado_por.strip(), observaciones.strip()))
+            
+            sol_id = cursor.lastrowid
+
+            # 4. Crear Muestreo y Muestra asociada
+            cursor.execute("""
+                INSERT INTO muestreos (solicitud_id, codigo_muestreo, fecha_muestreo, responsable_muestreo, ubicacion_muestreo, observaciones)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (sol_id, f"MUE-{siguiente_num:02d}", fecha_recepcion, muestreado_por.strip(), ubicacion.strip(), fuente.strip()))
+            muestreo_id = cursor.lastrowid
+
+            cod_muestra = ident_lsmch.strip() or f"{codigo_solicitud}-M01"
+            cursor.execute("""
+                INSERT INTO muestras (muestreo_id, codigo_muestra, tipo_material, descripcion, profundidad_elemento)
+                VALUES (?, ?, ?, ?, ?)
+            """, (muestreo_id, cod_muestra, "SUELO", descripcion.strip(), fuente.strip()))
+
+            conn.commit()
+            return sol_id, codigo_solicitud
+
     def crear_solicitud(self, proyecto_id, cliente_id, fecha_recepcion=None, fecha_entrega_estimada=None, 
                         responsable_tecnico="Ing. Metrólogo", jefe_laboratorio="Dr. Jefe de Lab", observaciones=""):
+
         if not fecha_recepcion:
             fecha_recepcion = datetime.now().strftime("%Y-%m-%d")
 

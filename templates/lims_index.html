@@ -187,14 +187,14 @@
 
     <!-- NAVEGACIÓN PRINCIPAL -->
     <nav class="lims-nav">
-        <button class="nav-tab active" onclick="switchTab('geotecnia')">
+        <button class="nav-tab active" onclick="switchTab('solicitudes')">
+            <i class="fa-solid fa-folder-open"></i> Solicitudes (LSMCH-NNN-AAAA)
+        </button>
+        <button class="nav-tab" onclick="switchTab('geotecnia')">
             <i class="fa-solid fa-mountain"></i> Módulo de Geotecnia
         </button>
         <button class="nav-tab" onclick="switchTab('dashboard')">
             <i class="fa-solid fa-chart-line"></i> Dashboard
-        </button>
-        <button class="nav-tab" onclick="switchTab('solicitudes')">
-            <i class="fa-solid fa-folder-open"></i> Solicitudes (LSMCH-NNN-AAAA)
         </button>
         <button class="nav-tab" onclick="switchTab('concreto')">
             <i class="fa-solid fa-cubes"></i> Módulo de Concreto
@@ -220,7 +220,8 @@
         </div>
 
         <!-- 1. MÓDULO DE GEOTECNIA -->
-        <section id="tab-geotecnia" class="tab-content active">
+        <section id="tab-geotecnia" class="tab-content">
+
             <div class="subnav-pills">
                 <button class="subnav-pill active" onclick="switchSubGeo('granulometria-hc006')">
                     <i class="fa-solid fa-file-excel"></i> Granulometría (ASTM D6913 / HC-LSMCH-006)
@@ -496,12 +497,93 @@
             <div class="card-panel"><div class="panel-header"><span class="panel-title"><i class="fa-solid fa-clock-rotate-left"></i> Solicitudes Recientes</span></div><div class="table-responsive"><table class="table-lims"><thead><tr><th>Expediente</th><th>Cliente</th><th>Proyecto</th><th>Estado</th></tr></thead><tbody id="tablaSolicitudesRecientes"></tbody></table></div></div>
         </section>
 
-        <section id="tab-solicitudes" class="tab-content">
+        <!-- 1. MÓDULO DE SOLICITUDES (PRIMERA PESTAÑA Y ACTIVA POR DEFECTO) -->
+        <section id="tab-solicitudes" class="tab-content active">
+            
+            <!-- FORMULARIO DE REGISTRO DE NUEVA SOLICITUD / ORDEN DE SERVICIO -->
+            <div class="card-panel" style="margin-bottom: 1.5rem;">
+                <div class="panel-header">
+                    <span class="panel-title"><i class="fa-solid fa-file-circle-plus"></i> CREACIÓN DE NUEVA SOLICITUD DE ENSAYOS / ORDEN DE SERVICIO</span>
+                    <span class="badge-solicitud">LIMS ISO/IEC 17025</span>
+                </div>
+                
+                <div style="background:#f8fafc; border:1.5px solid #1e3a8a; border-radius:6px; padding:1.25rem;">
+                    <div class="grid-2" style="gap:0.85rem 1.5rem; font-size:0.88rem;">
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight:700; color:#1e3a8a;">PROYECTO:</label>
+                            <input type="text" id="nuevaSolProyecto" class="form-control" value="CONSTRUCCION DE NUEVO PABELLON" placeholder="Nombre completo del proyecto">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight:700; color:#1e3a8a;">LOC. DE PROYECTO:</label>
+                            <input type="text" id="nuevaSolUbicacion" class="form-control" value="URBANIZACIÓN EL CARMEN, DAVID, CHIRIQUI" placeholder="Ubicación exacta">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight:700; color:#1e3a8a;">CLIENTE:</label>
+                            <input type="text" id="nuevaSolCliente" class="form-control" value="THE KING SCHOOL DAVID, S.A." placeholder="Empresa o Nombre del cliente">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight:700; color:#1e3a8a;">INFORME:</label>
+                            <input type="text" id="nuevaSolInforme" class="form-control" value="LSMCH-098-2026" placeholder="Ej. LSMCH-098-2026">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight:700; color:#1e3a8a;">MUESTREADO POR:</label>
+                            <input type="text" id="nuevaSolMuestreado" class="form-control" value="JQ, NS, CO" placeholder="Iniciales o Nombres">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight:700; color:#1e3a8a;">DESCRIPCIÓN DE MUESTRA:</label>
+                            <input type="text" id="nuevaSolDesc" class="form-control" value="SUELO" placeholder="Ej. SUELO">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight:700; color:#1e3a8a;">IDENT. DEL CLIENTE:</label>
+                            <input type="text" id="nuevaSolIdCliente" class="form-control" value="SUELO" placeholder="Ej. SUELO">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight:700; color:#1e3a8a;">FUENTE / SONDEO:</label>
+                            <input type="text" id="nuevaSolFuente" class="form-control" value="SPT 1 Y 2 / 7m @ 8m" placeholder="Ej. SPT 1 Y 2 / 7m @ 8m">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight:700; color:#1e3a8a;">IDENT. DEL LSMCH:</label>
+                            <input type="text" id="nuevaSolIdLsmch" class="form-control" value="M5022@023-2026-2" placeholder="Ej. M5022@023-2026-2">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight:700; color:#1e3a8a;">FECHA DE RECEPCIÓN:</label>
+                            <input type="date" id="nuevaSolFecha" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top:1.25rem; display:flex; justify-content:flex-end; gap:0.75rem;">
+                        <button class="btn btn-success" style="padding:0.6rem 1.25rem; font-size:0.9rem;" onclick="crearNuevaSolicitudLSMCH()">
+                            <i class="fa-solid fa-plus-circle"></i> + Crear Solicitud y Cargar Hoja HC-006
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REGISTRO Y TABLA DE SOLICITUDES -->
             <div class="card-panel">
-                <div class="panel-header"><span class="panel-title"><i class="fa-solid fa-list-check"></i> Registro de Solicitudes LSMCH</span><button class="btn btn-secondary" onclick="cargarSolicitudesTabla()"><i class="fa-solid fa-arrows-rotate"></i> Actualizar</button></div>
-                <div class="table-responsive"><table class="table-lims"><thead><tr><th>Código Solicitud</th><th>Cliente</th><th>Proyecto</th><th>Fecha Recepción</th><th>Estado</th></tr></thead><tbody id="tablaSolicitudesCompleta"></tbody></table></div>
+                <div class="panel-header">
+                    <span class="panel-title"><i class="fa-solid fa-list-check"></i> Registro de Solicitudes LSMCH en Base de Datos</span>
+                    <button class="btn btn-secondary" onclick="cargarSolicitudesTabla()"><i class="fa-solid fa-arrows-rotate"></i> Actualizar Listado</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-lims">
+                        <thead>
+                            <tr>
+                                <th>Código Solicitud</th>
+                                <th>Número de Informe</th>
+                                <th>Cliente</th>
+                                <th>Proyecto</th>
+                                <th>Fecha Recepción</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaSolicitudesCompleta"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
+
 
         <section id="tab-concreto" class="tab-content"><div class="card-panel"><h3>Módulo de Concreto</h3></div></section>
         <section id="tab-incertidumbre" class="tab-content"><div class="card-panel"><h3>Módulo de Incertidumbre GUM</h3></div></section>
@@ -663,6 +745,58 @@
             document.getElementById('hcOrden').value = codigo;
             cargarDatosPorSolicitud(codigo);
         }
+
+        async function crearNuevaSolicitudLSMCH() {
+            const pry = document.getElementById('nuevaSolProyecto').value.trim();
+            const cli = document.getElementById('nuevaSolCliente').value.trim();
+            const ubi = document.getElementById('nuevaSolUbicacion').value.trim();
+            const inf = document.getElementById('nuevaSolInforme').value.trim();
+            const mue = document.getElementById('nuevaSolMuestreado').value.trim();
+            const des = document.getElementById('nuevaSolDesc').value.trim();
+            const idC = document.getElementById('nuevaSolIdCliente').value.trim();
+            const fue = document.getElementById('nuevaSolFuente').value.trim();
+            const idL = document.getElementById('nuevaSolIdLsmch').value.trim();
+            const fec = document.getElementById('nuevaSolFecha').value || new Date().toISOString().split('T')[0];
+
+            if (!pry || !cli) {
+                alert("Por favor ingrese el Nombre del Proyecto y del Cliente.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/lims/solicitudes', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        cliente_nombre: cli,
+                        proyecto_nombre: pry,
+                        ubicacion: ubi,
+                        numero_informe: inf,
+                        muestreado_por: mue,
+                        descripcion: des,
+                        ident_cliente: idC,
+                        fuente: fue,
+                        ident_lsmch: idL,
+                        fecha_recepcion: fec
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert(`¡ÉXITO! Solicitud ${data.codigo_solicitud} registrada correctamente.`);
+                    cargarSolicitudesTabla();
+                    cargarStatsDashboard();
+                    
+                    // Seleccionar y cargar datos en la hoja HC-006 inmediatamente
+                    seleccionarSolicitud(data.codigo_solicitud);
+                } else {
+                    alert("Error al registrar solicitud: " + (data.error || "Datos no válidos"));
+                }
+            } catch(e) {
+                alert("Error de conexión al registrar la nueva solicitud.");
+            }
+        }
+
 
 
         async function calcularHojaHC006() {

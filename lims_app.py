@@ -96,26 +96,47 @@ def handle_proyectos():
 def handle_solicitudes():
     if request.method == 'POST':
         data = request.json or {}
-        proyecto_id = data.get("proyecto_id")
-        cliente_id = data.get("cliente_id")
-        if not proyecto_id or not cliente_id:
-            return jsonify({"error": "Proyecto y Cliente son obligatorios"}), 400
+        cliente_nombre = data.get("cliente_nombre")
+        proyecto_nombre = data.get("proyecto_nombre")
+        
+        if cliente_nombre and proyecto_nombre:
+            sol_id, cod_sol = db.crear_solicitud_completa(
+                cliente_nombre=cliente_nombre,
+                proyecto_nombre=proyecto_nombre,
+                ubicacion=data.get("ubicacion", ""),
+                numero_informe=data.get("numero_informe", ""),
+                muestreado_por=data.get("muestreado_por", ""),
+                descripcion=data.get("descripcion", "SUELO"),
+                ident_cliente=data.get("ident_cliente", "SUELO"),
+                fuente=data.get("fuente", ""),
+                ident_lsmch=data.get("ident_lsmch", ""),
+                fecha_recepcion=data.get("fecha_recepcion"),
+                fecha_entrega_estimada=data.get("fecha_entrega_estimada"),
+                observaciones=data.get("observaciones", "")
+            )
+        else:
+            proyecto_id = data.get("proyecto_id")
+            cliente_id = data.get("cliente_id")
+            if not proyecto_id or not cliente_id:
+                return jsonify({"error": "Debe especificar Cliente y Proyecto"}), 400
+                
+            sol_id, cod_sol = db.crear_solicitud(
+                proyecto_id=proyecto_id,
+                cliente_id=cliente_id,
+                fecha_recepcion=data.get("fecha_recepcion"),
+                fecha_entrega_estimada=data.get("fecha_entrega_estimada"),
+                responsable_tecnico=data.get("responsable_tecnico", "Ing. Metrólogo LSMCH"),
+                jefe_laboratorio=data.get("jefe_laboratorio", "Dr. Jefe de Laboratorio"),
+                observaciones=data.get("observaciones", "")
+            )
             
-        sol_id, cod_sol = db.crear_solicitud(
-            proyecto_id=proyecto_id,
-            cliente_id=cliente_id,
-            fecha_recepcion=data.get("fecha_recepcion"),
-            fecha_entrega_estimada=data.get("fecha_entrega_estimada"),
-            responsable_tecnico=data.get("responsable_tecnico", "Ing. Metrólogo LSMCH"),
-            jefe_laboratorio=data.get("jefe_laboratorio", "Dr. Jefe de Laboratorio"),
-            observaciones=data.get("observaciones", "")
-        )
         return jsonify({
             "success": True,
             "solicitud_id": sol_id,
             "codigo_solicitud": cod_sol,
-            "message": f"Solicitud {cod_sol} generada exitosamente con numeración anual automática."
+            "message": f"Solicitud {cod_sol} generada exitosamente en la base de datos."
         })
+
     else:
         limite = int(request.args.get("limite", 50))
         return jsonify(db.obtener_solicitudes(limite=limite))
