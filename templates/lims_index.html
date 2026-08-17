@@ -1253,8 +1253,8 @@
                                     <div><label style="color:#cbd5e1;">Uncert Cert (U_cal):</label><input type="number" step="0.001" id="gumUCal" class="form-control" value="0.05" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
                                     <div><label style="color:#cbd5e1; font-weight:800;">Factor Cobertura (k_cert):</label><input type="number" step="0.1" id="gumKCal" class="form-control" value="2.0" readonly style="padding:0.15rem 0.35rem; font-size:0.78rem; background:#e2e8f0; color:#0f172a; font-weight:800;" title="El factor de cobertura k para certificados de calibración siempre es 2.00 conforme a metrología ISO 17025"></div>
 
-                                    <div><label style="color:#cbd5e1; font-weight:800;">Corrección Cert (C):</label><input type="number" step="0.01" id="gumCorreccion" class="form-control" value="0.00" style="padding:0.15rem 0.35rem; font-size:0.78rem; font-weight:800; color:#0284c7;" title="Valor de la corrección del certificado interpolado para el rango de medición"></div>
                                     <div><label style="color:#cbd5e1;">Deriva Estimada (d):</label><input type="number" step="0.001" id="gumDeriva" class="form-control" value="0.05" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
+                                    <div><label style="color:#cbd5e1;">Variación Amb (h):</label><input type="number" step="0.001" id="gumHomogeneidad" class="form-control" value="0.1" style="padding:0.15rem 0.35rem; font-size:0.78rem;"></div>
                                     <div><label style="color:#cbd5e1;">Nivel Confianza (P):</label>
                                         <select id="gumConfianza" class="form-control" style="padding:0.15rem 0.25rem; font-size:0.75rem;">
                                             <option value="0.9545">95.45% (ISO 17025)</option>
@@ -1262,6 +1262,7 @@
                                         </select>
                                     </div>
                                 </div>
+
 
                             </div>
 
@@ -3356,13 +3357,15 @@
                             tbPaso2.innerHTML = r.tabla_presupuesto.map((f, idx) => {
                                 const xiTag = (mod === 'compresion') ? (idx === 0 ? 'P' : (idx === 1 ? 'CP' : 'd')) : (idx === 0 ? 'L' : (idx === 1 ? 'C' : `X${idx+1}`));
                                 const simboloXi = f["simbolo"] || (f["Tipo"] === 'A' ? 'u_rep' : (idx === 1 ? 'Ucal' : (idx === 2 ? 'res' : 'u_deriva')));
-                                const parametroCuant = f["parametro"] || (f["Tipo"] === 'A' ? 'Variación de lecturas' : (f["fuente"].toLowerCase().includes('calibr') ? 'Incertidumbre del certificado' : (f["fuente"].toLowerCase().includes('resolución') || f["fuente"].toLowerCase().includes('resolucion') ? 'Resolución' : 'Deriva instrumental')));
+                                const fuenteNombre = (f["Fuente de Incertidumbre"] || f["fuente"] || '').toString();
+                                const fuenteLower = fuenteNombre.toLowerCase();
+                                const parametroCuant = f["parametro"] || (f["Tipo"] === 'A' ? 'Variación de lecturas' : (fuenteLower.includes('calibr') ? 'Incertidumbre del certificado' : (fuenteLower.includes('resolución') || fuenteLower.includes('resolucion') ? 'Resolución' : 'Deriva instrumental')));
                                 const valorConst = typeof f["Valor xi"] === 'number' ? f["Valor xi"].toFixed(3) : (typeof f["valor_xi"] === 'number' ? f["valor_xi"].toFixed(3) : (f["Valor xi"] || f["valor_xi"] || '-'));
 
                                 return `
                                     <tr>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${xiTag}</td>
-                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${fuenteNombre}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem;">${parametroCuant}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem;">${f["Distribución"] || f["distribucion"]}</td>
                                         <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;"><span class="badge-status ${f["Tipo"] === 'A' ? 'badge-validado' : 'badge-en-proceso'}">${f["Tipo"] || f["tipo"]}</span></td>
@@ -3378,21 +3381,24 @@
                         if (tbPaso3Cuant) {
                             tbPaso3Cuant.innerHTML = r.tabla_presupuesto.map((f, idx) => {
                                 const xiTag = (mod === 'compresion') ? (idx === 0 ? 'P' : (idx === 1 ? 'CP' : 'd')) : (idx === 0 ? 'L' : (idx === 1 ? 'C' : `X${idx+1}`));
-                                const fuenteNombre = f["Fuente de Incertidumbre"] || f["fuente"];
+                                const fuenteNombre = (f["Fuente de Incertidumbre"] || f["fuente"] || '').toString();
+                                const fuenteLower = fuenteNombre.toLowerCase();
+                                const tipoVal = (f["tipo"] || f["Tipo"] || '').toUpperCase();
                                 let ecuacionUncert = "";
-                                if (f["tipo"] === 'A') {
+                                if (tipoVal === 'A') {
                                     ecuacionUncert = "u(rep) = s(L) / √n";
-                                } else if (fuenteNombre.toLowerCase().includes('calibr')) {
+                                } else if (fuenteLower.includes('calibr')) {
                                     ecuacionUncert = "u(Cal) = U / k";
-                                } else if (fuenteNombre.toLowerCase().includes('resoluc') || fuenteNombre.toLowerCase().includes('resolución')) {
+                                } else if (fuenteLower.includes('resoluc') || fuenteLower.includes('resolución')) {
                                     ecuacionUncert = "u(res) = Resolución / (2·√3)";
-                                } else if (fuenteNombre.toLowerCase().includes('deriva')) {
+                                } else if (fuenteLower.includes('deriva')) {
                                     ecuacionUncert = "u(deriva) = d / √3";
                                 } else {
                                     ecuacionUncert = "u(xᵢ) = Δx / √3";
                                 }
 
                                 const uxiVal = typeof f["u_std"] === 'number' ? f["u_std"].toFixed(4) : (typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"].toFixed(4) : (f["u_std"] || '0.0000'));
+
 
                                 return `
                                     <tr>
