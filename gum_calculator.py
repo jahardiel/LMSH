@@ -35,6 +35,38 @@ class GUMCalculator:
 
         return corr_interp, u_cal_std, k_interp
 
+    @staticmethod
+    def convertir_valor(val: float, orig: str, dest: str, es_delta: bool = False) -> float:
+        """
+        Convierte lecturas o diferencias metrológicas entre °F <-> °C, psi <-> MPa, in <-> mm.
+        """
+        if not orig or not dest:
+            return float(val)
+        u_orig = str(orig).strip().lower()
+        u_dest = str(dest).strip().lower()
+        if u_orig == u_dest:
+            return float(val)
+
+        # Temperatura °F <-> °C
+        if ("°f" in u_orig or "f" == u_orig) and ("°c" in u_dest or "c" == u_dest):
+            return float(val / 1.8) if es_delta else float((val - 32.0) / 1.8)
+        elif ("°c" in u_orig or "c" == u_orig) and ("°f" in u_dest or "f" == u_dest):
+            return float(val * 1.8) if es_delta else float(val * 1.8 + 32.0)
+
+        # Presión psi <-> MPa
+        elif "psi" in u_orig and "mpa" in u_dest:
+            return float(val * 0.006894757)
+        elif "mpa" in u_orig and "psi" in u_dest:
+            return float(val * 145.0377)
+
+        # Longitud in <-> mm
+        elif ("in" in u_orig or "pulg" in u_orig) and "mm" in u_dest:
+            return float(val * 25.4)
+        elif "mm" in u_orig and ("in" in u_dest or "pulg" in u_dest):
+            return float(val / 25.4)
+
+        return float(val)
+
     @classmethod
     def evaluar_incertidumbre(
         cls,
@@ -52,12 +84,40 @@ class GUMCalculator:
         lecturas_longitud: Optional[List[float]] = None,
         puntos_calibracion_vernier: Optional[List[Dict]] = None,
         resolucion_vernier: float = 0.01,
-        deriva_vernier: float = 0.005
+        deriva_vernier: float = 0.005,
+        unidad_origen: Optional[str] = None
     ) -> Dict:
         """
         Realiza la evaluación de la incertidumbre de medición paso a paso según la GUM.
         Soporta Módulo 1 (Temperatura), Módulo 2 (Asentamiento) y Módulo 3 (Compresión ASTM C39).
+        Transforma automáticamente datos del certificado si unidad_origen != unidad (unidad destino).
         """
+        unidad_destino = unidad
+        u_orig = unidad_origen or unidad_destino
+
+        # Convertir datos si unidad_origen es diferente de unidad_destino
+        if u_orig and unidad_destino and u_orig.strip().lower() != unidad_destino.strip().lower():
+            # 1. Transformar resolucion y deriva
+            resolucion = cls.convertir_valor(resolucion, u_orig, unidad_destino, es_delta=True)
+            deriva_estimada = cls.convertir_valor(deriva_estimada, u_orig, unidad_destino, es_delta=True)
+            homogeneidad_concreto = cls.convertir_valor(homogeneidad_concreto, u_orig, unidad_destino, es_delta=True)
+
+            # 2. Transformar puntos de calibracion
+            puntos_convertidos = []
+            for p in (puntos_calibracion or []):
+                p_ind = cls.convertir_valor(p.get("temp_indicada", 0.0), u_orig, unidad_destino, es_delta=False)
+                p_pat = cls.convertir_valor(p.get("temp_patron", 0.0), u_orig, unidad_destino, es_delta=False)
+                p_corr = cls.convertir_valor(p.get("correccion", 0.0), u_orig, unidad_destino, es_delta=True)
+                p_uexp = cls.convertir_valor(p.get("u_expandida", 0.0), u_orig, unidad_destino, es_delta=True)
+                puntos_convertidos.append({
+                    "temp_indicada": p_ind,
+                    "temp_patron": p_pat,
+                    "correccion": p_corr,
+                    "u_expandida": p_uexp,
+                    "factor_k": p.get("factor_k", 2.0)
+                })
+            puntos_calibracion = puntos_convertidos
+
         mod_clean = str(modulo).lower()
         es_compresion = ("compresion" in mod_clean)
         es_asentamiento = ("asentamiento" in mod_clean or "slump" in mod_clean)

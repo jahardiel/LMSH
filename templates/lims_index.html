@@ -1213,20 +1213,48 @@
                     <div style="font-weight:800; color:#1e3a8a; font-size:0.88rem; margin-bottom:0.75rem; border-bottom:1px solid #cbd5e1; padding-bottom:0.25rem;">
                         <i class="fa-solid fa-sliders"></i> DATOS DE ENTRADA Y PARÁMETROS METROLÓGICOS
                     </div>
+
+                    <!-- CAJA DE CONVERSIÓN Y TRANSFORMACIÓN DE UNIDADES METROLÓGICAS -->
+                    <div style="background:linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%); border:1.5px solid #0284c7; border-radius:8px; padding:0.85rem; margin-bottom:1rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
+                            <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+                                <span style="font-weight:900; color:#0369a1; font-size:0.85rem;"><i class="fa-solid fa-arrows-rotate"></i> TRANSFORMACIÓN DE UNIDADES:</span>
+                                
+                                <label style="font-weight:700; color:#0369a1; font-size:0.8rem;">Unidad del Certificado / Origen:</label>
+                                <select id="gumUnidadOrigen" class="form-control" style="font-weight:800; width:100px; color:#1e3a8a; background:#ffffff; border:1px solid #0284c7;" onchange="actualizarInfoTransformacionUnidades()">
+                                    <option value="°F">°F</option>
+                                    <option value="°C" selected>°C</option>
+                                    <option value="psi">psi</option>
+                                    <option value="MPa">MPa</option>
+                                    <option value="in">in</option>
+                                    <option value="mm">mm</option>
+                                    <option value="kN">kN</option>
+                                </select>
+
+                                <i class="fa-solid fa-right-long" style="color:#0284c7; font-size:1.1rem;"></i>
+
+                                <label style="font-weight:700; color:#0369a1; font-size:0.8rem;">Unidad Objetivo del Cálculo / Reporte:</label>
+                                <select id="gumUnidad" class="form-control" style="font-weight:800; width:100px; color:#1e3a8a; background:#ffffff; border:1px solid #0284c7;" onchange="actualizarInfoTransformacionUnidades()">
+                                    <option value="°C" selected>°C</option>
+                                    <option value="°F">°F</option>
+                                    <option value="MPa">MPa</option>
+                                    <option value="psi">psi</option>
+                                    <option value="mm">mm</option>
+                                    <option value="in">in</option>
+                                </select>
+                            </div>
+                            <div id="lblBadgeTransformacionUnidades" style="font-weight:800; font-size:0.78rem; background:#ffffff; color:#0284c7; border:1px solid #0284c7; padding:0.35rem 0.75rem; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                                <i class="fa-solid fa-check"></i> Sin conversión (Mismas unidades)
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="grid-4" style="gap:0.75rem; font-size:0.82rem;">
                         <div>
                             <label style="font-weight:700; color:#1e3a8a;">Lecturas Obtenidas de Campo/Lab:</label>
                             <input type="text" id="gumLecturas" class="form-control" value="28.5, 28.7, 28.4, 28.6" placeholder="Ej. 28.5, 28.7, 28.4">
                         </div>
-                        <div>
-                            <label style="font-weight:700; color:#1e3a8a;">Unidad de Medida:</label>
-                            <select id="gumUnidad" class="form-control" style="font-weight:700;">
-                                <option value="MPa">MPa</option>
-                                <option value="psi">psi</option>
-                                <option value="°C">°C</option>
-                                <option value="mm">mm</option>
-                            </select>
-                        </div>
+
                         <div>
                             <label style="font-weight:700; color:#1e3a8a;">Resolución Equipo (R):</label>
                             <input type="number" step="0.001" id="gumResolucion" class="form-control" value="0.1">
@@ -2907,6 +2935,43 @@
             `;
         }
 
+        function actualizarInfoTransformacionUnidades() {
+            const orig = document.getElementById('gumUnidadOrigen')?.value || '°C';
+            const dest = document.getElementById('gumUnidad')?.value || '°C';
+            const badge = document.getElementById('lblBadgeTransformacionUnidades');
+
+            if (!badge) return;
+
+            if (orig === dest) {
+                badge.innerHTML = `<i class="fa-solid fa-check"></i> Sin conversión (${orig} ➔ ${dest})`;
+                badge.style.background = "#ffffff";
+                badge.style.color = "#0284c7";
+                badge.style.borderColor = "#0284c7";
+            } else {
+                let formulaStr = "";
+                if (orig === '°F' && dest === '°C') {
+                    formulaStr = "T_°C = (T_°F - 32) / 1.8 | Incertidumbre: Δ°C = Δ°F / 1.8";
+                } else if (orig === '°C' && dest === '°F') {
+                    formulaStr = "T_°F = T_°C · 1.8 + 32 | Incertidumbre: Δ°F = Δ°C · 1.8";
+                } else if (orig === 'psi' && dest === 'MPa') {
+                    formulaStr = "P_MPa = P_psi · 0.006895 | Incertidumbre: U_MPa = U_psi · 0.006895";
+                } else if (orig === 'MPa' && dest === 'psi') {
+                    formulaStr = "P_psi = P_MPa · 145.038 | Incertidumbre: U_psi = U_MPa · 145.038";
+                } else if (orig === 'in' && dest === 'mm') {
+                    formulaStr = "L_mm = L_in · 25.4 | Incertidumbre: U_mm = U_in · 25.4";
+                } else if (orig === 'mm' && dest === 'in') {
+                    formulaStr = "L_in = L_mm / 25.4 | Incertidumbre: U_in = U_mm / 25.4";
+                } else {
+                    formulaStr = `Conversión activa ${orig} ➔ ${dest}`;
+                }
+
+                badge.innerHTML = `<i class="fa-solid fa-right-left"></i> TRANSFORMACIÓN ACTIVA: <strong>${orig} ➔ ${dest}</strong><br><small style="font-size:0.72rem;">${formulaStr}</small>`;
+                badge.style.background = "#fef3c7";
+                badge.style.color = "#92400e";
+                badge.style.borderColor = "#f59e0b";
+            }
+        }
+
         async function calcularIncertidumbreGUM() {
             const lecturasRaw = document.getElementById('gumLecturas').value;
             const arrLecturas = lecturasRaw.split(',').map(x => parseFloat(x.trim())).filter(x => !isNaN(x));
@@ -2917,6 +2982,7 @@
 
             const mod = document.getElementById('gumModulo').value;
             const unidad = document.getElementById('gumUnidad').value;
+            const unidadOrigen = document.getElementById('gumUnidadOrigen')?.value || unidad;
             const resolucion = parseFloat(document.getElementById('gumResolucion').value) || 0.1;
             const uCal = parseFloat(document.getElementById('gumUCal').value) || 1.0;
             const kCal = parseFloat(document.getElementById('gumKCal').value) || 2.0;
@@ -2935,9 +3001,11 @@
                         deriva: deriva,
                         homogeneidad: homog,
                         modulo: mod,
-                        unidad: unidad
+                        unidad: unidad,
+                        unidad_origen: unidadOrigen
                     })
                 });
+
 
                 const data = await res.json();
                 if (data.success && data.resultado) {

@@ -365,6 +365,7 @@ def api_evaluar_incertidumbre():
         homogeneidad = float(data.get("homogeneidad", 0.0))
         modulo = data.get("modulo", "compresion")
         unidad = data.get("unidad", "MPa")
+        unidad_origen = data.get("unidad_origen", unidad)
         
         puntos_cal = [{
             'temp_indicada': float(np.mean(lecturas)),
@@ -382,8 +383,10 @@ def api_evaluar_incertidumbre():
             deriva_estimada=deriva,
             homogeneidad_concreto=homogeneidad,
             unidad=unidad,
-            modulo=modulo
+            modulo=modulo,
+            unidad_origen=unidad_origen
         )
+
 
         def sanitize_json(obj):
             if isinstance(obj, dict):
