@@ -3234,11 +3234,12 @@
                     const nombreProceso = document.getElementById('incNombreEnsayoInput')?.value || selectMod.options[selectMod.selectedIndex].text;
                     const modeloInfo = obtenerModeloMatematicoEnsayo(mod, nombreProceso);
 
-                    document.getElementById('lblHc012NombreProceso').innerText = nombreProceso;
-                    document.getElementById('lblHc012MagnitudMedida').innerText = nombreProceso;
-                    document.getElementById('lblHc012UnidadMedida').innerText = unidad;
-                    document.getElementById('lblHc012EcuacionModelo').innerText = modeloInfo.ecuacion;
-                    document.getElementById('lblHc012DescripcionModelo').innerText = modeloInfo.descripcion;
+                    if (document.getElementById('lblHc012NombreProceso')) document.getElementById('lblHc012NombreProceso').innerText = nombreProceso;
+                    if (document.getElementById('lblHc012MagnitudMedida')) document.getElementById('lblHc012MagnitudMedida').innerText = nombreProceso;
+                    if (document.getElementById('lblHc012UnidadMedida')) document.getElementById('lblHc012UnidadMedida').innerText = unidad;
+                    if (document.getElementById('lblHc012EcuacionModelo')) document.getElementById('lblHc012EcuacionModelo').innerText = modeloInfo.ecuacion;
+                    if (document.getElementById('lblHc012DescripcionModelo')) document.getElementById('lblHc012DescripcionModelo').innerText = modeloInfo.descripcion;
+
 
                     // Paso 3 Salida y Paso 4/5 Resumen conforme al validado UTP
                     if (document.getElementById('lblPaso3SalidaMesurando')) document.getElementById('lblPaso3SalidaMesurando').innerText = (mod === 'compresion') ? "f'c" : "T";
@@ -3473,8 +3474,10 @@
                     alert("Error en el cálculo GUM: " + (data.error || "Datos no válidos"));
                 }
             } catch(e) {
-                alert("Error de conexión al calcular la Incertidumbre GUM.");
+                console.error("Error en calcularIncertidumbreGUM:", e);
+                alert("Error de procesamiento al calcular la Incertidumbre GUM: " + e.message);
             }
+
         }
 
         function dibujarPieHC012(fuentes) {
