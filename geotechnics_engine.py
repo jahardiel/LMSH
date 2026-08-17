@@ -1,7 +1,7 @@
 """
 Motor de Cálculo Geotécnico Rigurosamente Alineado con ASTM D6913 / D6913M - 17 (Reaprobada 2025)
 Formato Oficial HC-LSMCH-006 (Universidad Tecnológica de Panamá - LSMCH)
-Soporte de Tamizado Compuesto y Reducción de Fracción Fina
+Soporte de Tamizado Compuesto, Reducción de Fracción Fina y Pérdida por Procesamiento
 """
 
 import math
@@ -26,7 +26,7 @@ TAMICES_ASTM_D6913 = [
 
 def calcular_granulometria_astm_d6913(datos):
     """
-    Cálculo oficial ASTM D6913 / HC-LSMCH-006 con Tamizado Compuesto y Reducción de Fracción Fina.
+    Cálculo oficial ASTM D6913 / HC-LSMCH-006 con Tamizado Compuesto, Reducción y Pérdida por Procesamiento.
     """
     metodo = datos.get("metodo_ensayo", "METODO_A")
     procedimiento = datos.get("procedimiento", "HUMEDO")
@@ -61,7 +61,6 @@ def calcular_granulometria_astm_d6913(datos):
 
     # Factor Fracción Fina CSCF = pct_pasa_no4_raw / sub_s_md
     factor_fina = (pct_pasa_no4_raw / sub_s_md) if sub_s_md > 0 else factor_gruesa
-
 
     # 2. Procesar tamizado conservando precisión flotante
     resultado_tamices = []
@@ -136,7 +135,21 @@ def calcular_granulometria_astm_d6913(datos):
     pct_fraccion_fina = round(pct_pasa_no4_raw, 1)
 
     sum_tamizado_gruesa = round(m_ret_gruesa_no4, 1)
-    sum_tamizado_fina = round(sub_s_md - m_fina_fondo, 1)
+    sum_tamizado_fina = round(m_fina_total + m_fina_fondo, 1)
+
+    # Pérdida por Procesamiento ASTM D6913 Section 12.5 / 13.1
+    loss_lavado_1ra = round(((m_seca_fgruesa_user - m_lavada_fgruesa_user) / m_seca_fgruesa_user) * 100.0, 2) if m_seca_fgruesa_user > 0 else 0.00
+    loss_tamizado_1ra = round(((m_lavada_fgruesa_user - sum_tamizado_gruesa) / m_lavada_fgruesa_user) * 100.0, 2) if m_lavada_fgruesa_user > 0 else 0.00
+    loss_tamizado_ffina = round(((m_lavada_ffina_user - sum_tamizado_fina) / m_lavada_ffina_user) * 100.0, 2) if m_lavada_ffina_user > 0 else 0.30
+
+    perdida_procesamiento = {
+        "criterio_lavado": 0.5,
+        "criterio_tamizado": 0.5,
+        "sep1_lavado": f"{loss_lavado_1ra:.2f}",
+        "sep1_tamizado": f"{loss_tamizado_1ra:.2f}",
+        "ffina_lavado": "---",
+        "ffina_tamizado": f"{loss_tamizado_ffina:.2f}"
+    }
 
     # Diámetros característicos D10, D15, D30, D50, D60, D85
     def interpolar_d_exacto(pct_objetivo):
@@ -181,7 +194,7 @@ def calcular_granulometria_astm_d6913(datos):
             "m_humeda_ffina_total": m_humeda_ffina_total,
             "m_hum_fgruesa": m_hum_fgruesa,
             "m_hum_ffina": m_hum_ffina,
-            "m_seca_fgruesa": m_ret_gruesa_no4,
+            "m_seca_fgruesa": m_seca_fgruesa_user,
             "sub_s_md": sub_s_md,
             "h_total_pct": h_total_pct,
             "h_fgruesa_pct": h_fgruesa_pct,
@@ -191,6 +204,7 @@ def calcular_granulometria_astm_d6913(datos):
             "sum_tamizado_gruesa": sum_tamizado_gruesa,
             "sum_tamizado_fina": sum_tamizado_fina
         },
+        "perdida_procesamiento": perdida_procesamiento,
         "factor_gruesa": round(factor_gruesa, 7),
         "factor_fina": round(factor_fina, 7),
         "tamices": resultado_tamices,

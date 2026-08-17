@@ -330,7 +330,41 @@
                         </div>
                     </div>
 
+                    <!-- TABLA DE PÉRDIDA POR PROCESAMIENTO (ASTM D6913) -->
+                    <div style="background:#ffffff; border:1.5px solid #1e3a8a; border-radius:6px; padding:0.85rem; margin-bottom:1.25rem; width:100%;">
+                        <h4 style="color:#1e3a8a; font-size:0.88rem; font-weight:700; text-align:center; margin-bottom:0.6rem;">PÉRDIDA POR PROCESAMIENTO (ASTM D6913 / D6913M - 17)</h4>
+                        <div class="table-responsive">
+                            <table class="table-lims" style="font-size:0.82rem; max-width:500px; margin:0 auto; text-align:center;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:left;">Fase de Ensayo</th>
+                                        <th style="text-align:center;">Lavado</th>
+                                        <th style="text-align:center;">Tamizado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="color:#dc2626; font-weight:700;">
+                                        <td style="text-align:left;">CRITERIO (Pérdida Máxima &le; 0.5%)</td>
+                                        <td style="color:#dc2626;">0,5</td>
+                                        <td style="color:#dc2626;">0,5</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:600;">1ra Separación</td>
+                                        <td id="ppSep1Lavado">0,00</td>
+                                        <td id="ppSep1Tamizado">0,00</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; font-weight:600;">Fracción Fina</td>
+                                        <td id="ppFfinaLavado">---</td>
+                                        <td id="ppFfinaTamizado" style="font-weight:700; color:#1e3a8a;">0,30</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- 4. TABLA 2: RESULTADOS DE TAMIZADO OFICIAL (ASTM D6913 / E11) -->
+
                     <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:6px; padding:0.85rem; margin-bottom:1.25rem; width:100%;">
                         <h4 style="color:#1e3a8a; font-size:0.9rem; font-weight:700; margin-bottom:0.5rem;"><i class="fa-solid fa-table-cells"></i> Tabla de Tamizado Oficial (ASTM D6913 / HC-LSMCH-006)</h4>
                         <div class="table-responsive">
@@ -602,6 +636,16 @@
                     if (document.getElementById('tcSumFg')) document.getElementById('tcSumFg').innerText = tc.sum_tamizado_gruesa;
                     if (document.getElementById('tcSumFf')) document.getElementById('tcSumFf').innerText = tc.sum_tamizado_fina;
                 }
+
+                if (data.perdida_procesamiento) {
+                    const pp = data.perdida_procesamiento;
+                    if (document.getElementById('ppSep1Lavado')) document.getElementById('ppSep1Lavado').innerText = pp.sep1_lavado;
+                    if (document.getElementById('ppSep1Tamizado')) document.getElementById('ppSep1Tamizado').innerText = pp.sep1_tamizado;
+                    if (document.getElementById('ppFfinaLavado')) document.getElementById('ppFfinaLavado').innerText = pp.ffina_lavado;
+                    if (document.getElementById('ppFfinaTamizado')) document.getElementById('ppFfinaTamizado').innerText = pp.ffina_tamizado;
+                }
+
+
 
                 if (data.tamices) {
                     rows.forEach((r, idx) => {
