@@ -283,6 +283,71 @@ def guardar_ensayo_bd():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
+# ---------------------------------------------------------
+# API REST: GUARDAR Y RECUPERAR HOJAS DE CÁLCULO (HC) POR MUESTRA Y ENSAYO
+# ---------------------------------------------------------
+@app.route('/api/lims/hojas/guardar', methods=['POST'])
+def api_guardar_hoja():
+    try:
+        data = request.json or {}
+        cod_sol = data.get("codigo_solicitud", "")
+        cod_mue = data.get("codigo_muestra", "")
+        tipo_ens = data.get("tipo_ensayo", "GRANULOMETRIA")
+        norma = data.get("norma", "ASTM D6913")
+        datos_j = data.get("datos_json", {})
+        res_j = data.get("resultados_json", {})
+        usr = data.get("usuario_tecnico", "Analista LIMS")
+
+        if not cod_sol and not cod_mue:
+            return jsonify({"success": False, "error": "Debe especificar la Orden de Servicio o el Código de Muestra"}), 400
+
+        ensayo_id = db.guardar_hoja_calculo(
+            codigo_solicitud=cod_sol,
+            codigo_muestra=cod_mue,
+            tipo_ensayo=tipo_ens,
+            norma=norma,
+            datos_json=datos_j,
+            resultados_json=res_j,
+            usuario_tecnico=usr
+        )
+
+        return jsonify({
+            "success": True,
+            "ensayo_id": ensayo_id,
+            "codigo_solicitud": cod_sol,
+            "codigo_muestra": cod_mue,
+            "tipo_ensayo": tipo_ens,
+            "message": f"Hoja de Cálculo de {tipo_ens} guardada exitosamente para la Orden {cod_sol} / Muestra {cod_mue}."
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+@app.route('/api/lims/hojas/cargar', methods=['GET'])
+def api_cargar_hoja():
+    try:
+        cod_sol = request.args.get("solicitud", "")
+        cod_mue = request.args.get("muestra", "")
+        tipo_ens = request.args.get("tipo", "GRANULOMETRIA")
+
+        hoja = db.obtener_hoja_calculo(cod_sol, cod_mue, tipo_ens)
+        if not hoja:
+            return jsonify({"success": False, "found": False, "message": f"No hay Hoja de Cálculo guardada para {tipo_ens} en la Orden {cod_sol} / Muestra {cod_mue}."}), 444
+
+        return jsonify({"success": True, "found": True, "hoja": hoja})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+@app.route('/api/lims/hojas/listar', methods=['GET'])
+def api_listar_hojas():
+    try:
+        cod_sol = request.args.get("solicitud")
+        lista = db.listar_hojas_guardadas(cod_sol)
+        return jsonify({"success": True, "hojas": lista})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+
 if __name__ == '__main__':
     print("Iniciando Sistema LIMS LSMCH (ISO/IEC 17025) en http://localhost:5050")
     app.run(host='0.0.0.0', port=5050, debug=True)
+

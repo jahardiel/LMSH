@@ -618,3 +618,130 @@ class DatabaseLIMS:
             datos_json={"tamices": tamices_demo, "ll": 38.0, "lp": 22.0},
             resultados_json=res_gran
         )
+
+    # ----------------------------------------------------
+    # ALMACENAMIENTO Y RECUPERACIÓN DE HOJAS DE CÁLCULO (HC)
+    # POR ORDEN DE SERVICIO, MUESTRA Y ENSAYO
+    # ----------------------------------------------------
+    def guardar_hoja_calculo(self, codigo_solicitud, codigo_muestra, tipo_ensayo, norma="", datos_json=None, resultados_json=None, usuario_tecnico="Analista LIMS"):
+        import json
+        if datos_json is None: datos_json = {}
+        if resultados_json is None: resultados_json = {}
+        
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            codigo_solicitud = str(codigo_solicitud or "").strip()
+            codigo_muestra = str(codigo_muestra or "").strip()
+            tipo_ensayo = str(tipo_ensayo or "").strip().upper()
+            
+            # 1. Obtener id de muestra (o crear si no existe)
+            cursor.execute("SELECT id FROM muestras WHERE codigo_muestra = ?", (codigo_muestra,))
+            row_m = cursor.fetchone()
+            
+            if row_m:
+                muestra_id = row_m["id"]
+            else:
+                # Buscar id de solicitud
+                cursor.execute("SELECT id FROM solicitudes WHERE codigo_solicitud = ?", (codigo_solicitud,))
+                row_s = cursor.fetchone()
+                solicitud_id = row_s["id"] if row_s else None
+                
+                if not solicitud_id:
+                    # Crear solicitud rápida si no existe
+                    sol_id, cod_sol = self.crear_solicitud_completa("Cliente General", "Proyecto General")
+                    solicitud_id = sol_id
+                    if not codigo_solicitud: codigo_solicitud = cod_sol
+                    
+                # Crear muestreo y muestra
+                fecha_actual = datetime.now().strftime("%Y-%m-%d")
+                cursor.execute("INSERT INTO muestreos (solicitud_id, codigo_muestreo, fecha_muestreo) VALUES (?, ?, ?)", (solicitud_id, f"MUE-{codigo_solicitud}", fecha_actual))
+                muestreo_id = cursor.lastrowid
+                if not codigo_muestra: codigo_muestra = f"{codigo_solicitud}-M01"
+                cursor.execute("INSERT INTO muestras (muestreo_id, codigo_muestra, tipo_material, descripcion) VALUES (?, ?, ?, ?)",
+                               (muestreo_id, codigo_muestra, "SUELO", "SUELO"))
+                muestra_id = cursor.lastrowid
+
+                
+            # 2. Verificar si ya existe este ensayo para esta muestra
+            cursor.execute("SELECT id FROM ensayos WHERE muestra_id = ? AND tipo_ensayo = ?", (muestra_id, tipo_ensayo))
+            row_e = cursor.fetchone()
+            
+            datos_str = json.dumps(datos_json, ensure_ascii=False) if isinstance(datos_json, (dict, list)) else str(datos_json or '')
+            res_str = json.dumps(resultados_json, ensure_ascii=False) if isinstance(resultados_json, (dict, list)) else str(resultados_json or '')
+            fecha_actual = datetime.now().strftime("%Y-%m-%d")
+            
+            if row_e:
+                ensayo_id = row_e["id"]
+                cursor.execute("""
+                    UPDATE ensayos 
+                    SET norma = ?, datos_json = ?, resultados_json = ?, fecha_ensayo = ?, usuario_tecnico = ?, estado = 'CALCULADO'
+                    WHERE id = ?
+                """, (norma, datos_str, res_str, fecha_actual, usuario_tecnico, ensayo_id))
+            else:
+                cursor.execute("""
+                    INSERT INTO ensayos (muestra_id, tipo_ensayo, norma, estado, fecha_ensayo, usuario_tecnico, datos_json, resultados_json)
+                    VALUES (?, ?, ?, 'CALCULADO', ?, ?, ?, ?)
+                """, (muestra_id, tipo_ensayo, norma, fecha_actual, usuario_tecnico, datos_str, res_str))
+                ensayo_id = cursor.lastrowid
+                
+            conn.commit()
+            return ensayo_id
+
+    def obtener_hoja_calculo(self, codigo_solicitud, codigo_muestra, tipo_ensayo):
+        import json
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT e.*, m.codigo_muestra, s.codigo_solicitud
+                FROM ensayos e
+                JOIN muestras m ON e.muestra_id = m.id
+                JOIN muestreos mue ON m.muestreo_id = mue.id
+                JOIN solicitudes s ON mue.solicitud_id = s.id
+                WHERE (s.codigo_solicitud = ? OR m.codigo_muestra = ?)
+                  AND (e.tipo_ensayo = ? OR e.tipo_ensayo LIKE ?)
+                ORDER BY e.id DESC LIMIT 1
+            """, (str(codigo_solicitud or '').strip(), str(codigo_muestra or '').strip(),
+                  str(tipo_ensayo or '').strip().upper(), f"%{str(tipo_ensayo or '').strip().upper()}%"))
+            row = cursor.fetchone()
+            if not row:
+                return None
+            d = dict(row)
+            if d.get("datos_json"):
+                try: d["datos_json"] = json.loads(d["datos_json"])
+                except: pass
+            if d.get("resultados_json"):
+                try: d["resultados_json"] = json.loads(d["resultados_json"])
+                except: pass
+            return d
+
+    def listar_hojas_guardadas(self, codigo_solicitud=None):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            if codigo_solicitud:
+                cursor.execute("""
+                    SELECT e.id, e.tipo_ensayo, e.norma, e.estado, e.fecha_ensayo, e.usuario_tecnico, e.fecha_registro,
+                           m.codigo_muestra, s.codigo_solicitud, c.nombre as cliente_nombre, p.nombre as proyecto_nombre
+                    FROM ensayos e
+                    JOIN muestras m ON e.muestra_id = m.id
+                    JOIN muestreos mue ON m.muestreo_id = mue.id
+                    JOIN solicitudes s ON mue.solicitud_id = s.id
+                    JOIN clientes c ON s.cliente_id = c.id
+                    JOIN proyectos p ON s.proyecto_id = p.id
+                    WHERE s.codigo_solicitud = ?
+                    ORDER BY e.id DESC
+                """, (str(codigo_solicitud).strip(),))
+            else:
+                cursor.execute("""
+                    SELECT e.id, e.tipo_ensayo, e.norma, e.estado, e.fecha_ensayo, e.usuario_tecnico, e.fecha_registro,
+                           m.codigo_muestra, s.codigo_solicitud, c.nombre as cliente_nombre, p.nombre as proyecto_nombre
+                    FROM ensayos e
+                    JOIN muestras m ON e.muestra_id = m.id
+                    JOIN muestreos mue ON m.muestreo_id = mue.id
+                    JOIN solicitudes s ON mue.solicitud_id = s.id
+                    JOIN clientes c ON s.cliente_id = c.id
+                    JOIN proyectos p ON s.proyecto_id = p.id
+                    ORDER BY e.id DESC LIMIT 100
+                """)
+            return [dict(r) for r in cursor.fetchall()]
+

@@ -255,9 +255,11 @@
                         <div style="display:flex; gap:0.5rem; align-items:center;">
                             <span class="badge-solicitud">HC-LSMCH-006 | Rev. 02</span>
                             <button class="btn btn-primary" onclick="calcularHojaHC006()"><i class="fa-solid fa-calculator"></i> Calcular</button>
-                            <button class="btn btn-success" onclick="guardarEnsayoEnBD()"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar en BD</button>
-                            <button class="btn btn-secondary" onclick="imprimirHojaHC006()"><i class="fa-solid fa-print"></i> Imprimir Reporte PDF</button>
+                            <button class="btn btn-success" onclick="guardarHojaCalculoBD('GRANULOMETRIA', 'hc')"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar HC en BD</button>
+                            <button class="btn btn-secondary" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;" onclick="cargarHojaCalculoBD('GRANULOMETRIA', 'hc')"><i class="fa-solid fa-folder-open"></i> Cargar HC Guardada</button>
+                            <button class="btn btn-secondary" onclick="imprimirHojaHC006()"><i class="fa-solid fa-print"></i> Imprimir PDF</button>
                         </div>
+
                     </div>
 
                     <!-- 1. ENCABEZADO OFICIAL TIPO REPORTE HC-LSMCH-006 -->
@@ -1877,9 +1879,141 @@
             } catch(e) { console.error(e); }
         }
 
+        async function guardarHojaCalculoBD(tipoEnsayo, prefix) {
+            let codSol = document.getElementById(`${prefix}_SelectOrden`)?.value || document.getElementById(`${prefix}_Orden`)?.value || document.getElementById('hcOrden')?.value || '';
+            let codMue = document.getElementById(`${prefix}_IdLsmch`)?.value || document.getElementById(`${prefix}IdLsmch`)?.value || document.getElementById('hcIdLsmch')?.value || '';
+            
+            if (!codSol) {
+                alert("Por favor seleccione o escriba la Orden de Servicio.");
+                return;
+            }
+            if (!codMue) {
+                codMue = `${codSol}-M01`;
+            }
+
+            let datosJson = {};
+            let resultadosJson = {};
+
+            if (prefix === 'hc' || tipoEnsayo === 'GRANULOMETRIA') {
+                const rows = document.querySelectorAll('#tbodyTamicesHC006 tr');
+                let tamices = [];
+                rows.forEach(r => {
+                    const tamiz = r.cells[0]?.innerText.trim() || '';
+                    const ap = parseFloat(r.cells[1]?.innerText) || 0;
+                    const inp = r.querySelector('input');
+                    const masa = inp ? (parseFloat(inp.value) || 0) : 0;
+                    if (tamiz) tamices.push({ tamiz: tamiz, apertura_mm: ap, masa_retenida: masa });
+                });
+
+                datosJson = {
+                    tamices: tamices,
+                    masa_seca_total: parseFloat(document.getElementById('hcMasaSecaTotal')?.value) || 0,
+                    masa_fina_total: parseFloat(document.getElementById('hcMasaFinaTotal')?.value) || 0,
+                    perdida_lavado: parseFloat(document.getElementById('hcPerdidaLavado')?.value) || 0,
+                    fraccion_fina_reducida: parseFloat(document.getElementById('hcFraccionFinaReducida')?.value) || 0,
+                    ll: parseFloat(document.getElementById('hcLL')?.value) || 0,
+                    lp: parseFloat(document.getElementById('hcLP')?.value) || 0,
+                    ip: parseFloat(document.getElementById('hcIP')?.value) || 0,
+                    ensayado_por: document.getElementById('hcMuestreado')?.value || 'Técnico LIMS'
+                };
+
+                if (window.ultimoResultadoGranulometria) {
+                    resultadosJson = window.ultimoResultadoGranulometria;
+                }
+            } else {
+                datosJson = {
+                    proyecto: document.getElementById(`${prefix}_Pry`)?.value || '',
+                    cliente: document.getElementById(`${prefix}_Cliente`)?.value || '',
+                    ubicacion: document.getElementById(`${prefix}_Loc`)?.value || '',
+                    informe: document.getElementById(`${prefix}_Informe`)?.value || '',
+                    muestreado: document.getElementById(`${prefix}_Muestreado`)?.value || '',
+                    descripcion: document.getElementById(`${prefix}_Desc`)?.value || '',
+                    id_cliente: document.getElementById(`${prefix}_IdCliente`)?.value || '',
+                    fuente: document.getElementById(`${prefix}_Fuente`)?.value || '',
+                    id_lsmch: document.getElementById(`${prefix}_IdLsmch`)?.value || ''
+                };
+            }
+
+            try {
+                const res = await fetch('/api/lims/hojas/guardar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        codigo_solicitud: codSol,
+                        codigo_muestra: codMue,
+                        tipo_ensayo: tipoEnsayo,
+                        norma: "ASTM D6913 / ASTM D2487",
+                        datos_json: datosJson,
+                        resultados_json: resultadosJson,
+                        usuario_tecnico: document.getElementById(`${prefix}_Muestreado`)?.value || "Analista LIMS"
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert(` ¡ÉXITO AL GUARDAR! Hoja de Cálculo HC-LSMCH (${tipoEnsayo}) grabada correctamente en la Base de Datos para la Orden ${codSol} y Muestra ${codMue}.`);
+                } else {
+                    alert("Error al guardar Hoja de Cálculo: " + (data.error || "Datos incompletos"));
+                }
+            } catch(e) {
+                alert("Error de conexión al guardar la Hoja de Cálculo.");
+            }
+        }
+
+        async function cargarHojaCalculoBD(tipoEnsayo, prefix) {
+            let codSol = document.getElementById(`${prefix}_SelectOrden`)?.value || document.getElementById(`${prefix}_Orden`)?.value || document.getElementById('hcOrden')?.value || '';
+            let codMue = document.getElementById(`${prefix}_IdLsmch`)?.value || document.getElementById(`${prefix}IdLsmch`)?.value || document.getElementById('hcIdLsmch')?.value || '';
+            
+            if (!codSol && !codMue) {
+                alert("Por favor seleccione la Orden de Servicio o Muestra para cargar la Hoja.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/lims/hojas/cargar?solicitud=${encodeURIComponent(codSol)}&muestra=${encodeURIComponent(codMue)}&tipo=${encodeURIComponent(tipoEnsayo)}`);
+                const data = await res.json();
+                if (data.success && data.found && data.hoja) {
+                    const h = data.hoja;
+                    const dj = h.datos_json || {};
+                    
+                    if (prefix === 'hc' || tipoEnsayo === 'GRANULOMETRIA') {
+                        if (dj.masa_seca_total !== undefined) document.getElementById('hcMasaSecaTotal').value = dj.masa_seca_total;
+                        if (dj.masa_fina_total !== undefined) document.getElementById('hcMasaFinaTotal').value = dj.masa_fina_total;
+                        if (dj.perdida_lavado !== undefined) document.getElementById('hcPerdidaLavado').value = dj.perdida_lavado;
+                        if (dj.fraccion_fina_reducida !== undefined) document.getElementById('hcFraccionFinaReducida').value = dj.fraccion_fina_reducida;
+                        if (dj.ll !== undefined) document.getElementById('hcLL').value = dj.ll;
+                        if (dj.lp !== undefined) document.getElementById('hcLP').value = dj.lp;
+                        if (dj.ip !== undefined) document.getElementById('hcIP').value = dj.ip;
+
+                        if (dj.tamices && Array.isArray(dj.tamices)) {
+                            const rows = document.querySelectorAll('#tbodyTamicesHC006 tr');
+                            dj.tamices.forEach(t => {
+                                rows.forEach(r => {
+                                    if (r.cells[0]?.innerText.trim() === t.tamiz) {
+                                        const inp = r.querySelector('input');
+                                        if (inp) inp.value = t.masa_retenida;
+                                    }
+                                });
+                            });
+                        }
+                        
+                        calcularHojaHC006();
+                        alert(` ¡HOJA RECUPERADA EXITOSAMENTE! Se cargaron todos los datos grabados de ${tipoEnsayo} para la Muestra ${h.codigo_muestra} (Orden ${h.codigo_solicitud}).`);
+                    } else {
+                        alert(` ¡HOJA RECUPERADA! Datos de ${tipoEnsayo} cargados para la Orden ${h.codigo_solicitud}.`);
+                    }
+                } else {
+                    alert(`No se encontró una Hoja de Cálculo previa grabada para ${tipoEnsayo} en la Orden ${codSol}.`);
+                }
+            } catch(e) {
+                alert("Error de conexión al recuperar la Hoja de Cálculo.");
+            }
+        }
+
         function cerrarBusqueda() {
             document.getElementById('searchResultsPanel').style.display = 'none';
         }
     </script>
 </body>
 </html>
+
