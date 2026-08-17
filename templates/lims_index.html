@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema LIMS | Laboratorio de Suelos, Materiales y Concreto Hidráulico (LSMCH)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- LIMS Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lims_style.css') }}">
+</head>
+<body>
+
+    <!-- ENCABEZADO INSTITUCIONAL -->
+    <header class="lims-header">
+        <div class="brand-container">
+            <div class="brand-logo">LSMCH</div>
+            <div class="brand-text">
+                <h1>Sistema LIMS Metrológico</h1>
+                <p>Laboratorio de Suelos, Materiales y Concreto Hidráulico | ISO/IEC 17025</p>
+            </div>
+        </div>
+
+        <!-- BUSCADOR GLOBAL -->
+        <div class="global-search-container">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="globalSearchInput" class="global-search-input" placeholder="Buscar Solicitud (LSMCH-001-2026), Muestra, Cliente..." onkeyup="ejecutarBusquedaGlobal(event)">
+        </div>
+    </header>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="lims-nav">
+        <button class="nav-tab active" onclick="switchTab('dashboard')">
+            <i class="fa-solid fa-chart-line"></i> Dashboard LIMS
+        </button>
+        <button class="nav-tab" onclick="switchTab('solicitudes')">
+            <i class="fa-solid fa-folder-open"></i> Solicitudes & Trazabilidad
+        </button>
+        <button class="nav-tab" onclick="switchTab('geotecnia')">
+            <i class="fa-solid fa-mountain"></i> Geotecnia (Suelos)
+        </button>
+        <button class="nav-tab" onclick="switchTab('concreto')">
+            <i class="fa-solid fa-cubes"></i> Concreto
+        </button>
+        <button class="nav-tab" onclick="switchTab('incertidumbre')">
+            <i class="fa-solid fa-calculator"></i> Incertidumbre GUM
+        </button>
+        <button class="nav-tab" onclick="switchTab('reportes')">
+            <i class="fa-solid fa-print"></i> Reportes PDF ISO 17025
+        </button>
+    </nav>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="lims-container">
+
+        <!-- RESULTADOS DE BÚSQUEDA GLOBAL -->
+        <div id="searchResultsPanel" class="card-panel" style="display: none; border: 2px solid var(--primary-light);">
+            <div class="panel-header">
+                <span class="panel-title"><i class="fa-solid fa-search"></i> Resultados de Búsqueda</span>
+                <button class="btn btn-secondary" onclick="cerrarBusqueda()"><i class="fa-solid fa-xmark"></i> Cerrar</button>
+            </div>
+            <div id="searchResultsContent"></div>
+        </div>
+
+        <!-- 1. DASHBOARD CENTRAL -->
+        <section id="tab-dashboard" class="tab-content active">
+            <div class="grid-4" style="margin-bottom: 1.5rem;">
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                    <div>
+                        <div class="kpi-value" id="kpiTotalSol">1</div>
+                        <div class="kpi-label">Solicitudes Totales</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-spinner"></i></div>
+                    <div>
+                        <div class="kpi-value" id="kpiSolActivas">1</div>
+                        <div class="kpi-label">Ensayos en Proceso</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:#e0f2fe; color:#0284c7;"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <div class="kpi-value" id="kpiClientes">1</div>
+                        <div class="kpi-label">Clientes Registrados</div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:#dcfce7; color:#15803d;"><i class="fa-solid fa-building-flag"></i></div>
+                    <div>
+                        <div class="kpi-value" id="kpiProyectos">1</div>
+                        <div class="kpi-label">Proyectos Activos</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <!-- Solicitudes Recientes -->
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-clock-rotate-left"></i> Solicitudes Recientes (LSMCH-NNN-AAAA)</span>
+                        <button class="btn btn-primary" onclick="switchTab('solicitudes')"><i class="fa-solid fa-plus"></i> Nueva Solicitud</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table-lims">
+                            <thead>
+                                <tr>
+                                    <th>Código Expediente</th>
+                                    <th>Cliente</th>
+                                    <th>Proyecto</th>
+                                    <th>Fecha Recepción</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaSolicitudesRecientes">
+                                <tr><td colspan="5" style="text-align:center;">Cargando expediente...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Resumen de Ensayos Realizados -->
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-flask"></i> Actividad Metrológica del Laboratorio</span>
+                    </div>
+                    <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px dashed var(--border-accent);">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;"><i class="fa-solid fa-circle-check"></i> Control de Trazabilidad Activo</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-muted);">
+                            Todas las muestras y ensayos están correlacionados mediante la estructura jerárquica:
+                            <br><strong>Cliente &rarr; Proyecto &rarr; Solicitud (LSMCH-NNN-AAAA) &rarr; Muestreo &rarr; Muestra &rarr; Ensayo</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. ADMINISTRACIÓN Y TRAZABILIDAD DE SOLICITUDES -->
+        <section id="tab-solicitudes" class="tab-content">
+            <div class="grid-2">
+                <!-- Crear Solicitud Automática -->
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-file-signature"></i> Nueva Solicitud (Generador LSMCH-NNN-AAAA)</span>
+                    </div>
+                    <form id="formNuevaSolicitud" onsubmit="guardarNuevaSolicitud(event)">
+                        <div class="form-group">
+                            <label class="form-label">Cliente</label>
+                            <select id="selectCliente" class="form-control" onchange="cargarProyectosCliente()" required>
+                                <option value="">Cargando clientes...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Proyecto</label>
+                            <select id="selectProyecto" class="form-control" required>
+                                <option value="">Seleccione primero un cliente...</option>
+                            </select>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Fecha Recepción</label>
+                                <input type="date" id="fechaRecepcion" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Entrega Estimada</label>
+                                <input type="date" id="fechaEntrega" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Responsable Técnico</label>
+                            <input type="text" id="responsableTecnico" class="form-control" value="Ing. Metrólogo LSMCH">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fa-solid fa-wand-magic-sparkles"></i> Generar Solicitud LSMCH-NNN-AAAA</button>
+                    </form>
+                </div>
+
+                <!-- Registro Rápido de Clientes/Proyectos -->
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-user-plus"></i> Registrar Cliente y Proyecto</span>
+                    </div>
+                    <form onsubmit="guardarClienteRapido(event)">
+                        <div class="form-group">
+                            <label class="form-label">Nombre del Cliente / Empresa</label>
+                            <input type="text" id="nuevoClienteNombre" class="form-control" placeholder="Ej: Constructora del Sur S.A." required>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">RUC / NIT</label>
+                                <input type="text" id="nuevoClienteRuc" class="form-control" placeholder="20123456789">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Contacto / Teléfono</label>
+                                <input type="text" id="nuevoClienteContacto" class="form-control" placeholder="Ing. Juan Pérez">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-secondary" style="width: 100%; margin-bottom: 1rem;"><i class="fa-solid fa-save"></i> Guardar Cliente</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. MÓDULO DE GEOTECNIA (MECÁNICA DE SUELOS) -->
+        <section id="tab-geotecnia" class="tab-content">
+            <div class="card-panel">
+                <div class="panel-header">
+                    <span class="panel-title"><i class="fa-solid fa-layer-group"></i> Granulometría & Clasificación SUCS (ASTM D6913 / D2487)</span>
+                    <button class="btn btn-primary" onclick="calcularGranulometriaYSUCS()"><i class="fa-solid fa-calculator"></i> Calcular Granulometría y SUCS</button>
+                </div>
+
+                <div class="grid-2">
+                    <!-- Entradas de Tamizado -->
+                    <div>
+                        <h4 style="color: var(--primary); margin-bottom: 0.75rem;">Límites de Atterberg (ASTM D4318)</h4>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Límite Líquido (LL %)</label>
+                                <input type="number" id="inputLL" class="form-control" value="38.0" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Límite Plástico (LP %)</label>
+                                <input type="number" id="inputLP" class="form-control" value="22.0" step="0.1">
+                            </div>
+                        </div>
+
+                        <h4 style="color: var(--primary); margin: 1rem 0 0.75rem;">Masa Retenida por Tamiz (g)</h4>
+                        <div class="table-responsive">
+                            <table class="table-lims" id="tablaTamices">
+                                <thead>
+                                    <tr>
+                                        <th>Tamiz</th>
+                                        <th>Apertura (mm)</th>
+                                        <th>Masa Retenida (g)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>3"</td><td>75.0</td><td><input type="number" class="table-input m-ret" value="0"></td></tr>
+                                    <tr><td>1 1/2"</td><td>37.5</td><td><input type="number" class="table-input m-ret" value="120"></td></tr>
+                                    <tr><td>1"</td><td>25.0</td><td><input type="number" class="table-input m-ret" value="180"></td></tr>
+                                    <tr><td>3/4"</td><td>19.0</td><td><input type="number" class="table-input m-ret" value="250"></td></tr>
+                                    <tr><td>3/8"</td><td>9.5</td><td><input type="number" class="table-input m-ret" value="310"></td></tr>
+                                    <tr><td>N° 4</td><td>4.75</td><td><input type="number" class="table-input m-ret" value="420"></td></tr>
+                                    <tr><td>N° 10</td><td>2.0</td><td><input type="number" class="table-input m-ret" value="350"></td></tr>
+                                    <tr><td>N° 40</td><td>0.425</td><td><input type="number" class="table-input m-ret" value="480"></td></tr>
+                                    <tr><td>N° 200</td><td>0.075</td><td><input type="number" class="table-input m-ret" value="520"></td></tr>
+                                    <tr><td>Fondo</td><td>0.0</td><td><input type="number" class="table-input m-ret" value="370"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Resultados & Curva Granulométrica SVG -->
+                    <div>
+                        <div id="resultadoSUCSBox" style="background:#eff6ff; border:2px solid #bfdbfe; border-radius:8px; padding:1rem; margin-bottom:1rem;">
+                            <span style="font-size:0.8rem; font-weight:700; color:#1e40af; text-transform:uppercase;">Clasificación Automática SUCS</span>
+                            <h2 id="txtSUCS" style="color:#1e3a8a; margin-top:0.25rem;">GW (Grava bien graduada)</h2>
+                            <p id="txtParametrosSUCS" style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">
+                                Cu: 12.5 | Cc: 1.8 | Finos: 14.8% | IP: 16.0
+                            </p>
+                        </div>
+
+                        <!-- Gráfico SVG Granulometría -->
+                        <div style="background:#ffffff; border:1px solid var(--border-color); border-radius:8px; padding:1rem;">
+                            <h4 style="color:var(--primary); font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-chart-area"></i> Curva Granulométrica (Escala Logarítmica)</h4>
+                            <svg id="svgGranulometria" viewBox="0 0 500 240" style="width:100%; height:240px; background:#fafafa; border-radius:4px; border:1px solid #e2e8f0;"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. MÓDULO DE CONCRETO -->
+        <section id="tab-concreto" class="tab-content">
+            <div class="card-panel">
+                <div class="panel-header">
+                    <span class="panel-title"><i class="fa-solid fa-cubes"></i> Resistencia a Compresión de Especímenes (ASTM C39)</span>
+                    <button class="btn btn-primary" onclick="calcularConcreto()"><i class="fa-solid fa-calculator"></i> Procesar Rotura</button>
+                </div>
+                <div class="grid-2">
+                    <div>
+                        <h4 style="color: var(--primary); margin-bottom: 0.75rem;">Especímenes Cilíndricos (15x30 cm)</h4>
+                        <div class="table-responsive">
+                            <table class="table-lims" id="tablaConcreto">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Diámetro (cm)</th>
+                                        <th>Carga Máx (kg)</th>
+                                        <th>Edad (Días)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>CIL-01</td><td>15.0</td><td><input type="number" class="table-input conc-carga" value="38500"></td><td>7</td></tr>
+                                    <tr><td>CIL-02</td><td>15.0</td><td><input type="number" class="table-input conc-carga" value="49200"></td><td>14</td></tr>
+                                    <tr><td>CIL-03</td><td>15.0</td><td><input type="number" class="table-input conc-carga" value="54800"></td><td>28</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        <div id="resultadoConcretoBox" style="background:#dcfce7; border:2px solid #86efac; border-radius:8px; padding:1.25rem;">
+                            <span style="font-size:0.8rem; font-weight:700; color:#15803d; text-transform:uppercase;">Resistencia a 28 Días</span>
+                            <h2 id="txtResistencia28d" style="color:#14532d; margin-top:0.25rem;">310.1 kg/cm² (30.4 MPa)</h2>
+                            <p style="font-size:0.85rem; color:#166534; margin-top:0.3rem;">Supera la resistencia especificada f'c = 280 kg/cm² (110.7% de f'c)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. MÓDULO DE INCERTIDUMBRE GUM (ISO/IEC 17025) -->
+        <section id="tab-incertidumbre" class="tab-content">
+            <div class="card-panel">
+                <div class="panel-header">
+                    <span class="panel-title"><i class="fa-solid fa-calculator"></i> Estimación de Incertidumbre GUM (HC-LSMCH-012)</span>
+                    <button class="btn btn-primary" onclick="calcularIncertidumbreGUM()"><i class="fa-solid fa-microchip"></i> Evaluar Incertidumbre</button>
+                </div>
+                <div class="grid-2">
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label">u(A) Repetibilidad de Lecturas (g o kg/cm²)</label>
+                            <input type="number" id="incRepetibilidad" class="form-control" value="0.05" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">U(B1) Incertidumbre Certificado Balanza/Prensa (k=2)</label>
+                            <input type="number" id="incCalibracion" class="form-control" value="0.08" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">u(B2) Resolución del Instrumento (Lectura mínima)</label>
+                            <input type="number" id="incResolucion" class="form-control" value="0.01" step="0.001">
+                        </div>
+                    </div>
+                    <div>
+                        <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:1.25rem;">
+                            <h4 style="color:#1e3a8a;"><i class="fa-solid fa-square-root-variable"></i> Presupuesto de Incertidumbre Combinada</h4>
+                            <p style="font-size:0.9rem; margin-top:0.5rem;">Incertidumbre Combinada u_c: <strong id="txtUc">0.0640</strong></p>
+                            <p style="font-size:1.1rem; color:#1e3a8a; font-weight:700; margin-top:0.25rem;">Incertidumbre Expandida U (k=2): <span id="txtUexp">± 0.1280</span></p>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">Nivel de confianza ~95.45% con distribución normal (ISO/IEC 17025).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. GENERADOR DE INFORMES Y IMPRESIÓN PDF ISO 17025 -->
+        <section id="tab-reportes" class="tab-content">
+            <div class="card-panel">
+                <div class="panel-header">
+                    <span class="panel-title"><i class="fa-solid fa-file-pdf"></i> Previsualización del Informe Normalizado ISO/IEC 17025</span>
+                    <button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir / Guardar en PDF</button>
+                </div>
+
+                <!-- HOJA OFICIAL MEMBRETADA PARA IMPRESIÓN -->
+                <div id="hojaReporteOficial" style="background:#ffffff; border:1px solid #cbd5e1; padding:2.5rem; border-radius:4px; max-width:850px; margin:0 auto;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #1e3a8a; padding-bottom:1rem; margin-bottom:1.5rem;">
+                        <div>
+                            <h2 style="color:#1e3a8a; margin:0;">LABORATORIO LSMCH</h2>
+                            <p style="font-size:0.82rem; color:#475569; margin:0;">Suelos, Materiales y Concreto Hidráulico | Acreditado ISO/IEC 17025</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="badge-solicitud" style="font-size:1.1rem;" id="repCodigoSolicitud">LSMCH-001-2026</span>
+                            <p style="font-size:0.78rem; color:#64748b; margin-top:0.2rem;">Informe Técnico de Ensayo</p>
+                        </div>
+                    </div>
+
+                    <table class="table-lims" style="margin-bottom:1.5rem;">
+                        <tr><th style="width:25%;">Cliente:</th><td id="repCliente">Constructora e Inmobiliaria San Martin S.A.</td></tr>
+                        <tr><th>Proyecto:</th><td id="repProyecto">Edificio Facultativo de Ingeniería - Campus Central</td></tr>
+                        <tr><th>Identificación Muestra:</th><td>LSMCH-001-2026-M01 (Profundidad 1.50m - 2.20m)</td></tr>
+                        <tr><th>Ensayos Incluidos:</th><td>Granulometría (ASTM D6913), SUCS (ASTM D2487), Compresión (ASTM C39)</td></tr>
+                    </table>
+
+                    <h4 style="color:#1e3a8a; border-bottom:1px solid #e2e8f0; padding-bottom:0.3rem; margin-bottom:0.75rem;">Resultados Obtenidos</h4>
+                    <table class="table-lims" style="margin-bottom:2rem;">
+                        <thead>
+                            <tr>
+                                <th>Parametro Metrológico</th>
+                                <th>Norma de Referencia</th>
+                                <th>Resultado Medido</th>
+                                <th>Incertidumbre Expandida (U, k=2)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Clasificación de Suelo SUCS</td><td>ASTM D2487</td><td><strong id="repSUCS">GW (Grava bien graduada)</strong></td><td>N/A (Cualitativo)</td></tr>
+                            <tr><td>Resistencia Compresión f'c (28d)</td><td>ASTM C39</td><td><strong>310.1 kg/cm²</strong></td><td>± 4.2 kg/cm²</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div style="display:flex; justify-content:space-between; margin-top:4rem; padding-top:1rem; border-top:1px dashed #cbd5e1;">
+                        <div style="text-align:center; width:45%;">
+                            <p style="border-top:1px solid #000; padding-top:0.3rem; font-weight:700;">Ing. Metrólogo LSMCH</p>
+                            <p style="font-size:0.75rem; color:#64748b;">Responsable Técnico de Ensayo</p>
+                        </div>
+                        <div style="text-align:center; width:45%;">
+                            <p style="border-top:1px solid #000; padding-top:0.3rem; font-weight:700;">Dr. Jefe de Laboratorio</p>
+                            <p style="font-size:0.75rem; color:#64748b;">Director de Gestión de Calidad</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- LOGICA JAVASCRIPT DEL SISTEMA LIMS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarStatsDashboard();
+            cargarSolicitudesTabla();
+            cargarClientesCombo();
+            calcularGranulometriaYSUCS();
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            const btn = Array.from(document.querySelectorAll('.nav-tab')).find(b => b.getAttribute('onclick').includes(tabId));
+            if (btn) btn.classList.add('active');
+            
+            const tabObj = document.getElementById(`tab-${tabId}`);
+            if (tabObj) tabObj.classList.add('active');
+        }
+
+        async function cargarStatsDashboard() {
+            try {
+                const res = await fetch('/api/lims/stats');
+                const data = await res.json();
+                document.getElementById('kpiTotalSol').innerText = data.total_solicitudes;
+                document.getElementById('kpiSolActivas').innerText = data.solicitudes_activas;
+                document.getElementById('kpiClientes').innerText = data.total_clientes;
+                document.getElementById('kpiProyectos').innerText = data.total_proyectos;
+            } catch (e) {
+                console.error("Error al cargar stats:", e);
+            }
+        }
+
+        async function cargarSolicitudesTabla() {
+            try {
+                const res = await fetch('/api/lims/solicitudes?limite=10');
+                const data = await res.json();
+                const tbody = document.getElementById('tablaSolicitudesRecientes');
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay solicitudes registradas.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(s => `
+                    <tr>
+                        <td><span class="badge-solicitud">${s.codigo_solicitud}</span></td>
+                        <td>${s.cliente_nombre}</td>
+                        <td>${s.proyecto_nombre}</td>
+                        <td>${s.fecha_recepcion}</td>
+                        <td><span class="badge-status badge-en-proceso">${s.estado}</span></td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function cargarClientesCombo() {
+            try {
+                const res = await fetch('/api/lims/clientes');
+                const clientes = await res.json();
+                const sel = document.getElementById('selectCliente');
+                sel.innerHTML = '<option value="">-- Seleccionar Cliente --</option>' + 
+                    clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        async function cargarProyectosCliente() {
+            const clienteId = document.getElementById('selectCliente').value;
+            if (!clienteId) return;
+            try {
+                const res = await fetch(`/api/lims/proyectos?cliente_id=${clienteId}`);
+                const proyectos = await res.json();
+                const sel = document.getElementById('selectProyecto');
+                sel.innerHTML = '<option value="">-- Seleccionar Proyecto --</option>' + 
+                    proyectos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        async function guardarNuevaSolicitud(e) {
+            e.preventDefault();
+            const clienteId = document.getElementById('selectCliente').value;
+            const proyectoId = document.getElementById('selectProyecto').value;
+            const fechaRec = document.getElementById('fechaRecepcion').value;
+            const fechaEnt = document.getElementById('fechaEntrega').value;
+
+            try {
+                const res = await fetch('/api/lims/solicitudes', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        cliente_id: clienteId,
+                        proyecto_id: proyectoId,
+                        fecha_recepcion: fechaRec,
+                        fecha_entrega_estimada: fechaEnt
+                    })
+                });
+                const r = await res.json();
+                if (r.success) {
+                    alert(`¡Solicitud ${r.codigo_solicitud} creada exitosamente con numeración anual automática!`);
+                    cargarStatsDashboard();
+                    cargarSolicitudesTabla();
+                    switchTab('dashboard');
+                } else {
+                    alert("Error: " + r.error);
+                }
+            } catch(err) {
+                alert("Error al conectar con el servidor LIMS.");
+            }
+        }
+
+        async function calcularGranulometriaYSUCS() {
+            const rows = document.querySelectorAll('#tablaTamices tbody tr');
+            const tamices = [];
+            rows.forEach(r => {
+                const nombre = r.cells[0].innerText;
+                const apertura = parseFloat(r.cells[1].innerText);
+                const ret = parseFloat(r.querySelector('.m-ret').value || 0);
+                tamices.push({tamiz: nombre, apertura_mm: apertura, masa_retenida: ret});
+            });
+
+            const ll = parseFloat(document.getElementById('inputLL').value || 38.0);
+            const lp = parseFloat(document.getElementById('inputLP').value || 22.0);
+
+            try {
+                const res = await fetch('/api/lims/ensayos/geotecnia/granulometria', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({tamices, ll, lp})
+                });
+                const data = await res.json();
+                
+                document.getElementById('txtSUCS').innerText = data.clasificacion_sucs || "GW";
+                document.getElementById('repSUCS').innerText = data.clasificacion_sucs || "GW";
+                document.getElementById('txtParametrosSUCS').innerText = 
+                    `Cu: ${data.cu || '-'} | Cc: ${data.cc || '-'} | Finos: ${data.pct_finos}% | IP: ${data.ip || '-'}`;
+
+                dibujarCurvaSVG(data.tamices || []);
+            } catch(e) { console.error(e); }
+        }
+
+        function dibujarCurvaSVG(tamices) {
+            const svg = document.getElementById('svgGranulometria');
+            if (!svg || !tamices || tamices.length === 0) return;
+            
+            let pts = [];
+            tamices.forEach(t => {
+                if (t.apertura_mm > 0) {
+                    // Mapeo semi-log (75mm -> x: 450, 0.075mm -> x: 50)
+                    const logAp = Math.log10(t.apertura_mm);
+                    const logMin = Math.log10(0.075);
+                    const logMax = Math.log10(75.0);
+                    const x = 50 + ((logAp - logMin) / (logMax - logMin)) * 400;
+                    const y = 200 - (t.pct_pasa / 100.0) * 160;
+                    pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+                }
+            });
+
+            svg.innerHTML = `
+                <line x1="50" y1="200" x2="450" y2="200" stroke="#cbd5e1" stroke-width="2"/>
+                <line x1="50" y1="40" x2="50" y2="200" stroke="#cbd5e1" stroke-width="2"/>
+                <polyline fill="none" stroke="#2563eb" stroke-width="3" points="${pts.join(' ')}"/>
+                ${pts.map(p => {
+                    const [x,y] = p.split(',');
+                    return `<circle cx="${x}" cy="${y}" r="4" fill="#1e3a8a"/>`;
+                }).join('')}
+                <text x="250" y="230" text-anchor="middle" font-size="12" fill="#64748b">Apertura del Tamiz (mm) - Escala Log</text>
+                <text x="15" y="120" text-anchor="middle" font-size="12" fill="#64748b" transform="rotate(-90 15 120)">% Pasa</text>
+            `;
+        }
+
+        async function calcularConcreto() {
+            const cargas = Array.from(document.querySelectorAll('.conc-carga')).map(i => parseFloat(i.value || 0));
+            const c3 = cargas[2] || 54800;
+            const area = Math.PI * (7.5**2);
+            const res_kg = c3 / area;
+            const res_mpa = res_kg * 0.0980665;
+            document.getElementById('txtResistencia28d').innerText = `${res_kg.toFixed(1)} kg/cm² (${res_mpa.toFixed(1)} MPa)`;
+        }
+
+        async function calcularIncertidumbreGUM() {
+            const uRep = parseFloat(document.getElementById('incRepetibilidad').value || 0.05);
+            const uCal = parseFloat(document.getElementById('incCalibracion').value || 0.08);
+            const uRes = parseFloat(document.getElementById('incResolucion').value || 0.01);
+
+            try {
+                const res = await fetch('/api/lims/incertidumbre/calcular', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({u_repetibilidad: uRep, u_calibracion: uCal, u_resolucion: uRes})
+                });
+                const data = await res.json();
+                document.getElementById('txtUc').innerText = data.incertidumbre_combinada;
+                document.getElementById('txtUexp').innerText = `± ${data.incertidumbre_expandida}`;
+            } catch(e) { console.error(e); }
+        }
+
+        async function ejecutarBusquedaGlobal(e) {
+            const q = document.getElementById('globalSearchInput').value.trim();
+            const panel = document.getElementById('searchResultsPanel');
+            const container = document.getElementById('searchResultsContent');
+            
+            if (q.length < 2) {
+                panel.style.display = 'none';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/lims/buscar?q=${encodeURIComponent(q)}`);
+                const data = await res.json();
+                panel.style.display = 'block';
+
+                if (data.solicitudes.length === 0 && data.muestras.length === 0) {
+                    container.innerHTML = `<p style="color:var(--text-muted);">No se encontraron coincidencias para "${q}".</p>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="grid-2">
+                        <div>
+                            <h4>Solicitudes Coincidentes (${data.solicitudes.length})</h4>
+                            <ul>
+                                ${data.solicitudes.map(s => `<li><strong>${s.codigo_solicitud}</strong> - ${s.cliente} (${s.fecha})</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Muestras Coincidentes (${data.muestras.length})</h4>
+                            <ul>
+                                ${data.muestras.map(m => `<li><strong>${m.codigo_muestra}</strong> (${m.detalle})</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } catch(e) { console.error(e); }
+        }
+
+        function cerrarBusqueda() {
+            document.getElementById('searchResultsPanel').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

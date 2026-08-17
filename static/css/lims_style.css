@@ -1,0 +1,460 @@
+/* 
+   Sistema de Diseño Técnico LIMS - Tema Claro Metrológico (ISO/IEC 17025)
+   Laboratorio de Suelos, Materiales y Concreto Hidráulico - LSMCH
+*/
+
+:root {
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-sidebar: #0f172a;
+    --border-color: #e2e8f0;
+    --border-accent: #cbd5e1;
+
+    --primary: #1e3a8a;       /* Azul institucional LSMCH */
+    --primary-light: #2563eb; /* Azul acción */
+    --primary-hover: #1d4ed8;
+    --accent: #0284c7;        /* Cían metrológico */
+
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+
+    --status-success-bg: #dcfce7;
+    --status-success-text: #15803d;
+    --status-warning-bg: #fef3c7;
+    --status-warning-text: #b45309;
+    --status-info-bg: #e0f2fe;
+    --status-info-text: #0369a1;
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Encabezado Superior Institucional */
+.lims-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: #ffffff;
+    padding: 0.85rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-md);
+}
+
+.brand-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.brand-logo {
+    width: 44px;
+    height: 44px;
+    background: #ffffff;
+    color: #1e3a8a;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-sm);
+}
+
+.brand-text h1 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.2px;
+}
+
+.brand-text p {
+    font-size: 0.78rem;
+    color: #93c5fd;
+    margin: 0;
+}
+
+/* Buscador Global */
+.global-search-container {
+    position: relative;
+    width: 380px;
+}
+
+.global-search-input {
+    width: 100%;
+    padding: 0.55rem 1rem 0.55rem 2.4rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    font-size: 0.88rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.global-search-input::placeholder {
+    color: #cbd5e1;
+}
+
+.global-search-input:focus {
+    background: #ffffff;
+    color: var(--text-main);
+    box-shadow: var(--shadow-md);
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #cbd5e1;
+    pointer-events: none;
+}
+
+/* Navegación por Pestañas */
+.lims-nav {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+}
+
+.nav-tab {
+    padding: 0.85rem 1.25rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.nav-tab:hover {
+    color: var(--primary-light);
+    background: var(--bg-main);
+}
+
+.nav-tab.active {
+    color: var(--primary-light);
+    border-bottom-color: var(--primary-light);
+    background: transparent;
+}
+
+/* Layout Principal */
+.lims-container {
+    max-width: 1440px;
+    margin: 1.5rem auto;
+    padding: 0 1.5rem;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Paneles y Cards */
+.card-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.panel-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Grid LIMS */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+
+/* Métricas KPI */
+.kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    background: #eff6ff;
+    color: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.kpi-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.1;
+}
+
+.kpi-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Formularios */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 0.35rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    color: var(--text-main);
+    background-color: #ffffff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Botones */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-light);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary {
+    background-color: #ffffff;
+    border-color: var(--border-accent);
+    color: var(--text-main);
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-main);
+}
+
+.btn-success {
+    background-color: #10b981;
+    color: #ffffff;
+}
+
+.btn-success:hover {
+    background-color: #059669;
+}
+
+/* Tablas Metrológicas / Hoja de Cálculo */
+.table-responsive {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+}
+
+.table-lims {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+    background: #ffffff;
+}
+
+.table-lims th {
+    background-color: #f1f5f9;
+    color: var(--primary);
+    font-weight: 700;
+    text-align: left;
+    padding: 0.65rem 0.85rem;
+    border-bottom: 2px solid var(--border-color);
+    white-space: nowrap;
+}
+
+.table-lims td {
+    padding: 0.55rem 0.85rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.table-lims tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.table-lims input.table-input {
+    width: 100%;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    font-size: 0.84rem;
+}
+
+/* Badges de Estado */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.badge-solicitud {
+    font-family: 'JetBrains Mono', monospace;
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.badge-en-proceso {
+    background: var(--status-warning-bg);
+    color: var(--status-warning-text);
+}
+
+.badge-calculado {
+    background: var(--status-info-bg);
+    color: var(--status-info-text);
+}
+
+.badge-validado {
+    background: var(--status-success-bg);
+    color: var(--status-success-text);
+}
+
+/* Estilos de Impresión Normalizada ISO 17025 */
+@media print {
+    body {
+        background: #ffffff;
+        color: #000000;
+    }
+
+    .lims-header, .lims-nav, .btn, .global-search-container {
+        display: none !important;
+    }
+
+    .lims-container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .card-panel {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+    }
+
+    .print-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #000;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+}
