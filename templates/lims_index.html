@@ -266,14 +266,17 @@
                             <div><label>PROYECTO:</label><input type="text" id="hcPry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
                             <div>
                                 <label>ORDEN DE SERVICIO:</label>
-                                <div style="display:flex; gap:0.25rem; align-items:center;">
-                                    <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'hc')">
-                                        <option value="">-- Seleccionar --</option>
+                                <div style="display:flex; gap:0.35rem; align-items:center;">
+                                    <select class="form-control select-orden-servicio" id="hc_SelectOrden" style="width:190px; font-weight:700; color:#1e3a8a; font-size:0.85rem;" onchange="cargarDatosGenericosModulo('hc', this.value)">
+                                        <option value="">-- Seleccionar Orden --</option>
                                     </select>
-                                    <input type="text" id="hcOrden" value="LSMCH-050-2026" onchange="cargarDatosPorSolicitud()" placeholder="Ej. LSMCH-050-2026" style="width:120px;">
-                                    <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" title="Llamar Datos de la Orden" onclick="cargarDatosPorSolicitud()"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
+                                    <input type="hidden" id="hcOrden" value="LSMCH-050-2026">
+                                    <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.78rem;" title="Llamar Datos de la Orden" onclick="cargarDatosGenericosModulo('hc')">
+                                        <i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden
+                                    </button>
                                 </div>
                             </div>
+
 
                             <div><label>LOC. DE PROYECTO:</label><input type="text" id="hcLoc" value="URBANIZACION EL CARMEN, DAVID, CHIRIQUI"></div>
                             <div>
@@ -495,11 +498,13 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'hum')">
-                                    <option value="">-- Seleccionar --</option>
+                                <select class="form-control select-orden-servicio" id="hum_SelectOrden" style="width:190px; font-weight:700; color:#1e3a8a; font-size:0.85rem;" onchange="cargarDatosGenericosModulo('hum', this.value)">
+                                    <option value="">-- Seleccionar Orden --</option>
                                 </select>
-                                <input type="text" id="hum_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('hum')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('hum')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
+                                <input type="hidden" id="hum_Orden" value="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.78rem;" title="Llamar Datos de la Orden" onclick="cargarDatosGenericosModulo('hum')">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden
+                                </button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -530,11 +535,13 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'att')">
-                                    <option value="">-- Seleccionar --</option>
+                                <select class="form-control select-orden-servicio" id="att_SelectOrden" style="width:190px; font-weight:700; color:#1e3a8a; font-size:0.85rem;" onchange="cargarDatosGenericosModulo('att', this.value)">
+                                    <option value="">-- Seleccionar Orden --</option>
                                 </select>
-                                <input type="text" id="att_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('att')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('att')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
+                                <input type="hidden" id="att_Orden" value="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.78rem;" title="Llamar Datos de la Orden" onclick="cargarDatosGenericosModulo('att')">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden
+                                </button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -565,11 +572,13 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'prc')">
-                                    <option value="">-- Seleccionar --</option>
+                                <select class="form-control select-orden-servicio" id="prc_SelectOrden" style="width:190px; font-weight:700; color:#1e3a8a; font-size:0.85rem;" onchange="cargarDatosGenericosModulo('prc', this.value)">
+                                    <option value="">-- Seleccionar Orden --</option>
                                 </select>
-                                <input type="text" id="prc_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('prc')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('prc')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
+                                <input type="hidden" id="prc_Orden" value="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.78rem;" title="Llamar Datos de la Orden" onclick="cargarDatosGenericosModulo('prc')">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden
+                                </button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -600,11 +609,13 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'cbr')">
-                                    <option value="">-- Seleccionar --</option>
+                                <select class="form-control select-orden-servicio" id="cbr_SelectOrden" style="width:190px; font-weight:700; color:#1e3a8a; font-size:0.85rem;" onchange="cargarDatosGenericosModulo('cbr', this.value)">
+                                    <option value="">-- Seleccionar Orden --</option>
                                 </select>
-                                <input type="text" id="cbr_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('cbr')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('cbr')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
+                                <input type="hidden" id="cbr_Orden" value="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.78rem;" title="Llamar Datos de la Orden" onclick="cargarDatosGenericosModulo('cbr')">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden
+                                </button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -635,11 +646,13 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'den')">
-                                    <option value="">-- Seleccionar --</option>
+                                <select class="form-control select-orden-servicio" id="den_SelectOrden" style="width:190px; font-weight:700; color:#1e3a8a; font-size:0.85rem;" onchange="cargarDatosGenericosModulo('den', this.value)">
+                                    <option value="">-- Seleccionar Orden --</option>
                                 </select>
-                                <input type="text" id="den_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('den')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('den')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
+                                <input type="hidden" id="den_Orden" value="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.78rem;" title="Llamar Datos de la Orden" onclick="cargarDatosGenericosModulo('den')">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden
+                                </button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -670,11 +683,13 @@
                             <span style="font-size:0.88rem; font-weight:800; color:#1e3a8a;"><i class="fa-solid fa-file-invoice"></i> DATOS GENERALES DE LA ORDEN DE SERVICIO</span>
                             <div style="display:flex; gap:0.35rem; align-items:center;">
                                 <label style="font-weight:700; color:#1e3a8a; font-size:0.82rem;">CÓDIGO DE ORDEN:</label>
-                                <select class="form-control select-orden-servicio" style="width:160px; font-weight:700; color:#1e3a8a; font-size:0.82rem; padding:0.3rem;" onchange="cargarOrdenSeleccionadaEnModulo(this, 'spt')">
-                                    <option value="">-- Seleccionar --</option>
+                                <select class="form-control select-orden-servicio" id="spt_SelectOrden" style="width:190px; font-weight:700; color:#1e3a8a; font-size:0.85rem;" onchange="cargarDatosGenericosModulo('spt', this.value)">
+                                    <option value="">-- Seleccionar Orden --</option>
                                 </select>
-                                <input type="text" id="spt_Orden" class="table-input" value="LSMCH-050-2026" style="width:120px; text-align:left; font-weight:700; color:#1e3a8a;" onchange="cargarDatosGenericosModulo('spt')" placeholder="LSMCH-050-2026">
-                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="cargarDatosGenericosModulo('spt')"><i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden</button>
+                                <input type="hidden" id="spt_Orden" value="LSMCH-050-2026">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.78rem;" title="Llamar Datos de la Orden" onclick="cargarDatosGenericosModulo('spt')">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i> Llamar Orden
+                                </button>
                             </div>
                         </div>
                         <div class="form-grid-header">
@@ -691,6 +706,7 @@
                     </div>
                 </div>
             </div>
+
 
 
         </section>
@@ -1041,11 +1057,23 @@
             if (subObj) subObj.style.display = 'block';
         }
 
-        async function cargarDatosGenericosModulo(prefix) {
-            const ordenInput = document.getElementById(`${prefix}_Orden`);
-            if (!ordenInput) return;
-            const cod = ordenInput.value.trim();
+        async function cargarDatosGenericosModulo(prefix, codOverride = null) {
+            let cod = codOverride;
+            if (!cod) {
+                const sel = document.getElementById(`${prefix}_SelectOrden`);
+                if (sel && sel.value) cod = sel.value;
+            }
+            if (!cod) {
+                const inputOrden = document.getElementById(`${prefix}_Orden`);
+                if (inputOrden) cod = inputOrden.value.trim();
+            }
             if (!cod) return;
+
+            // Sincronizar select e input hidden
+            const sel = document.getElementById(`${prefix}_SelectOrden`);
+            if (sel) sel.value = cod;
+            const inp = document.getElementById(`${prefix}_Orden`);
+            if (inp) inp.value = cod;
 
             try {
                 const res = await fetch(`/api/lims/solicitudes/${encodeURIComponent(cod)}`);
@@ -1055,23 +1083,55 @@
                 }
                 const data = await res.json();
                 
-                if (document.getElementById(`${prefix}_Pry`)) document.getElementById(`${prefix}_Pry`).value = data.proyecto_nombre || '';
-                if (document.getElementById(`${prefix}_Cliente`)) document.getElementById(`${prefix}_Cliente`).value = data.cliente_nombre || '';
-                if (document.getElementById(`${prefix}_Loc`)) document.getElementById(`${prefix}_Loc`).value = data.proyecto_ubicacion || '';
-                if (document.getElementById(`${prefix}_Informe`) && data.numero_informe) document.getElementById(`${prefix}_Informe`).value = data.numero_informe;
-                if (document.getElementById(`${prefix}_Muestreado`) && data.responsable_tecnico) document.getElementById(`${prefix}_Muestreado`).value = data.responsable_tecnico;
-                if (document.getElementById(`${prefix}_Desc`) && data.observaciones) document.getElementById(`${prefix}_Desc`).value = data.observaciones;
+                // Actualizar campos principales
+                if (document.getElementById(`${prefix}Pry`) || document.getElementById(`${prefix}_Pry`)) {
+                    const el = document.getElementById(`${prefix}Pry`) || document.getElementById(`${prefix}_Pry`);
+                    el.value = data.proyecto_nombre || '';
+                }
+                if (document.getElementById(`${prefix}Cliente`) || document.getElementById(`${prefix}_Cliente`)) {
+                    const el = document.getElementById(`${prefix}Cliente`) || document.getElementById(`${prefix}_Cliente`);
+                    el.value = data.cliente_nombre || '';
+                }
+                if (document.getElementById(`${prefix}Loc`) || document.getElementById(`${prefix}_Loc`)) {
+                    const el = document.getElementById(`${prefix}Loc`) || document.getElementById(`${prefix}_Loc`);
+                    el.value = data.proyecto_ubicacion || '';
+                }
+                if (document.getElementById(`${prefix}Informe`) || document.getElementById(`${prefix}_Informe`)) {
+                    const el = document.getElementById(`${prefix}Informe`) || document.getElementById(`${prefix}_Informe`);
+                    if (data.numero_informe) el.value = data.numero_informe;
+                }
+                if (document.getElementById(`${prefix}Muestreado`) || document.getElementById(`${prefix}_Muestreado`)) {
+                    const el = document.getElementById(`${prefix}Muestreado`) || document.getElementById(`${prefix}_Muestreado`);
+                    if (data.responsable_tecnico) el.value = data.responsable_tecnico;
+                }
+                if (document.getElementById(`${prefix}Desc`) || document.getElementById(`${prefix}_Desc`)) {
+                    const el = document.getElementById(`${prefix}Desc`) || document.getElementById(`${prefix}_Desc`);
+                    if (data.observaciones) el.value = data.observaciones;
+                }
 
-                if (data.muestreos && data.muestreos.length > 0 && data.muestreos[0].muestras && data.muestreos[0].muestras.length > 0) {
-                    const m = data.muestreos[0].muestras[0];
-                    if (document.getElementById(`${prefix}_IdLsmch`) && m.codigo_muestra) document.getElementById(`${prefix}_IdLsmch`).value = m.codigo_muestra;
-                    if (document.getElementById(`${prefix}_Desc`) && m.descripcion) document.getElementById(`${prefix}_Desc`).value = m.descripcion;
-                    if (document.getElementById(`${prefix}_Fuente`) && m.profundidad_elemento) document.getElementById(`${prefix}_Fuente`).value = m.profundidad_elemento;
+                // Actualizar campos de muestreo
+                if (data.muestreos && data.muestreos.length > 0) {
+                    const mue = data.muestreos[0];
+                    if (mue.muestras && mue.muestras.length > 0) {
+                        const m = mue.muestras[0];
+                        const elIdLsmch = document.getElementById(`${prefix}IdLsmch`) || document.getElementById(`${prefix}_IdLsmch`);
+                        if (elIdLsmch && m.codigo_muestra) elIdLsmch.value = m.codigo_muestra;
+
+                        const elDesc = document.getElementById(`${prefix}Desc`) || document.getElementById(`${prefix}_Desc`);
+                        if (elDesc && m.descripcion) elDesc.value = m.descripcion;
+
+                        const elIdCliente = document.getElementById(`${prefix}IdCliente`) || document.getElementById(`${prefix}_IdCliente`);
+                        if (elIdCliente) elIdCliente.value = m.descripcion || 'SUELO';
+
+                        const elFuente = document.getElementById(`${prefix}Fuente`) || document.getElementById(`${prefix}_Fuente`);
+                        if (elFuente) elFuente.value = m.profundidad_elemento || mue.ubicacion_muestreo || 'SPT';
+                    }
                 }
             } catch(e) {
                 console.error("Error al cargar orden en módulo:", e);
             }
         }
+
 
         async function guardarInformeGenerico(prefix) {
             const cod = document.getElementById(`${prefix}_Orden`)?.value.trim();
@@ -1372,12 +1432,13 @@
             const selects = document.querySelectorAll('.select-orden-servicio');
             selects.forEach(sel => {
                 const valActual = sel.value;
-                sel.innerHTML = `<option value="">-- Seleccionar --</option>` + data.map(s => `
-                    <option value="${s.codigo_solicitud}">${s.codigo_solicitud} - ${s.cliente_nombre}</option>
+                sel.innerHTML = `<option value="">-- Seleccionar Orden --</option>` + data.map(s => `
+                    <option value="${s.codigo_solicitud}">${s.codigo_solicitud}</option>
                 `).join('');
                 if (valActual) sel.value = valActual;
             });
         }
+
 
         function cargarOrdenSeleccionadaEnModulo(selectElem, prefix) {
             const cod = selectElem.value;
