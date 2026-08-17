@@ -317,9 +317,10 @@
                                     <tr><td>Masa total húmeda, g</td><td style="text-align:right; font-weight:700; color:#1e3a8a;"><input type="number" id="hcMasaHumedaTotal" class="table-input" value="1942.7" style="width:90px;" onchange="calcularHojaHC006()"></td><td style="text-align:center;">---</td><td style="text-align:center; font-weight:700; color:#1e3a8a;"><input type="number" id="hcMasaHumedaFFinaTotal" class="table-input" value="1821.3" style="width:90px;" onchange="calcularHojaHC006()"></td></tr>
                                     <tr><td>Masa total seca, g</td><td style="text-align:right; font-weight:700; color:#1e3a8a;"><input type="number" id="hcMasaSecaTotal" class="table-input" value="1246.3" style="width:90px;" onchange="calcularHojaHC006()"></td><td style="text-align:center;">---</td><td style="text-align:center;">---</td></tr>
                                     <tr><td>Tamices de Separación</td><td style="text-align:right;">---</td><td style="text-align:center; font-weight:700;">No. 4</td><td style="text-align:center;">~</td></tr>
-                                    <tr><td>Masa húmeda de fracción retenida g</td><td style="text-align:right;">---</td><td style="text-align:center;"><input type="number" id="hcMHumFg" class="table-input" value="121.4" style="width:80px;" onchange="calcularHojaHC006()"></td><td style="text-align:center; background:#fef08a;"><input type="number" id="hcMHumFf" class="table-input" value="132.5" style="width:80px;" onchange="calcularHojaHC006()"></td></tr>
-                                    <tr><td>Masa seca de fracción g</td><td style="text-align:right;">---</td><td style="text-align:center; font-weight:600;" id="tcMSecaFg">77.9</td><td style="text-align:center; font-weight:600; background:#fef08a;" id="tcMSecaFf">84.6</td></tr>
-                                    <tr><td>Fracción después de lavar g</td><td style="text-align:right;">---</td><td style="text-align:center; font-weight:600;" id="tcMLavadaFg">77.9</td><td style="text-align:center; font-weight:600; background:#fef08a;" id="tcMLavadaFf">84.6</td></tr>
+                                    <tr><td>Masa húmeda de fracción retenida g</td><td style="text-align:right;">---</td><td style="text-align:center;"><input type="number" id="hcMHumFg" class="table-input" value="121.4" style="width:85px;" onchange="calcularHojaHC006()"></td><td style="text-align:center; background:#fef08a;"><input type="number" id="hcMHumFf" class="table-input" value="132.5" style="width:85px; font-weight:700; color:#854d0e;" onchange="calcularHojaHC006()"></td></tr>
+                                    <tr><td>Masa seca de fracción g</td><td style="text-align:right;">---</td><td style="text-align:center;"><input type="number" id="hcMSecaFg" class="table-input" value="77.9" style="width:85px;" onchange="calcularHojaHC006()"></td><td style="text-align:center; background:#fef08a;"><input type="number" id="hcMSecaFf" class="table-input" value="84.6" style="width:85px; font-weight:700; color:#854d0e;" onchange="calcularHojaHC006()"></td></tr>
+                                    <tr><td>Fracción después de lavar g</td><td style="text-align:right;">---</td><td style="text-align:center;"><input type="number" id="hcMLavadaFg" class="table-input" value="77.9" style="width:85px;" onchange="calcularHojaHC006()"></td><td style="text-align:center; background:#fef08a;"><input type="number" id="hcMLavadaFf" class="table-input" value="84.6" style="width:85px; font-weight:700; color:#854d0e;" onchange="calcularHojaHC006()"></td></tr>
+
                                     <tr><td>Humedad de fracción %</td><td style="text-align:right;">---</td><td style="text-align:center;" id="tcHFg">55.8</td><td style="text-align:center;" id="tcHFf">56.6</td></tr>
                                     <tr><td>Fracción %</td><td style="text-align:right;">---</td><td style="text-align:center;" id="tcPctFg">6.3</td><td style="text-align:center;" id="tcPctFf">93.7</td></tr>
                                     <tr><td>Humedad total %</td><td style="text-align:right; font-weight:700; color:#1e3a8a;" id="tcHTotal" colspan="3">56.6%</td></tr>
@@ -537,6 +538,10 @@
             const mHumedaFFinaTotal = parseFloat(document.getElementById('hcMasaHumedaFFinaTotal')?.value || 1821.3);
             const mHumFg = parseFloat(document.getElementById('hcMHumFg')?.value || 121.4);
             const mHumFf = parseFloat(document.getElementById('hcMHumFf')?.value || 132.5);
+            const mSecaFg = parseFloat(document.getElementById('hcMSecaFg')?.value || 77.9);
+            const mSecaFf = parseFloat(document.getElementById('hcMSecaFf')?.value || 84.6);
+            const mLavadaFg = parseFloat(document.getElementById('hcMLavadaFg')?.value || 77.9);
+            const mLavadaFf = parseFloat(document.getElementById('hcMLavadaFf')?.value || 84.6);
 
             const metodo = document.getElementById('hcMetodoASTM').value || "METODO_A";
             const procedimiento = document.getElementById('hcProcedimientoASTM').value || "HUMEDO";
@@ -571,9 +576,14 @@
                         masa_total_humeda_ffina_g: mHumedaFFinaTotal,
                         m_hum_fgruesa: mHumFg,
                         m_hum_ffina: mHumFf,
+                        m_seca_fgruesa: mSecaFg,
+                        m_seca_ffina: mSecaFf,
+                        m_lavada_fgruesa: mLavadaFg,
+                        m_lavada_ffina: mLavadaFf,
                         tamices: tamices
                     })
                 });
+
                 const data = await res.json();
                 ultimoCalculoCompleto = data;
                 ultimoDataTamices = data.tamices || [];

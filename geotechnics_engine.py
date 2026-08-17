@@ -37,6 +37,11 @@ def calcular_granulometria_astm_d6913(datos):
 
     m_hum_fgruesa = float(datos.get("m_hum_fgruesa", 121.4))
     m_hum_ffina = float(datos.get("m_hum_ffina", 132.5))
+    
+    m_seca_fgruesa_user = float(datos.get("m_seca_fgruesa", 77.9))
+    m_seca_ffina_user = float(datos.get("m_seca_ffina", 84.6))
+    m_lavada_fgruesa_user = float(datos.get("m_lavada_fgruesa", 77.9))
+    m_lavada_ffina_user = float(datos.get("m_lavada_ffina", 84.6))
 
     tamices_input = datos.get("tamices", [])
     
@@ -44,7 +49,7 @@ def calcular_granulometria_astm_d6913(datos):
     factor_gruesa = (100.0 / s_md) if s_md > 0 else 0.0
     
     item_no4 = next((x for x in tamices_input if x.get("tamiz") == 'No. 4'), {})
-    m_ret_gruesa_no4 = float(item_no4.get("fgruesa_g", item_no4.get("masa_retenida", 77.9)))
+    m_ret_gruesa_no4 = m_seca_fgruesa_user
     
     pct_ret_no4_raw = m_ret_gruesa_no4 * factor_gruesa
     pct_pasa_no4_raw = 100.0 - pct_ret_no4_raw
@@ -52,10 +57,11 @@ def calcular_granulometria_astm_d6913(datos):
     # Masa de subespécimen fino lavado
     m_fina_total = sum(float(x.get("ffina_g", x.get("masa_retenida", 0.0))) for x in tamices_input if x.get("tamiz") != 'Fondo' and not next((t["es_gruesa"] for t in TAMICES_ASTM_D6913 if t["tamiz"] == x.get("tamiz")), True))
     m_fina_fondo = float(next((x.get("ffina_g", x.get("masa_retenida", 10.34)) for x in tamices_input if x.get("tamiz") == 'Fondo'), 10.34))
-    sub_s_md = m_fina_total + m_fina_fondo # Masa seca subespécimen fino (e.g. 84.6g)
+    sub_s_md = m_seca_ffina_user # Masa seca subespécimen fino ingresada por el usuario (e.g. 84.6g)
 
     # Factor Fracción Fina CSCF = pct_pasa_no4_raw / sub_s_md
     factor_fina = (pct_pasa_no4_raw / sub_s_md) if sub_s_md > 0 else factor_gruesa
+
 
     # 2. Procesar tamizado conservando precisión flotante
     resultado_tamices = []
