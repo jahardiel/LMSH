@@ -140,19 +140,27 @@ def calcular_granulometria_astm_d6913(datos):
     sum_tamizado_gruesa = round(m_ret_gruesa_no4, 1)
     sum_tamizado_fina = round(m_fina_total + m_fina_fondo, 1)
 
-    # Pérdida por Procesamiento ASTM D6913 Section 12.5 / 13.1
-    loss_lavado_1ra = round(((m_seca_fgruesa_user - m_lavada_fgruesa_user) / m_seca_fgruesa_user) * 100.0, 2) if m_seca_fgruesa_user > 0 else 0.00
-    loss_tamizado_1ra = round(((m_lavada_fgruesa_user - sum_tamizado_gruesa) / m_lavada_fgruesa_user) * 100.0, 2) if m_lavada_fgruesa_user > 0 else 0.00
-    loss_tamizado_ffina = round(((m_lavada_ffina_user - sum_tamizado_fina) / m_lavada_ffina_user) * 100.0, 2) if m_lavada_ffina_user > 0 else 0.30
+    # Pérdida por Procesamiento ASTM D6913 Section 12.5 / 13.1 (Correlación Directa de Masas)
+    sum_tamizado_fina_exacta = (m_fina_total + m_fina_fondo)
+    
+    loss_lavado_1ra = ((m_seca_fgruesa_user - m_lavada_fgruesa_user) / m_seca_fgruesa_user * 100.0) if m_seca_fgruesa_user > 0 else 0.0
+    loss_tamizado_1ra = ((m_lavada_fgruesa_user - m_ret_gruesa_no4) / m_lavada_fgruesa_user * 100.0) if m_lavada_fgruesa_user > 0 else 0.0
+    
+    loss_lavado_ffina = ((m_seca_ffina_user - m_lavada_ffina_user) / m_seca_ffina_user * 100.0) if m_seca_ffina_user > 0 else 0.0
+    loss_tamizado_ffina = ((m_lavada_ffina_user - sum_tamizado_fina_exacta) / m_lavada_ffina_user * 100.0) if m_lavada_ffina_user > 0 else 0.0
 
     perdida_procesamiento = {
         "criterio_lavado": 0.5,
         "criterio_tamizado": 0.5,
         "sep1_lavado": f"{loss_lavado_1ra:.2f}",
         "sep1_tamizado": f"{loss_tamizado_1ra:.2f}",
-        "ffina_lavado": "---",
-        "ffina_tamizado": f"{loss_tamizado_ffina:.2f}"
+        "ffina_lavado": "---" if abs(loss_lavado_ffina) < 0.001 else f"{loss_lavado_ffina:.2f}",
+        "ffina_tamizado": f"{loss_tamizado_ffina:.2f}",
+        "cumple_sep1_lavado": loss_lavado_1ra <= 0.5,
+        "cumple_sep1_tamizado": loss_tamizado_1ra <= 0.5,
+        "cumple_ffina_tamizado": loss_tamizado_ffina <= 0.5
     }
+
 
     # Diámetros característicos D10, D15, D30, D50, D60, D85
     def interpolar_d_exacto(pct_objetivo):
