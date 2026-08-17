@@ -3292,14 +3292,15 @@
                                 </tr>
                             `;
                         } else {
-                            const stdVal = (r.num_lecturas && r.num_lecturas > 1) ? `s(L) = ${(r.desviacion_estandar || 0).toFixed(3)}` : '-';
+                            const stdVal = (r.num_lecturas && r.num_lecturas > 1) ? `s(L) = ${(r.desviacion_estandar || r.std_muestral || 0).toFixed(3)}` : '-';
                             const lecturasStr = arrLecturas.slice(0, 5).join(', ');
+                            const meanLecturasPure = r.temp_media_indicada !== undefined ? r.temp_media_indicada : (arrLecturas.reduce((a,b)=>a+b,0)/(arrLecturas.length||1));
                             tbPaso3Mag.innerHTML = `
                                 <tr>
                                     <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">L</td>
                                     <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Lectura realizada de la temperatura</td>
                                     <td style="border:1px solid #cbd5e1; padding:0.35rem; font-size:0.75rem;">[${lecturasStr}]<br><small style="color:#0284c7; font-weight:800;">${stdVal}</small></td>
-                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${tempFinal.toFixed(2)}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${meanLecturasPure.toFixed(2)}</td>
                                     <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
                                 </tr>
                                 <tr>
@@ -3312,6 +3313,7 @@
 
                             `;
                         }
+
                     }
 
 
