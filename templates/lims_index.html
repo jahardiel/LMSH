@@ -18,25 +18,11 @@
             background: #ffffff;
             margin-bottom: 1.5rem;
         }
-        .hc006-title {
-            text-align: center;
-            font-weight: 800;
-            color: #1e3a8a;
-            font-size: 1.05rem;
-            border-bottom: 2px solid #1e3a8a;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-        }
         .form-grid-header {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.75rem 1.5rem;
             font-size: 0.82rem;
-        }
-        .form-grid-header div {
-            display: flex;
-            align-items: center;
         }
         .form-grid-header label {
             font-weight: 700;
@@ -51,9 +37,50 @@
             border-radius: 4px;
             font-size: 0.82rem;
         }
-        .param-table-hc006 td {
-            padding: 0.3rem 0.5rem;
+
+        /* Sub-navegación por módulos geotécnicos */
+        .subnav-pills {
+            display: flex;
+            gap: 0.5rem;
+            background: #e2e8f0;
+            padding: 0.4rem;
+            border-radius: 8px;
+            margin-bottom: 1.25rem;
+            overflow-x: auto;
+        }
+        .subnav-pill {
+            padding: 0.45rem 0.85rem;
             font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .subnav-pill.active {
+            background: #ffffff;
+            color: var(--primary-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Controles de Zoom del Gráfico */
+        .chart-controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f1f5f9;
+            padding: 0.5rem 0.85rem;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            font-size: 0.82rem;
+        }
+        .chart-controls-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
     </style>
 </head>
@@ -65,7 +92,7 @@
             <div class="brand-logo">UTP</div>
             <div class="brand-text">
                 <h1>LABORATORIO DE SUELOS Y MATERIALES DE CHIRIQUÍ (LSMCH)</h1>
-                <p>UNIVERSIDAD TECNOLÓGICA DE PANAMÁ | Formato Oficial HC-LSMCH-006 (ASTM D6913 / D2487)</p>
+                <p>UNIVERSIDAD TECNOLÓGICA DE PANAMÁ | Sistema LIMS - Núcleo de Ensayos Metrológicos</p>
             </div>
         </div>
 
@@ -75,19 +102,22 @@
         </div>
     </header>
 
-    <!-- NAVEGACIÓN -->
+    <!-- NAVEGACIÓN PRINCIPAL DE MÓDULOS DEL NÚCLEO -->
     <nav class="lims-nav">
-        <button class="nav-tab active" onclick="switchTab('granulometria-hc006')">
-            <i class="fa-solid fa-file-excel"></i> Hoja HC-LSMCH-006 (Granulometría)
+        <button class="nav-tab active" onclick="switchTab('geotecnia')">
+            <i class="fa-solid fa-mountain"></i> Módulo de Geotecnia
         </button>
-        <button class="nav-tab" onclick="switchTab('dashboard')">
-            <i class="fa-solid fa-chart-line"></i> Dashboard LIMS
+        <button class="nav-tab" onclick="switchTab('concreto')">
+            <i class="fa-solid fa-cubes"></i> Módulo de Concreto
+        </button>
+        <button class="nav-tab" onclick="switchTab('incertidumbre')">
+            <i class="fa-solid fa-calculator"></i> Módulo de Incertidumbre GUM
         </button>
         <button class="nav-tab" onclick="switchTab('solicitudes')">
-            <i class="fa-solid fa-folder-open"></i> Solicitudes LSMCH
+            <i class="fa-solid fa-folder-open"></i> Administración & Trazabilidad
         </button>
         <button class="nav-tab" onclick="switchTab('reportes')">
-            <i class="fa-solid fa-print"></i> Imprimir HC-LSMCH-006
+            <i class="fa-solid fa-print"></i> Reportes PDF ISO 17025
         </button>
     </nav>
 
@@ -103,173 +133,270 @@
             <div id="searchResultsContent"></div>
         </div>
 
-        <!-- HOJA DE CÁLCULO OFICIAL HC-LSMCH-006 -->
-        <section id="tab-granulometria-hc006" class="tab-content active">
-            <div class="card-panel">
-                <div class="panel-header">
-                    <span class="panel-title"><i class="fa-solid fa-flask-vial"></i> ENSAYO: DISTRIBUCIÓN DEL TAMAÑO DE PARTÍCULAS (GRADACIÓN) DE SUELOS USANDO ANÁLISIS DE TAMIZ</span>
-                    <div>
-                        <span class="badge-solicitud" style="margin-right:1rem;">HC-LSMCH-006 | Rev. 02</span>
-                        <button class="btn btn-primary" onclick="calcularHojaHC006()"><i class="fa-solid fa-calculator"></i> Calcular HC-LSMCH-006</button>
-                    </div>
-                </div>
+        <!-- 1. MÓDULO DE GEOTECNIA (MECÁNICA DE SUELOS) -->
+        <section id="tab-geotecnia" class="tab-content active">
+            <!-- SUB-NAVEGACIÓN INTERNA DEL MÓDULO DE GEOTECNIA -->
+            <div class="subnav-pills">
+                <button class="subnav-pill active" onclick="switchSubGeo('granulometria-hc006')">
+                    <i class="fa-solid fa-file-excel"></i> Granulometría (HC-LSMCH-006)
+                </button>
+                <button class="subnav-pill" onclick="switchSubGeo('humedad')">
+                    <i class="fa-solid fa-droplet"></i> Humedad (ASTM D2216)
+                </button>
+                <button class="subnav-pill" onclick="switchSubGeo('atterberg')">
+                    <i class="fa-solid fa-vial"></i> Límites Atterberg & SUCS
+                </button>
+                <button class="subnav-pill" onclick="switchSubGeo('proctor')">
+                    <i class="fa-solid fa-weight-hanging"></i> Proctor E/M (ASTM D698)
+                </button>
+                <button class="subnav-pill" onclick="switchSubGeo('cbr')">
+                    <i class="fa-solid fa-gauge-high"></i> CBR (ASTM D1883)
+                </button>
+                <button class="subnav-pill" onclick="switchSubGeo('densidad-campo')">
+                    <i class="fa-solid fa-circle-dot"></i> Densidad de Campo
+                </button>
+                <button class="subnav-pill" onclick="switchSubGeo('spt')">
+                    <i class="fa-solid fa-arrows-down-to-line"></i> SPT (ASTM D1586)
+                </button>
+            </div>
 
-                <!-- ENCABEZADO FORMATO HC-LSMCH-006 -->
-                <div class="hc006-header-box">
-                    <div class="form-grid-header">
-                        <div><label>PROYECTO:</label><input type="text" id="hcPry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
-                        <div><label>ORDEN DE SERVICIO:</label><input type="text" id="hcOrden" value="LSMCH-050-2026"></div>
-                        <div><label>LOC. DE PROYECTO:</label><input type="text" id="hcLoc" value="URBANIZACION EL CARMEN, DAVID, CHIRIQUI"></div>
-                        <div><label>INFORME:</label><input type="text" id="hcInforme" value="LSMCH-098-2026"></div>
-                        <div><label>CLIENTE:</label><input type="text" id="hcCliente" value="THE KING SCHOOL DAVID, S.A."></div>
-                        <div><label>MUESTREADO POR:</label><input type="text" id="hcMuestreado" value="JQ, NS, CO"></div>
-                        <div><label>DESCRIPCIÓN:</label><input type="text" id="hcDesc" value="SUELO"></div>
-                        <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="hcIdCliente" value="SUELO"></div>
-                        <div><label>FUENTE:</label><input type="text" id="hcFuente" value="SPT 1 Y 2 / 7m @ 8m"></div>
-                        <div><label>IDENT. DEL LSMCH:</label><input type="text" id="hcIdLsmch" value="M5022@023-2026-2"></div>
-                    </div>
-                </div>
-
-                <!-- MÉTODO DE ENSAYO & MASAS -->
-                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.5rem;">
-                    <p style="font-size:0.85rem; font-weight:700; color:#1e3a8a; margin-bottom:0.75rem;">Método de ensayo utilizado: Tamizado compuesto "A" - ASTM D6913</p>
-                    
-                    <div class="grid-3">
+            <!-- SUB-PÁGINA 1: GRANULOMETRÍA HC-LSMCH-006 -->
+            <div id="sub-granulometria-hc006" class="subgeo-content active">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-flask-vial"></i> ENSAYO: DISTRIBUCIÓN DEL TAMAÑO DE PARTÍCULAS (GRADACIÓN) DE SUELOS USANDO ANÁLISIS DE TAMIZ</span>
                         <div>
-                            <div class="form-group">
-                                <label class="form-label">Masa total húmeda, g</label>
-                                <input type="number" id="hcMasaHumedaTotal" class="form-control" value="1942.7" step="0.1">
+                            <span class="badge-solicitud" style="margin-right:1rem;">HC-LSMCH-006 | Rev. 02</span>
+                            <button class="btn btn-primary" onclick="calcularHojaHC006()"><i class="fa-solid fa-calculator"></i> Calcular HC-LSMCH-006</button>
+                        </div>
+                    </div>
+
+                    <!-- ENCABEZADO FORMATO HC-LSMCH-006 -->
+                    <div class="hc006-header-box">
+                        <div class="form-grid-header">
+                            <div><label>PROYECTO:</label><input type="text" id="hcPry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
+                            <div><label>ORDEN DE SERVICIO:</label><input type="text" id="hcOrden" value="LSMCH-050-2026"></div>
+                            <div><label>LOC. DE PROYECTO:</label><input type="text" id="hcLoc" value="URBANIZACION EL CARMEN, DAVID, CHIRIQUI"></div>
+                            <div><label>INFORME:</label><input type="text" id="hcInforme" value="LSMCH-098-2026"></div>
+                            <div><label>CLIENTE:</label><input type="text" id="hcCliente" value="THE KING SCHOOL DAVID, S.A."></div>
+                            <div><label>MUESTREADO POR:</label><input type="text" id="hcMuestreado" value="JQ, NS, CO"></div>
+                            <div><label>DESCRIPCIÓN:</label><input type="text" id="hcDesc" value="SUELO"></div>
+                            <div><label>IDENT. DEL CLIENTE:</label><input type="text" id="hcIdCliente" value="SUELO"></div>
+                            <div><label>FUENTE:</label><input type="text" id="hcFuente" value="SPT 1 Y 2 / 7m @ 8m"></div>
+                            <div><label>IDENT. DEL LSMCH:</label><input type="text" id="hcIdLsmch" value="M5022@023-2026-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- MÉTODO DE ENSAYO & MASAS -->
+                    <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.5rem;">
+                        <p style="font-size:0.85rem; font-weight:700; color:#1e3a8a; margin-bottom:0.75rem;">Método de ensayo utilizado: Tamizado compuesto "A" - ASTM D6913</p>
+                        
+                        <div class="grid-3">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Masa total húmeda, g</label>
+                                    <input type="number" id="hcMasaHumedaTotal" class="form-control" value="1942.7" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Masa total seca, g</label>
+                                    <input type="number" id="hcMasaSecaTotal" class="form-control" value="1246.3" step="0.1">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Masa total seca, g</label>
-                                <input type="number" id="hcMasaSecaTotal" class="form-control" value="1246.3" step="0.1">
+
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Límite Líquido (LL %)</label>
+                                    <input type="number" id="hcLL" class="form-control" value="38.0" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Límite Plástico (LP %)</label>
+                                    <input type="number" id="hcLP" class="form-control" value="22.0" step="0.1">
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="background:#ffffff; border:1px solid var(--border-accent); border-radius:6px; padding:0.75rem; text-align:center;">
+                                    <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">CLASIFICACIÓN SUCS (ASTM D2487)</span>
+                                    <h2 id="hcResultSUCS" style="color:#1e3a8a; margin-top:0.2rem;">GW (Grava bien graduada)</h2>
+                                    <p id="hcResultSUCSParams" style="font-size:0.78rem; color:#059669; font-weight:600; margin-top:0.2rem;">Cu: 12.5 | Cc: 1.8</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TABLA Y GRÁFICA SEMILOGARÍTMICA -->
+                    <div class="grid-2">
+                        <!-- TABLA DE TAMIZADO -->
+                        <div>
+                            <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-table-cells"></i> Tabla de Tamizado (ASTM D6913)</h4>
+                            <div class="table-responsive">
+                                <table class="table-lims" id="tablaHC006">
+                                    <thead>
+                                        <tr>
+                                            <th>Tamiz</th>
+                                            <th>Abertura (mm)</th>
+                                            <th>Masa Retenida (g)</th>
+                                            <th>% Retenido</th>
+                                            <th>% Acumulado</th>
+                                            <th>% Que Pasa</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>3"</td><td>75.000</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>2"</td><td>50.000</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>1 1/2"</td><td>38.100</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>1"</td><td>25.000</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>3/4"</td><td>19.000</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>3/8"</td><td>9.500</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
+                                        <tr><td>No. 4</td><td>4.750</td><td><input type="number" class="table-input hc-mret" value="77.9"></td><td class="r-ind">6.25</td><td class="r-acu">6.25</td><td class="r-pasa">93.75</td></tr>
+                                        <tr><td>No. 10</td><td>2.000</td><td><input type="number" class="table-input hc-mret" value="1.25"></td><td class="r-ind">1.39</td><td class="r-acu">7.64</td><td class="r-pasa">92.36</td></tr>
+                                        <tr><td>No. 20</td><td>0.850</td><td><input type="number" class="table-input hc-mret" value="5.92"></td><td class="r-ind">6.56</td><td class="r-acu">14.20</td><td class="r-pasa">85.80</td></tr>
+                                        <tr><td>No. 40</td><td>0.425</td><td><input type="number" class="table-input hc-mret" value="13.32"></td><td class="r-ind">14.76</td><td class="r-acu">28.96</td><td class="r-pasa">71.04</td></tr>
+                                        <tr><td>No. 60</td><td>0.250</td><td><input type="number" class="table-input hc-mret" value="12.18"></td><td class="r-ind">13.50</td><td class="r-acu">42.46</td><td class="r-pasa">57.54</td></tr>
+                                        <tr><td>No. 100</td><td>0.150</td><td><input type="number" class="table-input hc-mret" value="11.16"></td><td class="r-ind">12.37</td><td class="r-acu">54.83</td><td class="r-pasa">45.17</td></tr>
+                                        <tr><td>No. 140</td><td>0.105</td><td><input type="number" class="table-input hc-mret" value="17.41"></td><td class="r-ind">19.29</td><td class="r-acu">74.12</td><td class="r-pasa">25.88</td></tr>
+                                        <tr><td>No. 200</td><td>0.075</td><td><input type="number" class="table-input hc-mret" value="12.77"></td><td class="r-ind">14.15</td><td class="r-acu">88.27</td><td class="r-pasa">11.73</td></tr>
+                                        <tr><td>Fondo</td><td>0.000</td><td><input type="number" class="table-input hc-mret" value="10.34"></td><td class="r-ind">--</td><td class="r-acu">--</td><td class="r-pasa">--</td></tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
+                        <!-- GRÁFICA SEMILOGARÍTMICA CON CONTROLES INTERACTIVOS DE ZOOM % -->
                         <div>
-                            <div class="form-group">
-                                <label class="form-label">Límite Líquido (LL %)</label>
-                                <input type="number" id="hcLL" class="form-control" value="38.0" step="0.1">
+                            <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-chart-area"></i> Curva Granulométrica LSMCH</h4>
+                            
+                            <!-- BARRA DE CONTROLES DE ESCALA DE % -->
+                            <div class="chart-controls-bar">
+                                <div class="chart-controls-group">
+                                    <label><strong>Ajuste de Escala Y (%):</strong></label>
+                                    <span>Mín:</span>
+                                    <input type="number" id="zoomYMin" value="0" min="0" max="100" style="width:55px;" onchange="re-renderChart()"> %
+                                    <span>Máx:</span>
+                                    <input type="number" id="zoomYMax" value="100" min="0" max="100" style="width:55px;" onchange="re-renderChart()"> %
+                                </div>
+                                <div class="chart-controls-group">
+                                    <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.78rem;" onclick="autoAjustarEscalaY()"><i class="fa-solid fa-expand"></i> Auto-Ajustar</button>
+                                    <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.78rem;" onclick="restablecerEscalaY()"><i class="fa-solid fa-rotate-left"></i> 0-100%</button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Límite Plástico (LP %)</label>
-                                <input type="number" id="hcLP" class="form-control" value="22.0" step="0.1">
-                            </div>
-                        </div>
 
-                        <div>
-                            <div style="background:#ffffff; border:1px solid var(--border-accent); border-radius:6px; padding:0.75rem; text-align:center;">
-                                <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">CLASIFICACIÓN SUCS (ASTM D2487)</span>
-                                <h2 id="hcResultSUCS" style="color:#1e3a8a; margin-top:0.2rem;">GW (Grava bien graduada)</h2>
-                                <p id="hcResultSUCSParams" style="font-size:0.78rem; color:#059669; font-weight:600; margin-top:0.2rem;">Cu: 12.5 | Cc: 1.8</p>
+                            <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1rem;">
+                                <svg id="svgCurvaHC006" viewBox="0 0 720 360" style="width:100%; height:320px; background:#fafafa; border-radius:4px; border:1px solid #e2e8f0;"></svg>
+                            </div>
+
+                            <!-- PARÁMETROS CHARACTERÍSTICOS -->
+                            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:0.85rem;">
+                                <h5 style="color:#1e3a8a; font-size:0.82rem; font-weight:700; margin-bottom:0.5rem;">DIÁMETROS CARACTERÍSTICOS Y PARÁMETROS</h5>
+                                <div class="grid-3" style="font-size:0.8rem; row-gap:0.4rem;">
+                                    <div>% Grava = <strong id="valPctGrava">6.25%</strong></div>
+                                    <div>D10 mm = <strong id="valD10">0.08</strong></div>
+                                    <div>D15 mm = <strong id="valD15">0.08</strong></div>
+                                    <div>% Arena = <strong id="valPctArena">82.02%</strong></div>
+                                    <div>D30 mm = <strong id="valD30">0.12</strong></div>
+                                    <div>D50 mm = <strong id="valD50">0.20</strong></div>
+                                    <div>% Fino = <strong id="valPctFino">11.73%</strong></div>
+                                    <div>D60 mm = <strong id="valD60">0.28</strong></div>
+                                    <div>D85 mm = <strong id="valD85">0.82</strong></div>
+                                </div>
+                                <div style="margin-top:0.6rem; padding-top:0.4rem; border-top:1px dashed #cbd5e1; display:flex; justify-content:space-between; font-size:0.85rem;">
+                                    <div>Cu (Uniformidad): <strong id="valCu" style="color:#1e3a8a;">3.50</strong></div>
+                                    <div>Cc (Curvatura): <strong id="valCc" style="color:#1e3a8a;">0.64</strong></div>
+                                </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- FIRMAS -->
+                    <div style="display:flex; justify-content:space-between; margin-top:2rem; padding-top:1rem; border-top:1px solid #cbd5e1; font-size:0.82rem;">
+                        <div>ENSAYADO POR: <strong>N.S.</strong></div>
+                        <div>REVISADO POR: <strong>A.A.</strong></div>
+                        <div>FECHA: <strong>2026-08-10</strong></div>
                     </div>
                 </div>
+            </div>
 
-                <!-- TABLA DE TAMIZADO Y CÁLCULOS -->
-                <div class="grid-2">
-                    <div>
-                        <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-table-cells"></i> Tabla de Tamizado (ASTM D6913)</h4>
-                        <div class="table-responsive">
-                            <table class="table-lims" id="tablaHC006">
-                                <thead>
-                                    <tr>
-                                        <th>Tamiz</th>
-                                        <th>Abertura (mm)</th>
-                                        <th>Masa Retenida (g)</th>
-                                        <th>% Retenido</th>
-                                        <th>% Acumulado</th>
-                                        <th>% Que Pasa</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>3"</td><td>75.000</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                    <tr><td>2"</td><td>50.000</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                    <tr><td>1 1/2"</td><td>38.100</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                    <tr><td>1"</td><td>25.000</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                    <tr><td>3/4"</td><td>19.000</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                    <tr><td>3/8"</td><td>9.500</td><td><input type="number" class="table-input hc-mret" value="0.0"></td><td class="r-ind">0.0</td><td class="r-acu">0.0</td><td class="r-pasa">100.0</td></tr>
-                                    <tr><td>No. 4</td><td>4.750</td><td><input type="number" class="table-input hc-mret" value="77.9"></td><td class="r-ind">6.25</td><td class="r-acu">6.25</td><td class="r-pasa">93.75</td></tr>
-                                    <tr><td>No. 10</td><td>2.000</td><td><input type="number" class="table-input hc-mret" value="1.25"></td><td class="r-ind">1.39</td><td class="r-acu">7.64</td><td class="r-pasa">92.36</td></tr>
-                                    <tr><td>No. 20</td><td>0.850</td><td><input type="number" class="table-input hc-mret" value="5.92"></td><td class="r-ind">6.56</td><td class="r-acu">14.20</td><td class="r-pasa">85.80</td></tr>
-                                    <tr><td>No. 40</td><td>0.425</td><td><input type="number" class="table-input hc-mret" value="13.32"></td><td class="r-ind">14.76</td><td class="r-acu">28.96</td><td class="r-pasa">71.04</td></tr>
-                                    <tr><td>No. 60</td><td>0.250</td><td><input type="number" class="table-input hc-mret" value="12.18"></td><td class="r-ind">13.50</td><td class="r-acu">42.46</td><td class="r-pasa">57.54</td></tr>
-                                    <tr><td>No. 100</td><td>0.150</td><td><input type="number" class="table-input hc-mret" value="11.16"></td><td class="r-ind">12.37</td><td class="r-acu">54.83</td><td class="r-pasa">45.17</td></tr>
-                                    <tr><td>No. 140</td><td>0.105</td><td><input type="number" class="table-input hc-mret" value="17.41"></td><td class="r-ind">19.29</td><td class="r-acu">74.12</td><td class="r-pasa">25.88</td></tr>
-                                    <tr><td>No. 200</td><td>0.075</td><td><input type="number" class="table-input hc-mret" value="12.77"></td><td class="r-ind">14.15</td><td class="r-acu">88.27</td><td class="r-pasa">11.73</td></tr>
-                                    <tr><td>Fondo</td><td>0.000</td><td><input type="number" class="table-input hc-mret" value="10.34"></td><td class="r-ind">--</td><td class="r-acu">--</td><td class="r-pasa">--</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- GRÁFICA Y PARÁMETROS CHARACTERÍSTICOS D10-D85 -->
-                    <div>
-                        <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-chart-area"></i> Curva Granulométrica Oficial LSMCH</h4>
-                        <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1rem;">
-                            <svg id="svgCurvaHC006" viewBox="0 0 500 240" style="width:100%; height:240px; background:#fafafa; border-radius:4px; border:1px solid #e2e8f0;"></svg>
-                        </div>
-
-                        <!-- CUADRO DE DIÁMETROS D10, D15, D30, D50, D60, D85 -->
-                        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:0.85rem;">
-                            <h5 style="color:#1e3a8a; font-size:0.82rem; font-weight:700; margin-bottom:0.5rem;">DIÁMETROS CARACTERÍSTICOS Y PARÁMETROS</h5>
-                            <div class="grid-3" style="font-size:0.8rem; row-gap:0.4rem;">
-                                <div>% Grava = <strong id="valPctGrava">6.25%</strong></div>
-                                <div>D10 mm = <strong id="valD10">0.08</strong></div>
-                                <div>D15 mm = <strong id="valD15">0.08</strong></div>
-                                <div>% Arena = <strong id="valPctArena">82.02%</strong></div>
-                                <div>D30 mm = <strong id="valD30">0.12</strong></div>
-                                <div>D50 mm = <strong id="valD50">0.20</strong></div>
-                                <div>% Fino = <strong id="valPctFino">11.73%</strong></div>
-                                <div>D60 mm = <strong id="valD60">0.28</strong></div>
-                                <div>D85 mm = <strong id="valD85">0.82</strong></div>
-                            </div>
-                            <div style="margin-top:0.6rem; padding-top:0.4rem; border-top:1px dashed #cbd5e1; display:flex; justify-content:space-between; font-size:0.85rem;">
-                                <div>Cu (Uniformidad): <strong id="valCu" style="color:#1e3a8a;">3.50</strong></div>
-                                <div>Cc (Curvatura): <strong id="valCc" style="color:#1e3a8a;">0.64</strong></div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- OTROS ENSAYOS DEL MÓDULO DE GEOTECNIA -->
+            <div id="sub-humedad" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <h3>Módulo Geotecnia - Contenido de Humedad (ASTM D2216)</h3>
+                    <p>Captura de masa de recipientes, masa húmeda y masa seca para determinación de %W.</p>
                 </div>
+            </div>
 
-                <!-- PIE DE FIRMAS OFICIAL LSMCH -->
-                <div style="display:flex; justify-content:space-between; margin-top:2rem; padding-top:1rem; border-top:1px solid #cbd5e1; font-size:0.82rem;">
-                    <div>ENSAYADO POR: <strong>N.S.</strong></div>
-                    <div>REVISADO POR: <strong>A.A.</strong></div>
-                    <div>FECHA: <strong>2026-08-10</strong></div>
+            <div id="sub-atterberg" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <h3>Módulo Geotecnia - Límites de Atterberg & SUCS (ASTM D4318 / D2487)</h3>
+                    <p>Cálculo de Límite Líquido (Caza Grande / Cono), Límite Plástico e Índice de Plasticidad.</p>
+                </div>
+            </div>
+
+            <div id="sub-proctor" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <h3>Módulo Geotecnia - Proctor Estándar / Modificado (ASTM D698 / D1557)</h3>
+                    <p>Determinación de densidad seca máxima y humedad óptima con gráfica interactiva.</p>
+                </div>
+            </div>
+
+            <div id="sub-cbr" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <h3>Módulo Geotecnia - Ensayo CBR (ASTM D1883)</h3>
+                    <p>Curva de penetración vs carga, expansión % y %CBR.</p>
+                </div>
+            </div>
+
+            <div id="sub-densidad-campo" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <h3>Módulo Geotecnia - Densidad de Campo (ASTM D1556 / D6938)</h3>
+                    <p>Método Cono de Arena / Densímetro Nuclear y % de compactación respecto al Proctor.</p>
+                </div>
+            </div>
+
+            <div id="sub-spt" class="subgeo-content" style="display:none;">
+                <div class="card-panel">
+                    <h3>Módulo Geotecnia - Penetración Estándar SPT (ASTM D1586)</h3>
+                    <p>Perfil N de golpes, correcciones $N_{60}$ y perfil estratigráfico.</p>
                 </div>
             </div>
         </section>
 
-        <!-- PESTAÑAS SECUNDARIAS -->
-        <section id="tab-dashboard" class="tab-content">
+        <!-- 2. MÓDULO DE CONCRETO -->
+        <section id="tab-concreto" class="tab-content">
             <div class="card-panel">
-                <h3>Dashboard Central LIMS</h3>
-                <p>Trazabilidad activa para solicitudes LSMCH-050-2026.</p>
+                <h3>Módulo de Concreto</h3>
+                <p>Especímenes, rotura de cilindros f'c (ASTM C39), slump y evolución de resistencia.</p>
             </div>
         </section>
 
+        <!-- 3. MÓDULO DE INCERTIDUMBRE GUM -->
+        <section id="tab-incertidumbre" class="tab-content">
+            <div class="card-panel">
+                <h3>Módulo de Incertidumbre GUM (ISO/IEC 17025)</h3>
+                <p>Presupuestos de incertidumbre combinada y expandida $U (k=2)$.</p>
+            </div>
+        </section>
+
+        <!-- 4. ADMINISTRACIÓN & TRAZABILIDAD -->
         <section id="tab-solicitudes" class="tab-content">
             <div class="card-panel">
-                <h3>Solicitudes Registradas</h3>
-                <p>Consulte y gestione expedientes con numeración anual `LSMCH-NNN-AAAA`.</p>
+                <h3>Módulo de Administración & Trazabilidad</h3>
+                <p>Gestión de Clientes, Proyectos, Muestreos y Solicitudes `LSMCH-NNN-AAAA`.</p>
             </div>
         </section>
 
+        <!-- 5. REPORTES PDF ISO 17025 -->
         <section id="tab-reportes" class="tab-content">
             <div class="card-panel">
-                <div class="panel-header">
-                    <span class="panel-title">Vista de Impresión Formato HC-LSMCH-006</span>
-                    <button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Hoja Oficial</button>
-                </div>
-                <p>Al imprimir se generará el documento formato **HC-LSMCH-006 (Revisión 02)** normalizado.</p>
+                <h3>Módulo de Reportes & Impresión PDF</h3>
+                <p>Compilador e impresión de anexos e informes oficiales con membrete UTP / LSMCH.</p>
             </div>
         </section>
 
     </main>
 
     <script>
+        let ultimoDataTamices = [];
+
         document.addEventListener('DOMContentLoaded', () => {
             calcularHojaHC006();
         });
@@ -283,6 +410,17 @@
             
             const tabObj = document.getElementById(`tab-${tabId}`);
             if (tabObj) tabObj.classList.add('active');
+        }
+
+        function switchSubGeo(subId) {
+            document.querySelectorAll('.subnav-pill').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.subgeo-content').forEach(sc => sc.style.display = 'none');
+            
+            const btn = Array.from(document.querySelectorAll('.subnav-pill')).find(b => b.getAttribute('onclick').includes(subId));
+            if (btn) btn.classList.add('active');
+            
+            const subObj = document.getElementById(`sub-${subId}`);
+            if (subObj) subObj.style.display = 'block';
         }
 
         async function calcularHojaHC006() {
@@ -311,8 +449,8 @@
                     })
                 });
                 const data = await res.json();
+                ultimoDataTamices = data.tamices || [];
 
-                // Actualizar resultados en tabla
                 if (data.tamices) {
                     rows.forEach((r, idx) => {
                         if (data.tamices[idx]) {
@@ -323,7 +461,6 @@
                     });
                 }
 
-                // Actualizar cuadro de parámetros
                 document.getElementById('hcResultSUCS').innerText = data.clasificacion_sucs || "GW";
                 document.getElementById('hcResultSUCSParams').innerText = `Cu: ${data.cu || '-'} | Cc: ${data.cc || '-'}`;
                 
@@ -341,15 +478,38 @@
                 document.getElementById('valCu').innerText = data.cu || '-';
                 document.getElementById('valCc').innerText = data.cc || '-';
 
-                dibujarCurvaSVG(data.tamices || []);
+                dibujarCurvaSVG(ultimoDataTamices);
             } catch(e) { console.error(e); }
+        }
+
+        function `re-renderChart`() {
+            dibujarCurvaSVG(ultimoDataTamices);
+        }
+
+        function autoAjustarEscalaY() {
+            if (!ultimoDataTamices || ultimoDataTamices.length === 0) return;
+            const pasas = ultimoDataTamices.filter(t => t.apertura_mm > 0).map(t => t.pct_pasa);
+            let minP = Math.min(...pasas);
+            let maxP = Math.max(...pasas);
+            
+            minP = Math.max(0, Math.floor(minP - 5));
+            maxP = Math.min(100, Math.ceil(maxP + 5));
+
+            document.getElementById('zoomYMin').value = minP;
+            document.getElementById('zoomYMax').value = maxP;
+            dibujarCurvaSVG(ultimoDataTamices);
+        }
+
+        function restablecerEscalaY() {
+            document.getElementById('zoomYMin').value = 0;
+            document.getElementById('zoomYMax').value = 100;
+            dibujarCurvaSVG(ultimoDataTamices);
         }
 
         function dibujarCurvaSVG(tamices) {
             const svg = document.getElementById('svgCurvaHC006');
             if (!svg) return;
 
-            // Dimensiones del canvas SVG
             const width = 720;
             const height = 360;
             const marginLeft = 65;
@@ -360,9 +520,13 @@
             const plotWidth = width - marginLeft - marginRight;
             const plotHeight = height - marginTop - marginBottom;
 
-            // Rango Logarítmico de X (100mm a 0.01mm)
-            const logMax = 2.0;   // log10(100) = 2.0
-            const logMin = -2.0;  // log10(0.01) = -2.0
+            // Rango de escala Y (dinámico)
+            let yMinPct = parseFloat(document.getElementById('zoomYMin')?.value || 0);
+            let yMaxPct = parseFloat(document.getElementById('zoomYMax')?.value || 100);
+            if (yMinPct >= yMaxPct) { yMinPct = 0; yMaxPct = 100; }
+
+            const logMax = 2.0;   // 100mm
+            const logMin = -2.0;  // 0.01mm
             const logSpan = logMax - logMin;
 
             function xLog(apertura) {
@@ -372,12 +536,11 @@
             }
 
             function yPct(pasa) {
-                if (pasa < 0) pasa = 0;
-                if (pasa > 100) pasa = 100;
-                return (marginTop + plotHeight) - (pasa / 100.0) * plotHeight;
+                if (pasa < yMinPct) pasa = yMinPct;
+                if (pasa > yMaxPct) pasa = yMaxPct;
+                return (marginTop + plotHeight) - ((pasa - yMinPct) / (yMaxPct - yMinPct)) * plotHeight;
             }
 
-            // Coordenadas X para límites de franjas geotécnicas
             const x75 = xLog(75.0);
             const x19 = xLog(19.0);
             const x475 = xLog(4.75);
@@ -392,14 +555,14 @@
                 <rect x="${x475}" y="${marginTop}" width="${x0075 - x475}" height="${plotHeight}" fill="#e0f2fe" opacity="0.85"/>
                 <rect x="${x0075}" y="${marginTop}" width="${x001 - x0075}" height="${plotHeight}" fill="#f3e8ff" opacity="0.85"/>
 
-                <!-- Divisiones de Sub-Franjas (Líneas verticales punteadas) -->
+                <!-- Divisiones de Sub-Franjas -->
                 <line x1="${x19}" y1="${marginTop}" x2="${x19}" y2="${marginTop + plotHeight}" stroke="#d97706" stroke-dasharray="3,3" stroke-width="1"/>
                 <line x1="${x475}" y1="${marginTop}" x2="${x475}" y2="${marginTop + plotHeight}" stroke="#0284c7" stroke-width="1.5"/>
                 <line x1="${x2}" y1="${marginTop}" x2="${x2}" y2="${marginTop + plotHeight}" stroke="#0284c7" stroke-dasharray="3,3" stroke-width="1"/>
                 <line x1="${x0425}" y1="${marginTop}" x2="${x0425}" y2="${marginTop + plotHeight}" stroke="#0284c7" stroke-dasharray="3,3" stroke-width="1"/>
                 <line x1="${x0075}" y1="${marginTop}" x2="${x0075}" y2="${marginTop + plotHeight}" stroke="#7e22ce" stroke-width="1.5"/>
 
-                <!-- Etiquetas de Franjas Superiores (GRAVA / ARENA / FINOS) -->
+                <!-- Etiquetas de Franjas Superiores -->
                 <rect x="${x75}" y="22" width="${x475 - x75}" height="22" fill="#fef3c7" stroke="#f59e0b" rx="3"/>
                 <text x="${(x75 + x475)/2}" y="37" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">GRAVA</text>
 
@@ -410,12 +573,14 @@
                 <text x="${(x0075 + x001)/2}" y="37" text-anchor="middle" font-size="10" font-weight="700" fill="#6b21a8">FINOS (LIMO/ARCILLA)</text>
             `;
 
-            // Grid Horizontal (% Que Pasa)
-            for (let pct = 0; pct <= 100; pct += 20) {
+            // Grid Horizontal (% Que Pasa Dinámico)
+            const step = (yMaxPct - yMinPct) / 5.0;
+            for (let i = 0; i <= 5; i++) {
+                const pct = yMinPct + i * step;
                 const y = yPct(pct);
                 html += `
-                    <line x1="${marginLeft}" y1="${y}" x2="${width - marginRight}" y2="${y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="${pct === 0 || pct === 100 ? '0' : '2,2'}"/>
-                    <text x="${marginLeft - 8}" y="${y + 4}" text-anchor="end" font-size="11" font-weight="600" fill="#475569">${pct}%</text>
+                    <line x1="${marginLeft}" y1="${y}" x2="${width - marginRight}" y2="${y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="${i === 0 || i === 5 ? '0' : '2,2'}"/>
+                    <text x="${marginLeft - 8}" y="${y + 4}" text-anchor="end" font-size="11" font-weight="600" fill="#475569">${Math.round(pct)}%</text>
                 `;
             }
 
@@ -441,7 +606,7 @@
                 `;
             });
 
-            // Trazado de la Curva Granulométrica (Polyline)
+            // Trazado de la Curva Granulométrica
             let pts = [];
             if (tamices && tamices.length > 0) {
                 tamices.forEach(t => {
@@ -463,22 +628,15 @@
                 `;
             }
 
-            // Títulos de Ejes y Gráfico
             html += `
-                <!-- Marco del Gráfico -->
                 <rect x="${marginLeft}" y="${marginTop}" width="${plotWidth}" height="${plotHeight}" fill="none" stroke="#1e3a8a" stroke-width="1.5"/>
-
-                <!-- Título Eje Y -->
                 <text x="18" y="${marginTop + plotHeight/2}" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a" transform="rotate(-90 18 ${marginTop + plotHeight/2})">% QUE PASA</text>
-
-                <!-- Título Eje X -->
                 <text x="${marginLeft + plotWidth/2}" y="${height - 8}" text-anchor="middle" font-size="12" font-weight="700" fill="#1e3a8a">ABERTURA DEL TAMIZ (mm) - ESCALA SEMILOGARÍTMICA</text>
             `;
 
             svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
             svg.innerHTML = html;
         }
-
 
         async function ejecutarBusquedaGlobal(e) {
             const q = document.getElementById('globalSearchInput').value.trim();
@@ -490,9 +648,7 @@
                 const res = await fetch(`/api/lims/buscar?q=${encodeURIComponent(q)}`);
                 const data = await res.json();
                 panel.style.display = 'block';
-                container.innerHTML = `
-                    <p>Coincidencias encontradas: ${data.solicitudes.length} solicitudes, ${data.muestras.length} muestras.</p>
-                `;
+                container.innerHTML = `<p>Coincidencias: ${data.solicitudes.length} solicitudes, ${data.muestras.length} muestras.</p>`;
             } catch(e) { console.error(e); }
         }
 
