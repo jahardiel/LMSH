@@ -1408,16 +1408,16 @@
                         </tbody>
                     </table>
 
-                    <!-- PASO 3: CUANTIFICAR COMPONENTES DE INCERTIDUMBRE Y GRÁFICO PARETO CIRCULAR -->
+                    <!-- PASO 3: CUANTIFICAR COMPONENTES E INCERTIDUMBRES Y COEFICIENTES DE SENSIBILIDAD -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
-                        PASO 3. CUANTIFICAR COMPONENTES DE INCERTIDUMBRE
+                        PASO 3. CUANTIFICAR VARIABLES, INCERTIDUMBRES Y COEFICIENTES DE SENSIBILIDAD
                     </div>
-                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1rem;">
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1rem; text-align:center;">
                         <thead>
                             <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
                                 <th style="border:1px solid #1e3a8a; padding:0.35rem; width:40px;">Xi</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Fuente de incertidumbre</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Valores de entrada xi</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem; text-align:left;">Fuente de incertidumbre</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Ecuación o valor constante xi</th>
                                 <th style="border:1px solid #1e3a8a; padding:0.35rem;">u(xi) Incertidumbre estándar</th>
                                 <th style="border:1px solid #1e3a8a; padding:0.35rem;">Porcentaje de contribución (%)</th>
                             </tr>
@@ -1427,10 +1427,28 @@
                         </tbody>
                     </table>
 
+                    <!-- TABLA EXPLICITA DE COEFICIENTES DE SENSIBILIDAD POR MAGNITUD DE ENTRADA (DEL MASTER) -->
+                    <div style="font-weight:900; color:#1e3a8a; font-size:0.82rem; margin-bottom:0.35rem; text-transform:uppercase;">
+                        COEFICIENTES DE SENSIBILIDAD POR MAGNITUD DE ENTRADA (c_i = ∂y / ∂X_i)
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1.25rem; text-align:center;">
+                        <thead>
+                            <tr style="background:#e2e8f0; color:#1e3a8a; font-weight:800;">
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:40px;">Xi</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Coeficiente de Sensibilidad (Derivada Parcial)</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Valor del Coeficiente c_i</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Referencia de Xi (Unidad)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPaso3Coeficientes">
+                            <!-- Generado dinámicamente por JS -->
+                        </tbody>
+                    </table>
+
                     <!-- GRÁFICO APORTACIÓN POR CADA FUENTE (DIBUJO DEL MASTER) -->
                     <div style="text-align:center; padding:0.75rem; border:1.5px solid #cbd5e1; border-radius:6px; margin-bottom:1.25rem; background:#fafafa;">
                         <div style="font-weight:900; color:#1e3a8a; font-size:0.82rem; margin-bottom:0.5rem; text-transform:uppercase;">
-                            INCERTIDUMBRE APORTADA POR CADA FUENTE
+                            INCERTIDUMBRE APORTADA POR CADA FUENTE (DISTR. DE VARIANZA)
                         </div>
                         <div id="containerPieHC012" style="display:flex; justify-content:center; align-items:center; min-height:210px;">
                             <svg id="svgPieHC012" width="520" height="210"></svg>
@@ -1439,17 +1457,18 @@
 
                     <!-- PASO 4: EVALUAR INCERTIDUMBRE COMBINADA -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
-                        PASO 4. EVALUAR INCERTIDUMBRE COMBINADA Y FACTOR DE COBERTURA
+                        PASO 4. COMBINAR INCERTIDUMBRES (APORTE DE CADA MAGNITUD DE ENTRADA)
                     </div>
-                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1rem;">
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1rem; text-align:center;">
                         <thead>
                             <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
                                 <th style="border:1px solid #1e3a8a; padding:0.35rem; width:40px;">Xi</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Fuente de incertidumbre</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Coef. Sensibilidad ci</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">ui(y) Contribución</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">ui(y)^2 Varianza</th>
-                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Grados νi</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Valor del Coeficiente |c_i|</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Unidad c_i</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Incertidumbre u(x_i)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Unidad u(x_i)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Aporte u_i(y) = |c_i|·u(x_i)</th>
+                                <th style="border:1px solid #1e3a8a; padding:0.35rem;">Unidad u_i(y)</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyPaso4Combinada">
@@ -1473,16 +1492,33 @@
                         </tr>
                     </table>
 
-                    <!-- PASO 5: EVALUAR INCERTIDUMBRE EXPANDIDA Y RESULTADO FINAL -->
+                    <!-- PASO 5: EXPANDIR INCERTIDUMBRE Y APORTE CON GRADOS DE LIBERTAD (DEL MASTER) -->
                     <div style="font-weight:900; color:#1e3a8a; font-size:0.85rem; margin-bottom:0.35rem; text-transform:uppercase;">
-                        PASO 5. EVALUAR INCERTIDUMBRE EXPANDIDA Y DECLARACIÓN DE RESULTADO
+                        PASO 5. EXPANDIR INCERTIDUMBRE Y APORTE CON GRADOS DE LIBERTAD (ν_i)
                     </div>
+                    <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.78rem; margin-bottom:1.25rem; text-align:center;">
+                        <thead>
+                            <tr style="background:#e2e8f0; color:#1e3a8a; font-weight:800;">
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; width:40px;">Xi</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">Fuente de incertidumbre</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Incertidumbre al cuadrado u_i(y)^2</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Incertidumbre combinada u_c</th>
+                                <th style="border:1px solid #cbd5e1; padding:0.35rem;">Grados de libertad ν_i</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPaso5ExpandidaFuentes">
+                            <!-- Generado dinámicamente por JS -->
+                        </tbody>
+                    </table>
+
+                    <!-- DECLARACIÓN DE RESULTADO FINAL -->
                     <table style="width:100%; border-collapse:collapse; border:1.5px solid #1e3a8a; font-size:0.85rem; margin-bottom:1.25rem; text-align:center;">
                         <thead>
                             <tr style="background:#1e3a8a; color:#ffffff; font-weight:800;">
                                 <th style="border:1px solid #1e3a8a; padding:0.4rem;">Lectura Media Final</th>
                                 <th style="border:1px solid #1e3a8a; padding:0.4rem;">Incertidumbre Expandida U</th>
                                 <th style="border:1px solid #1e3a8a; padding:0.4rem;">Factor de Cobertura k</th>
+
                                 <th style="border:1px solid #1e3a8a; padding:0.4rem;">Nivel de Confianza P</th>
                             </tr>
                         </thead>
@@ -3040,44 +3076,95 @@
                     document.getElementById('lblHC012DeclaracionFinal').innerText = 
                         `Resultado = ${tempFinal.toFixed(2)} ± ${uExp.toFixed(3)} ${unidad} (k = ${kFactor.toFixed(2)}, P = 95.45%)`;
 
-                    // Llenar Tablas Pasos 2, 3 y 4
+                    // Llenar Tablas Pasos 2, 3, 4 y 5 conforme al formato Master HC-LSMCH-012 Rev. 01
                     if (r.tabla_presupuesto && Array.isArray(r.tabla_presupuesto)) {
                         // Paso 2: Fuentes
-                        document.getElementById('tbodyPaso2Fuentes').innerHTML = r.tabla_presupuesto.map((f, idx) => `
-                            <tr>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">X${idx+1}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem;"><span class="badge-status ${f["Tipo"] === 'A' ? 'badge-validado' : 'badge-en-proceso'}">${f["Tipo"] || f["tipo"]}</span></td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${f["Distribución"] || f["distribucion"]}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Divisor"] === 'number' ? f["Divisor"].toFixed(2) : f["Divisor"]}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
-                            </tr>
-                        `).join('');
+                        const tbPaso2 = document.getElementById('tbodyPaso2Fuentes');
+                        if (tbPaso2) {
+                            tbPaso2.innerHTML = r.tabla_presupuesto.map((f, idx) => `
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${idx+1}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;"><span class="badge-status ${f["Tipo"] === 'A' ? 'badge-validado' : 'badge-en-proceso'}">${f["Tipo"] || f["tipo"]}</span></td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${f["Distribución"] || f["distribucion"]}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Divisor"] === 'number' ? f["Divisor"].toFixed(2) : f["Divisor"]}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
+                                </tr>
+                            `).join('');
+                        }
 
-                        // Paso 3: Cuantificar
-                        document.getElementById('tbodyPaso3Cuantificar').innerHTML = r.tabla_presupuesto.map((f, idx) => `
-                            <tr>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">X${idx+1}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Valor xi"] === 'number' ? f["Valor xi"].toFixed(3) : f["Valor xi"]}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"].toFixed(4) : f["u(xi) Estándar"]}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${typeof f["Aporte %"] === 'number' ? f["Aporte %"].toFixed(1) + '%' : (f["Aporte %"] || '')}</td>
-                            </tr>
-                        `).join('');
+                        // Paso 3: Cuantificar Variables
+                        const tbPaso3 = document.getElementById('tbodyPaso3Cuantificar');
+                        if (tbPaso3) {
+                            tbPaso3.innerHTML = r.tabla_presupuesto.map((f, idx) => `
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${idx+1}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Valor xi"] === 'number' ? f["Valor xi"].toFixed(3) : (f["Valor xi"] || f["valor_xi"] || '-')}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${typeof f["u_std"] === 'number' ? f["u_std"].toFixed(4) : (typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"].toFixed(4) : f["u_std"])}</td>
+                                    <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${typeof f["contribucion_pct"] === 'number' ? f["contribucion_pct"].toFixed(1) + '%' : (f["contribucion_pct"] || '')}</td>
+                                </tr>
+                            `).join('');
+                        }
 
-                        // Paso 4: Combinada
-                        document.getElementById('tbodyPaso4Combinada').innerHTML = r.tabla_presupuesto.map((f, idx) => {
-                            const ui = typeof f["ui(y) Contribución"] === 'number' ? f["ui(y) Contribución"] : 0;
-                            return `
-                            <tr>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">X${idx+1}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem;">${typeof f["Coef. Sensibilidad ci"] === 'number' ? f["Coef. Sensibilidad ci"].toFixed(4) : f["Coef. Sensibilidad ci"]}</td>
-                                <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${ui.toFixed(4)}</td>
-                            </tr>
-                        `;
-                        }).join('');
+                        // Paso 3: Tabla Coeficientes de Sensibilidad (Master Page 2)
+                        const tbPaso3Coef = document.getElementById('tbodyPaso3Coeficientes');
+                        if (tbPaso3Coef) {
+                            tbPaso3Coef.innerHTML = r.tabla_presupuesto.map((f, idx) => {
+                                const ci = typeof f["coef_sensibilidad"] === 'number' ? f["coef_sensibilidad"] : (typeof f["Coef. Sensibilidad ci"] === 'number' ? f["Coef. Sensibilidad ci"] : 1.0);
+                                return `
+                                    <tr>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${idx+1}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left; font-family:'Times New Roman', serif; font-weight:700;">c_${idx+1} = ∂y / ∂X_${idx+1} (${f["Fuente de Incertidumbre"] || f["fuente"]})</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${ci.toFixed(4)}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
+                                    </tr>
+                                `;
+                            }).join('');
+                        }
+
+                        // Paso 4: Combinar Incertidumbres (Master Page 3)
+                        const tbPaso4 = document.getElementById('tbodyPaso4Combinada');
+                        if (tbPaso4) {
+                            tbPaso4.innerHTML = r.tabla_presupuesto.map((f, idx) => {
+                                const ci = typeof f["coef_sensibilidad"] === 'number' ? f["coef_sensibilidad"] : (typeof f["Coef. Sensibilidad ci"] === 'number' ? f["Coef. Sensibilidad ci"] : 1.0);
+                                const uxi = typeof f["u_std"] === 'number' ? f["u_std"] : (typeof f["u(xi) Estándar"] === 'number' ? f["u(xi) Estándar"] : 0.0);
+                                const uiy = typeof f["u_i_y"] === 'number' ? f["u_i_y"] : (typeof f["ui(y) Contribución"] === 'number' ? f["ui(y) Contribución"] : (Math.abs(ci) * uxi));
+                                return `
+                                    <tr>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${idx+1}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${Math.abs(ci).toFixed(4)}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${uxi.toFixed(4)}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:#1e3a8a;">${uiy.toFixed(4)}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem;">${unidad}</td>
+                                    </tr>
+                                `;
+                            }).join('');
+                        }
+
+                        // Paso 5: Expandir Incertidumbre y Grados por Fuente (Master Page 3)
+                        const tbPaso5 = document.getElementById('tbodyPaso5ExpandidaFuentes');
+                        if (tbPaso5) {
+                            tbPaso5.innerHTML = r.tabla_presupuesto.map((f, idx) => {
+                                const uiy = typeof f["u_i_y"] === 'number' ? f["u_i_y"] : (typeof f["ui(y) Contribución"] === 'number' ? f["ui(y) Contribución"] : 0.0);
+                                const uiySq = uiy * uiy;
+                                const nui = f["grados_libertad"] || f["Grados νi"] || (f["tipo"] === 'A' ? (r.num_lecturas ? r.num_lecturas - 1 : 5) : 1000);
+                                const nuiDisp = (nui >= 500) ? '∞ (Tipo B)' : nui;
+                                return `
+                                    <tr>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800;">${idx+1}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; text-align:left;">${f["Fuente de Incertidumbre"] || f["fuente"]}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-family:monospace; font-weight:700;">${uiySq.toFixed(6)}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:700;">${uComb.toFixed(4)}</td>
+                                        <td style="border:1px solid #cbd5e1; padding:0.35rem; font-weight:800; color:${nuiDisp.includes('∞') ? '#059669' : '#1e3a8a'};">${nuiDisp}</td>
+                                    </tr>
+                                `;
+                            }).join('');
+                        }
                     }
+
 
                     // Generar Anexo Técnico Memoria de Cálculo Paso a Paso
                     const contenedorAnexo = document.getElementById('anexoMemoriaCalculoContenido');
