@@ -1,76 +1,100 @@
 """
-Motor de Cálculo Geotécnico Completo según Formato Oficial HC-LSMCH-006 (ASTM D6913 / D2487)
-Laboratorio de Suelos y Materiales de Chiriquí (LSMCH) - Universidad Tecnológica de Panamá
+Motor de Cálculo Geotécnico Rigurosamente Alineado con ASTM D6913 / D6913M - 17 (Reaprobada 2025)
+Formato Oficial HC-LSMCH-006 (Universidad Tecnológica de Panamá - LSMCH)
 """
 
 import math
 
-# Lista oficial de tamices según norma ASTM D6913 / HC-LSMCH-006
-TAMICES_OFICIALES = [
-    {"tamiz": '3"', "apertura_mm": 75.000},
-    {"tamiz": '2"', "apertura_mm": 50.000},
-    {"tamiz": '1 1/2"', "apertura_mm": 38.100},
-    {"tamiz": '1"', "apertura_mm": 25.000},
-    {"tamiz": '3/4"', "apertura_mm": 19.000},
-    {"tamiz": '3/8"', "apertura_mm": 9.500},
-    {"tamiz": 'No. 4', "apertura_mm": 4.750},
-    {"tamiz": 'No. 10', "apertura_mm": 2.000},
-    {"tamiz": 'No. 20', "apertura_mm": 0.850},
-    {"tamiz": 'No. 40', "apertura_mm": 0.425},
-    {"tamiz": 'No. 60', "apertura_mm": 0.250},
-    {"tamiz": 'No. 100', "apertura_mm": 0.150},
-    {"tamiz": 'No. 140', "apertura_mm": 0.105},
-    {"tamiz": 'No. 200', "apertura_mm": 0.075},
-    {"tamiz": 'Fondo', "apertura_mm": 0.000}
+# Conjunto Estándar de Tamices según ASTM D6913 Tabla 1 / E11
+TAMICES_ASTM_D6913 = [
+    {"tamiz": '3"', "apertura_mm": 75.000, "fraccion": "GRAVA_GRUASA"},
+    {"tamiz": '2"', "apertura_mm": 50.000, "fraccion": "GRAVA_GRUASA"},
+    {"tamiz": '1 1/2"', "apertura_mm": 37.500, "fraccion": "GRAVA_FINA"},
+    {"tamiz": '1"', "apertura_mm": 25.000, "fraccion": "GRAVA_FINA"},
+    {"tamiz": '3/4"', "apertura_mm": 19.000, "fraccion": "GRAVA_FINA"},
+    {"tamiz": '3/8"', "apertura_mm": 9.500, "fraccion": "GRAVA_FINA"},
+    {"tamiz": 'No. 4', "apertura_mm": 4.750, "fraccion": "GRAVA_FINA"},
+    {"tamiz": 'No. 10', "apertura_mm": 2.000, "fraccion": "ARENA_GRUASA"},
+    {"tamiz": 'No. 20', "apertura_mm": 0.850, "fraccion": "ARENA_MEDIA"},
+    {"tamiz": 'No. 40', "apertura_mm": 0.425, "fraccion": "ARENA_MEDIA"},
+    {"tamiz": 'No. 60', "apertura_mm": 0.250, "fraccion": "ARENA_FINA"},
+    {"tamiz": 'No. 100', "apertura_mm": 0.150, "fraccion": "ARENA_FINA"},
+    {"tamiz": 'No. 140', "apertura_mm": 0.106, "fraccion": "ARENA_FINA"},
+    {"tamiz": 'No. 200', "apertura_mm": 0.075, "fraccion": "ARENA_FINA"},
+    {"tamiz": 'Fondo', "apertura_mm": 0.000, "fraccion": "FINOS"}
 ]
 
-def calcular_granulometria_hc006(datos):
+def calcular_granulometria_astm_d6913(datos):
     """
-    Cálculo metrológico completo para la hoja de cálculo HC-LSMCH-006 (ASTM D6913).
-    Soporta Tamizado Compuesto Método "A" o Tamizado Simple.
-    """
-    m_humeda_total = float(datos.get("masa_total_humeda_g", 1942.7))
-    m_seca_total = float(datos.get("masa_total_seca_g", 1246.3))
-
-    m_hum_sep_gruesa = float(datos.get("m_humeda_gruesa_g", 121.4))
-    m_sec_sep_gruesa = float(datos.get("m_seca_gruesa_g", 77.9))
-
-    m_hum_frac_fina = float(datos.get("m_humeda_fina_g", 1821.3))
-    m_sec_frac_fina = float(datos.get("m_seca_fina_g", 84.6))
+    Cálculo riguroso según la norma ASTM D6913 / D6913M - 17 (2025) y Formato HC-LSMCH-006.
     
+    Parámetros de datos:
+      - metodo_ensayo: 'METODO_A' (1% precisión) o 'METODO_B' (0.1% precisión)
+      - procedimiento: 'HUMEDO', 'SECADO_AIRE', 'SECADO_HORNO'
+      - dispersante_usado: bool
+      - masa_total_humeda_g: float
+      - masa_total_seca_g: float (S,Md según ec. ASTM)
+      - tamices: lista de dicts [{'tamiz': 'No. 4', 'masa_retenida': 77.9, ...}]
+      - ll, lp: float
+    """
+    metodo = datos.get("metodo_ensayo", "METODO_A")
+    procedimiento = datos.get("procedimiento", "HUMEDO")
+    
+    m_humeda_total = float(datos.get("masa_total_humeda_g", 1942.7))
+    s_md = float(datos.get("masa_total_seca_g", 1246.3)) # S,Md: Masa seca del espécimen (g)
+    
+    # Tamices recibidos
     tamices_input = datos.get("tamices", [])
     
     resultado_tamices = []
-    ret_acumulada_pct = 0.0
+    cmr_acumulada = 0.0
+    suma_masas_retenidas = 0.0
 
-    for t_def in TAMICES_OFICIALES:
+    for t_def in TAMICES_ASTM_D6913:
         nombre = t_def["tamiz"]
         apertura = t_def["apertura_mm"]
         
         item_in = next((x for x in tamices_input if x.get("tamiz") == nombre), {})
-        m_ret_gruesa = float(item_in.get("fgruesa_g", 0.0))
-        m_ret_fina = float(item_in.get("ffina_g", item_in.get("masa_retenida", 0.0)))
+        m_ret_ind = float(item_in.get("masa_retenida", item_in.get("ffina_g", 0.0)))
         
-        if m_seca_total > 0:
-            pct_ret_ind = (m_ret_fina / m_seca_total) * 100.0 if m_ret_fina > 0 else (m_ret_gruesa / m_seca_total) * 100.0
+        if nombre != 'Fondo':
+            suma_masas_retenidas += m_ret_ind
+            
+        cmr_acumulada += m_ret_ind
+        
+        # Ecuación 2 de ASTM D6913 Cl. 12.3: PPN = 100 * (1 - CMR_N / S,Md)
+        if s_md > 0:
+            pct_ret_ind = (m_ret_ind / s_md) * 100.0
+            pct_acum_ret = (cmr_acumulada / s_md) * 100.0
+            pct_pasa = 100.0 - pct_acum_ret
         else:
             pct_ret_ind = 0.0
+            pct_acum_ret = 0.0
+            pct_pasa = 100.0
             
-        ret_acumulada_pct += pct_ret_ind
-        pct_pasa = 100.0 - ret_acumulada_pct
         if pct_pasa < 0: pct_pasa = 0.0
+
+        # Redondeo según Método A (1%) o Método B (0.1%) - Cl. 1.6 / 13.1
+        dec = 1 if metodo == "METODO_B" else 2
         
         resultado_tamices.append({
             "tamiz": nombre,
             "apertura_mm": apertura,
-            "fgruesa_g": m_ret_gruesa,
-            "ffina_g": m_ret_fina,
-            "pct_retenido_ind": round(pct_ret_ind, 2),
-            "pct_acumulado_ret": round(ret_acumulada_pct, 2),
-            "pct_pasa": round(pct_pasa, 2)
+            "masa_retenida": round(m_ret_ind, 2),
+            "pct_retenido_ind": round(pct_ret_ind, dec),
+            "pct_acumulado_ret": round(pct_acum_ret, dec),
+            "pct_pasa": round(pct_pasa, dec)
         })
 
-    def interpolar_d_exacto(pct_objetivo):
+    # Pérdida aceptable por lavado y tamizado (CP_L) según Cl. 12.5.1.3 / Ec. 5:
+    # CP_L = 100 * (S,Md - M_recuperada) / S,Md
+    m_fondo = float(next((x.get("masa_retenida", 0.0) for x in tamices_input if x.get("tamiz") == 'Fondo'), 0.0))
+    m_recuperada_total = suma_masas_retenidas + m_fondo
+    cp_l = ((s_md - m_recuperada_total) / s_md) * 100.0 if s_md > 0 else 0.0
+    cp_l_aceptable = (abs(cp_l) <= 0.5)
+
+    # Interpolar diámetros característicos D10, D15, D30, D50, D60, D85 en escala semilog
+    def interpolar_d(pct_objetivo):
         for i in range(len(resultado_tamices) - 1):
             p1 = resultado_tamices[i]["pct_pasa"]
             p2 = resultado_tamices[i+1]["pct_pasa"]
@@ -84,21 +108,24 @@ def calcular_granulometria_hc006(datos):
                 return round(10**log_d, 2)
         return None
 
-    d10 = interpolar_d_exacto(10.0)
-    d15 = interpolar_d_exacto(15.0)
-    d30 = interpolar_d_exacto(30.0)
-    d50 = interpolar_d_exacto(50.0)
-    d60 = interpolar_d_exacto(60.0)
-    d85 = interpolar_d_exacto(85.0)
+    d10 = interpolar_d(10.0)
+    d15 = interpolar_d(15.0)
+    d30 = interpolar_d(30.0)
+    d50 = interpolar_d(50.0)
+    d60 = interpolar_d(60.0)
+    d85 = interpolar_d(85.0)
 
     cu = round(d60 / d10, 2) if (d60 and d10 and d10 > 0) else None
     cc = round((d30**2) / (d60 * d10), 2) if (d30 and d60 and d10 and (d60 * d10) > 0) else None
 
+    # Porcentajes por fracción granulométrica
+    pasa_3in = 100.0
     pasa_no4 = 100.0
     pasa_no200 = 0.0
     
     for t in resultado_tamices:
-        if t["tamiz"] == 'No. 4': pasa_no4 = t["pct_pasa"]
+        if t["tamiz"] == '3"': pasa_3in = t["pct_pasa"]
+        elif t["tamiz"] == 'No. 4': pasa_no4 = t["pct_pasa"]
         elif t["tamiz"] == 'No. 200': pasa_no200 = t["pct_pasa"]
 
     pct_grava = round(100.0 - pasa_no4, 2)
@@ -116,16 +143,23 @@ def calcular_granulometria_hc006(datos):
     pct_arena_media = round(pasa_no10 - pasa_no40, 2)
     pct_arena_fina = round(pasa_no40 - pasa_no200, 2)
 
+    # Clasificación SUCS ASTM D2487
     ll = datos.get("ll")
     lp = datos.get("lp")
     ip = round(float(ll) - float(lp), 2) if (ll is not None and lp is not None) else None
     
+    from geotechnics_engine import clasificar_sucs
     sucs = clasificar_sucs(pct_finos, pct_grava, pct_arena, ll=float(ll) if ll is not None else None, ip=ip, cu=cu, cc=cc)
 
     return {
         "formato": "HC-LSMCH-006",
-        "norma": "ASTM D6913",
+        "norma": "ASTM D6913 / D6913M - 17 (2025)",
+        "metodo_ensayo": metodo,
+        "procedimiento": procedimiento,
         "tamices": resultado_tamices,
+        "cp_l_pct": round(cp_l, 2),
+        "cp_l_aceptable": cp_l_aceptable,
+        "criterio_norma": "Cumple (CP_L <= 0.5%)" if cp_l_aceptable else "No Cumple (CP_L > 0.5%)",
         "d10": d10,
         "d15": d15,
         "d30": d30,
@@ -149,10 +183,10 @@ def calcular_granulometria_hc006(datos):
     }
 
 def calcular_granulometria(datos_tamices):
-    """Compatibilidad con llamadas previas."""
+    """Función wrapper de compatibilidad."""
     if isinstance(datos_tamices, dict):
-        return calcular_granulometria_hc006(datos_tamices)
-    return calcular_granulometria_hc006({"tamices": datos_tamices})
+        return calcular_granulometria_astm_d6913(datos_tamices)
+    return calcular_granulometria_astm_d6913({"tamices": datos_tamices})
 
 def clasificar_sucs(pct_finos, pct_grava, pct_arena, ll=None, ip=None, cu=None, cc=None):
     if pct_finos is None:

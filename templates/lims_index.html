@@ -30,7 +30,7 @@
             width: 140px;
             flex-shrink: 0;
         }
-        .form-grid-header input {
+        .form-grid-header input, .form-grid-header select {
             width: 100%;
             padding: 0.25rem 0.5rem;
             border: 1px solid #cbd5e1;
@@ -38,7 +38,6 @@
             font-size: 0.82rem;
         }
 
-        /* Sub-navegación por módulos geotécnicos */
         .subnav-pills {
             display: flex;
             gap: 0.5rem;
@@ -66,7 +65,6 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* Controles de Zoom del Gráfico */
         .chart-controls-bar {
             display: flex;
             align-items: center;
@@ -92,11 +90,10 @@
             <div class="brand-logo">UTP</div>
             <div class="brand-text">
                 <h1>LABORATORIO DE SUELOS Y MATERIALES DE CHIRIQUÍ (LSMCH)</h1>
-                <p>UNIVERSIDAD TECNOLÓGICA DE PANAMÁ | Sistema LIMS Integrado ISO/IEC 17025</p>
+                <p>UNIVERSIDAD TECNOLÓGICA DE PANAMÁ | Norma ASTM D6913 / D6913M - 17 (2025)</p>
             </div>
         </div>
 
-        <!-- BUSCADOR GLOBAL -->
         <div class="global-search-container">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
             <input type="text" id="globalSearchInput" class="global-search-input" placeholder="Buscar Solicitud (LSMCH-050-2026), Muestra..." onkeyup="ejecutarBusquedaGlobal(event)">
@@ -105,14 +102,14 @@
 
     <!-- NAVEGACIÓN PRINCIPAL -->
     <nav class="lims-nav">
-        <button class="nav-tab active" onclick="switchTab('dashboard')">
+        <button class="nav-tab active" onclick="switchTab('geotecnia')">
+            <i class="fa-solid fa-mountain"></i> Módulo de Geotecnia
+        </button>
+        <button class="nav-tab" onclick="switchTab('dashboard')">
             <i class="fa-solid fa-chart-line"></i> Dashboard
         </button>
         <button class="nav-tab" onclick="switchTab('solicitudes')">
             <i class="fa-solid fa-folder-open"></i> Solicitudes (LSMCH-NNN-AAAA)
-        </button>
-        <button class="nav-tab" onclick="switchTab('geotecnia')">
-            <i class="fa-solid fa-mountain"></i> Módulo de Geotecnia
         </button>
         <button class="nav-tab" onclick="switchTab('concreto')">
             <i class="fa-solid fa-cubes"></i> Módulo de Concreto
@@ -137,196 +134,20 @@
             <div id="searchResultsContent"></div>
         </div>
 
-        <!-- 1. DASHBOARD CENTRAL -->
-        <section id="tab-dashboard" class="tab-content active">
-            <div class="grid-4" style="margin-bottom: 1.5rem;">
-                <div class="kpi-card">
-                    <div class="kpi-icon"><i class="fa-solid fa-file-invoice"></i></div>
-                    <div>
-                        <div class="kpi-value" id="kpiTotalSol">1</div>
-                        <div class="kpi-label">Solicitudes Totales</div>
-                    </div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-spinner"></i></div>
-                    <div>
-                        <div class="kpi-value" id="kpiSolActivas">1</div>
-                        <div class="kpi-label">En Ensayos / Proceso</div>
-                    </div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-icon" style="background:#e0f2fe; color:#0284c7;"><i class="fa-solid fa-users"></i></div>
-                    <div>
-                        <div class="kpi-value" id="kpiClientes">1</div>
-                        <div class="kpi-label">Clientes Registrados</div>
-                    </div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-icon" style="background:#dcfce7; color:#15803d;"><i class="fa-solid fa-building-flag"></i></div>
-                    <div>
-                        <div class="kpi-value" id="kpiProyectos">1</div>
-                        <div class="kpi-label">Proyectos Activos</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <!-- Tabla de Solicitudes Recientes -->
-                <div class="card-panel">
-                    <div class="panel-header">
-                        <span class="panel-title"><i class="fa-solid fa-clock-rotate-left"></i> Últimas Solicitudes (LSMCH-NNN-AAAA)</span>
-                        <button class="btn btn-primary" onclick="switchTab('solicitudes')"><i class="fa-solid fa-plus"></i> Gestionar Solicitudes</button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table-lims">
-                            <thead>
-                                <tr>
-                                    <th>Expediente</th>
-                                    <th>Cliente</th>
-                                    <th>Proyecto</th>
-                                    <th>Recepción</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tablaSolicitudesRecientes">
-                                <tr><td colspan="5" style="text-align:center;">Cargando solicitudes...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Resumen Metrológico -->
-                <div class="card-panel">
-                    <div class="panel-header">
-                        <span class="panel-title"><i class="fa-solid fa-shield-halved"></i> Control de Trazabilidad ISO/IEC 17025</span>
-                    </div>
-                    <div style="padding: 1.25rem; background: #f8fafc; border-radius: 8px; border: 1px dashed var(--border-accent);">
-                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;"><i class="fa-solid fa-circle-check"></i> Numeración Anual LSMCH Activa</h4>
-                        <p style="font-size: 0.88rem; color: var(--text-muted);">
-                            La secuencia <strong><code>LSMCH-NNN-AAAA</code></strong> reinicia su contador <code>NNN</code> automáticamente a <code>001</code> el 1 de enero de cada año.
-                            <br><br>
-                            Estructura de Trazabilidad:
-                            <br><strong>Cliente &rarr; Proyecto &rarr; Solicitud &rarr; Muestreo &rarr; Muestra &rarr; Ensayo</strong>.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. ADMINISTRACIÓN Y TRAZABILIDAD DE SOLICITUDES (COMPLETO) -->
-        <section id="tab-solicitudes" class="tab-content">
-            <div class="grid-2" style="margin-bottom: 1.5rem;">
-                <!-- Crear Solicitud LSMCH-NNN-AAAA -->
-                <div class="card-panel">
-                    <div class="panel-header">
-                        <span class="panel-title"><i class="fa-solid fa-file-signature"></i> Nueva Solicitud (Generador LSMCH-NNN-AAAA)</span>
-                    </div>
-                    <form id="formNuevaSolicitud" onsubmit="guardarNuevaSolicitud(event)">
-                        <div class="form-group">
-                            <label class="form-label">Cliente</label>
-                            <select id="selectCliente" class="form-control" onchange="cargarProyectosCliente()" required>
-                                <option value="">Cargando clientes...</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Proyecto</label>
-                            <select id="selectProyecto" class="form-control" required>
-                                <option value="">Seleccione primero un cliente...</option>
-                            </select>
-                        </div>
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label class="form-label">Fecha Recepción</label>
-                                <input type="date" id="fechaRecepcion" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Entrega Estimada</label>
-                                <input type="date" id="fechaEntrega" class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Responsable Técnico</label>
-                            <input type="text" id="responsableTecnico" class="form-control" value="Ing. Metrólogo LSMCH">
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fa-solid fa-wand-magic-sparkles"></i> Generar Código LSMCH-NNN-AAAA</button>
-                    </form>
-                </div>
-
-                <!-- Registrar Cliente y Proyecto -->
-                <div class="card-panel">
-                    <div class="panel-header">
-                        <span class="panel-title"><i class="fa-solid fa-user-plus"></i> Registrar Cliente y Proyecto</span>
-                    </div>
-                    <form onsubmit="guardarClienteRapido(event)" style="margin-bottom:1.5rem;">
-                        <h5 style="color:var(--primary); margin-bottom:0.5rem;">Nuevo Cliente</h5>
-                        <div class="form-group">
-                            <input type="text" id="nuevoClienteNombre" class="form-control" placeholder="Nombre Cliente / Empresa" required>
-                        </div>
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <input type="text" id="nuevoClienteRuc" class="form-control" placeholder="RUC / NIT">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" id="nuevoClienteContacto" class="form-control" placeholder="Contacto / Teléfono">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-secondary" style="width: 100%;"><i class="fa-solid fa-save"></i> Guardar Cliente</button>
-                    </form>
-
-                    <form onsubmit="guardarProyectoRapido(event)">
-                        <h5 style="color:var(--primary); margin-bottom:0.5rem;">Nuevo Proyecto</h5>
-                        <div class="form-group">
-                            <input type="text" id="nuevoProyectoNombre" class="form-control" placeholder="Nombre del Proyecto" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" id="nuevoProyectoUbicacion" class="form-control" placeholder="Ubicación (Ej: David, Chiriquí)">
-                        </div>
-                        <button type="submit" class="btn btn-secondary" style="width: 100%;"><i class="fa-solid fa-save"></i> Guardar Proyecto</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Tabla de Expedientes / Solicitudes Registradas -->
-            <div class="card-panel">
-                <div class="panel-header">
-                    <span class="panel-title"><i class="fa-solid fa-list-check"></i> Registro General de Solicitudes LSMCH</span>
-                    <button class="btn btn-secondary" onclick="cargarSolicitudesTabla()"><i class="fa-solid fa-arrows-rotate"></i> Actualizar</button>
-                </div>
-                <div class="table-responsive">
-                    <table class="table-lims">
-                        <thead>
-                            <tr>
-                                <th>Código Solicitud</th>
-                                <th>Cliente</th>
-                                <th>Proyecto</th>
-                                <th>Fecha Recepción</th>
-                                <th>Responsable Técnico</th>
-                                <th>Estado</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaSolicitudesCompleta">
-                            <tr><td colspan="7" style="text-align:center;">Cargando listado completo de solicitudes...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- 3. MÓDULO DE GEOTECNIA -->
-        <section id="tab-geotecnia" class="tab-content">
+        <!-- 1. MÓDULO DE GEOTECNIA -->
+        <section id="tab-geotecnia" class="tab-content active">
             <div class="subnav-pills">
                 <button class="subnav-pill active" onclick="switchSubGeo('granulometria-hc006')">
-                    <i class="fa-solid fa-file-excel"></i> Granulometría (HC-LSMCH-006)
+                    <i class="fa-solid fa-file-excel"></i> Granulometría (ASTM D6913 / HC-LSMCH-006)
                 </button>
                 <button class="subnav-pill" onclick="switchSubGeo('humedad')">
                     <i class="fa-solid fa-droplet"></i> Humedad (ASTM D2216)
                 </button>
                 <button class="subnav-pill" onclick="switchSubGeo('atterberg')">
-                    <i class="fa-solid fa-vial"></i> Límites Atterberg & SUCS
+                    <i class="fa-solid fa-vial"></i> Límites Atterberg & SUCS (ASTM D4318 / D2487)
                 </button>
                 <button class="subnav-pill" onclick="switchSubGeo('proctor')">
-                    <i class="fa-solid fa-weight-hanging"></i> Proctor E/M (ASTM D698)
+                    <i class="fa-solid fa-weight-hanging"></i> Proctor E/M (ASTM D698 / D1557)
                 </button>
                 <button class="subnav-pill" onclick="switchSubGeo('cbr')">
                     <i class="fa-solid fa-gauge-high"></i> CBR (ASTM D1883)
@@ -339,18 +160,18 @@
                 </button>
             </div>
 
-            <!-- SUB-PÁGINA 1: GRANULOMETRÍA HC-LSMCH-006 -->
+            <!-- ENSAYO DE GRANULOMETRÍA ASTM D6913 - HC-LSMCH-006 -->
             <div id="sub-granulometria-hc006" class="subgeo-content active">
                 <div class="card-panel">
                     <div class="panel-header">
-                        <span class="panel-title"><i class="fa-solid fa-flask-vial"></i> ENSAYO: DISTRIBUCIÓN DEL TAMAÑO DE PARTÍCULAS (GRADACIÓN) DE SUELOS USANDO ANÁLISIS DE TAMIZ</span>
+                        <span class="panel-title"><i class="fa-solid fa-flask-vial"></i> ENSAYO DE GRANULOMETRÍA (GRADACIÓN) DE SUELOS MEDIANTE ANÁLISIS DE TAMIZ (ASTM D6913 / D6913M - 17)</span>
                         <div>
                             <span class="badge-solicitud" style="margin-right:1rem;">HC-LSMCH-006 | Rev. 02</span>
-                            <button class="btn btn-primary" onclick="calcularHojaHC006()"><i class="fa-solid fa-calculator"></i> Calcular HC-LSMCH-006</button>
+                            <button class="btn btn-primary" onclick="calcularHojaHC006()"><i class="fa-solid fa-calculator"></i> Calcular según ASTM D6913</button>
                         </div>
                     </div>
 
-                    <!-- ENCABEZADO FORMATO HC-LSMCH-006 -->
+                    <!-- ENCABEZADO OFICIAL HC-LSMCH-006 -->
                     <div class="hc006-header-box">
                         <div class="form-grid-header">
                             <div><label>PROYECTO:</label><input type="text" id="hcPry" value="CONSTRUCCION DE NUEVO PABELLON"></div>
@@ -366,47 +187,62 @@
                         </div>
                     </div>
 
-                    <!-- MÉTODO DE ENSAYO & MASAS -->
+                    <!-- PARÁMETROS DE NORMA ASTM D6913 Y MASAS -->
                     <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:1rem; margin-bottom:1.5rem;">
-                        <p style="font-size:0.85rem; font-weight:700; color:#1e3a8a; margin-bottom:0.75rem;">Método de ensayo utilizado: Tamizado compuesto "A" - ASTM D6913</p>
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #cbd5e1; padding-bottom:0.5rem; margin-bottom:0.75rem;">
+                            <span style="font-size:0.85rem; font-weight:700; color:#1e3a8a;"><i class="fa-solid fa-book-bookmark"></i> Parámetros de Norma ASTM D6913 / D6913M - 17 (2025)</span>
+                            <span id="badgeCPL" class="badge-status badge-validado">Criterio Pérdida por Lavado: Cumple (CP_L &le; 0.5%)</span>
+                        </div>
                         
+                        <div class="grid-4" style="margin-bottom:0.75rem;">
+                            <div class="form-group">
+                                <label class="form-label">Método de Ensayo</label>
+                                <select id="hcMetodoASTM" class="form-control" onchange="calcularHojaHC006()">
+                                    <option value="METODO_A">Método A (Informar al 1% más cercano)</option>
+                                    <option value="METODO_B">Método B (Informar al 0.1% más cercano)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Procedimiento Muestra</label>
+                                <select id="hcProcedimientoASTM" class="form-control">
+                                    <option value="HUMEDO">Húmedo (Moist)</option>
+                                    <option value="SECADO_AIRE">Secado al Aire (Air-Dried)</option>
+                                    <option value="SECADO_HORNO">Secado al Horno (Oven-Dried)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Masa Total Húmeda, g</label>
+                                <input type="number" id="hcMasaHumedaTotal" class="form-control" value="1942.7" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Masa Total Seca (S,Md), g</label>
+                                <input type="number" id="hcMasaSecaTotal" class="form-control" value="1246.3" step="0.1">
+                            </div>
+                        </div>
+
                         <div class="grid-3">
-                            <div>
-                                <div class="form-group">
-                                    <label class="form-label">Masa total húmeda, g</label>
-                                    <input type="number" id="hcMasaHumedaTotal" class="form-control" value="1942.7" step="0.1">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Masa total seca, g</label>
-                                    <input type="number" id="hcMasaSecaTotal" class="form-control" value="1246.3" step="0.1">
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label">Límite Líquido (LL %)</label>
+                                <input type="number" id="hcLL" class="form-control" value="38.0" step="0.1">
                             </div>
-
-                            <div>
-                                <div class="form-group">
-                                    <label class="form-label">Límite Líquido (LL %)</label>
-                                    <input type="number" id="hcLL" class="form-control" value="38.0" step="0.1">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Límite Plástico (LP %)</label>
-                                    <input type="number" id="hcLP" class="form-control" value="22.0" step="0.1">
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label">Límite Plástico (LP %)</label>
+                                <input type="number" id="hcLP" class="form-control" value="22.0" step="0.1">
                             </div>
-
                             <div>
-                                <div style="background:#ffffff; border:1px solid var(--border-accent); border-radius:6px; padding:0.75rem; text-align:center;">
+                                <div style="background:#ffffff; border:1px solid var(--border-accent); border-radius:6px; padding:0.5rem; text-align:center;">
                                     <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">CLASIFICACIÓN SUCS (ASTM D2487)</span>
-                                    <h2 id="hcResultSUCS" style="color:#1e3a8a; margin-top:0.2rem;">GW (Grava bien graduada)</h2>
-                                    <p id="hcResultSUCSParams" style="font-size:0.78rem; color:#059669; font-weight:600; margin-top:0.2rem;">Cu: 12.5 | Cc: 1.8</p>
+                                    <h2 id="hcResultSUCS" style="color:#1e3a8a; margin-top:0.1rem; font-size:1.2rem;">GW (Grava bien graduada)</h2>
+                                    <p id="hcResultSUCSParams" style="font-size:0.78rem; color:#059669; font-weight:600;">Cu: 12.5 | Cc: 1.8</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TABLA Y GRÁFICA -->
+                    <!-- TABLA Y GRÁFICA SEMILOGARÍTMICA -->
                     <div class="grid-2">
                         <div>
-                            <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-table-cells"></i> Tabla de Tamizado (ASTM D6913)</h4>
+                            <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-table-cells"></i> Tabla de Tamizado E11 (ASTM D6913)</h4>
                             <div class="table-responsive">
                                 <table class="table-lims" id="tablaHC006">
                                     <thead>
@@ -432,7 +268,7 @@
                                         <tr><td>No. 40</td><td>0.425</td><td><input type="number" class="table-input hc-mret" value="13.32"></td><td class="r-ind">14.76</td><td class="r-acu">28.96</td><td class="r-pasa">71.04</td></tr>
                                         <tr><td>No. 60</td><td>0.250</td><td><input type="number" class="table-input hc-mret" value="12.18"></td><td class="r-ind">13.50</td><td class="r-acu">42.46</td><td class="r-pasa">57.54</td></tr>
                                         <tr><td>No. 100</td><td>0.150</td><td><input type="number" class="table-input hc-mret" value="11.16"></td><td class="r-ind">12.37</td><td class="r-acu">54.83</td><td class="r-pasa">45.17</td></tr>
-                                        <tr><td>No. 140</td><td>0.105</td><td><input type="number" class="table-input hc-mret" value="17.41"></td><td class="r-ind">19.29</td><td class="r-acu">74.12</td><td class="r-pasa">25.88</td></tr>
+                                        <tr><td>No. 140</td><td>0.106</td><td><input type="number" class="table-input hc-mret" value="17.41"></td><td class="r-ind">19.29</td><td class="r-acu">74.12</td><td class="r-pasa">25.88</td></tr>
                                         <tr><td>No. 200</td><td>0.075</td><td><input type="number" class="table-input hc-mret" value="12.77"></td><td class="r-ind">14.15</td><td class="r-acu">88.27</td><td class="r-pasa">11.73</td></tr>
                                         <tr><td>Fondo</td><td>0.000</td><td><input type="number" class="table-input hc-mret" value="10.34"></td><td class="r-ind">--</td><td class="r-acu">--</td><td class="r-pasa">--</td></tr>
                                     </tbody>
@@ -440,13 +276,12 @@
                             </div>
                         </div>
 
-                        <!-- GRÁFICA SEMILOGARÍTMICA CON CONTROLES INTERACTIVOS DE ZOOM % -->
                         <div>
-                            <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-chart-area"></i> Curva Granulométrica LSMCH</h4>
+                            <h4 style="color:#1e3a8a; font-size:0.9rem; margin-bottom:0.5rem;"><i class="fa-solid fa-chart-area"></i> Curva Granulométrica (ASTM D6913)</h4>
                             
                             <div class="chart-controls-bar">
                                 <div class="chart-controls-group">
-                                    <label><strong>Ajuste Escala Y (%):</strong></label>
+                                    <label><strong>Escala Y (%):</strong></label>
                                     <span>Mín:</span>
                                     <input type="number" id="zoomYMin" value="0" min="0" max="100" style="width:55px;" onchange="reRenderChart()"> %
                                     <span>Máx:</span>
@@ -491,75 +326,36 @@
                 </div>
             </div>
 
-            <!-- SUB-PÁGINAS ADICIONALES -->
-            <div id="sub-humedad" class="subgeo-content" style="display:none;">
-                <div class="card-panel">
-                    <h3>Contenido de Humedad (ASTM D2216)</h3>
-                    <p>En construcción - Hoja de cálculo de masa de recipientes y %W.</p>
-                </div>
+            <!-- OTROS SUB-MÓDULOS DE GEOTECNIA -->
+            <div id="sub-humedad" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Humedad (ASTM D2216)</h3></div></div>
+            <div id="sub-atterberg" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Límites Atterberg & SUCS (ASTM D4318 / D2487)</h3></div></div>
+            <div id="sub-proctor" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Proctor (ASTM D698 / D1557)</h3></div></div>
+            <div id="sub-cbr" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>CBR (ASTM D1883)</h3></div></div>
+            <div id="sub-densidad-campo" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>Densidad de Campo</h3></div></div>
+            <div id="sub-spt" class="subgeo-content" style="display:none;"><div class="card-panel"><h3>SPT (ASTM D1586)</h3></div></div>
+        </section>
+
+        <!-- DASHBOARD, SOLICITUDES, CONCRETO, INCERTIDUMBRE, REPORTES -->
+        <section id="tab-dashboard" class="tab-content">
+            <div class="grid-4" style="margin-bottom: 1.5rem;">
+                <div class="kpi-card"><div class="kpi-icon"><i class="fa-solid fa-file-invoice"></i></div><div><div class="kpi-value" id="kpiTotalSol">1</div><div class="kpi-label">Solicitudes Totales</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-spinner"></i></div><div><div class="kpi-value" id="kpiSolActivas">1</div><div class="kpi-label">En Proceso</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background:#e0f2fe; color:#0284c7;"><i class="fa-solid fa-users"></i></div><div><div class="kpi-value" id="kpiClientes">1</div><div class="kpi-label">Clientes</div></div></div>
+                <div class="kpi-card"><div class="kpi-icon" style="background:#dcfce7; color:#15803d;"><i class="fa-solid fa-building-flag"></i></div><div><div class="kpi-value" id="kpiProyectos">1</div><div class="kpi-label">Proyectos</div></div></div>
             </div>
-            <div id="sub-atterberg" class="subgeo-content" style="display:none;">
-                <div class="card-panel">
-                    <h3>Límites de Atterberg & SUCS (ASTM D4318 / D2487)</h3>
-                    <p>En construcción - Determinación de LL, LP, IP y Carta de Plasticidad.</p>
-                </div>
-            </div>
-            <div id="sub-proctor" class="subgeo-content" style="display:none;">
-                <div class="card-panel">
-                    <h3>Proctor Estándar / Modificado (ASTM D698 / D1557)</h3>
-                    <p>En construcción - Curva de compactación y humedad óptima.</p>
-                </div>
-            </div>
-            <div id="sub-cbr" class="subgeo-content" style="display:none;">
-                <div class="card-panel">
-                    <h3>Ensayo CBR (ASTM D1883)</h3>
-                    <p>En construcción - Penetración vs Carga y %CBR.</p>
-                </div>
-            </div>
-            <div id="sub-densidad-campo" class="subgeo-content" style="display:none;">
-                <div class="card-panel">
-                    <h3>Densidad de Campo (ASTM D1556 / D6938)</h3>
-                    <p>En construcción - Cono de arena / Ensayo nuclear.</p>
-                </div>
-            </div>
-            <div id="sub-spt" class="subgeo-content" style="display:none;">
-                <div class="card-panel">
-                    <h3>Penetración Estándar SPT (ASTM D1586)</h3>
-                    <p>En construcción - Corrección N60 y perfil estratigráfico.</p>
-                </div>
+            <div class="card-panel"><div class="panel-header"><span class="panel-title"><i class="fa-solid fa-clock-rotate-left"></i> Solicitudes Recientes</span></div><div class="table-responsive"><table class="table-lims"><thead><tr><th>Expediente</th><th>Cliente</th><th>Proyecto</th><th>Estado</th></tr></thead><tbody id="tablaSolicitudesRecientes"></tbody></table></div></div>
+        </section>
+
+        <section id="tab-solicitudes" class="tab-content">
+            <div class="card-panel">
+                <div class="panel-header"><span class="panel-title"><i class="fa-solid fa-list-check"></i> Registro de Solicitudes LSMCH</span><button class="btn btn-secondary" onclick="cargarSolicitudesTabla()"><i class="fa-solid fa-arrows-rotate"></i> Actualizar</button></div>
+                <div class="table-responsive"><table class="table-lims"><thead><tr><th>Código Solicitud</th><th>Cliente</th><th>Proyecto</th><th>Fecha Recepción</th><th>Estado</th></tr></thead><tbody id="tablaSolicitudesCompleta"></tbody></table></div>
             </div>
         </section>
 
-        <!-- 4. MÓDULO DE CONCRETO -->
-        <section id="tab-concreto" class="tab-content">
-            <div class="card-panel">
-                <div class="panel-header">
-                    <span class="panel-title"><i class="fa-solid fa-cubes"></i> Resistencia a Compresión (ASTM C39)</span>
-                </div>
-                <p>Módulo de cilindros f'c, slump y evolución de resistencia.</p>
-            </div>
-        </section>
-
-        <!-- 5. MÓDULO DE INCERTIDUMBRE GUM -->
-        <section id="tab-incertidumbre" class="tab-content">
-            <div class="card-panel">
-                <div class="panel-header">
-                    <span class="panel-title"><i class="fa-solid fa-calculator"></i> Presupuestos de Incertidumbre GUM (ISO 17025)</span>
-                </div>
-                <p>Evaluaciones Tipo A y Tipo B para los ensayos del laboratorio.</p>
-            </div>
-        </section>
-
-        <!-- 6. REPORTES PDF ISO 17025 -->
-        <section id="tab-reportes" class="tab-content">
-            <div class="card-panel">
-                <div class="panel-header">
-                    <span class="panel-title"><i class="fa-solid fa-print"></i> Emisión e Impresión de Reportes</span>
-                    <button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Reporte</button>
-                </div>
-                <p>Generación de hoja membretada para el expediente actual.</p>
-            </div>
-        </section>
+        <section id="tab-concreto" class="tab-content"><div class="card-panel"><h3>Módulo de Concreto</h3></div></section>
+        <section id="tab-incertidumbre" class="tab-content"><div class="card-panel"><h3>Módulo de Incertidumbre GUM</h3></div></section>
+        <section id="tab-reportes" class="tab-content"><div class="card-panel"><h3>Reportes e Impresión PDF</h3><button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Reporte</button></div></section>
 
     </main>
 
@@ -569,7 +365,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             cargarStatsDashboard();
             cargarSolicitudesTabla();
-            cargarClientesCombo();
             calcularHojaHC006();
         });
 
@@ -613,19 +408,13 @@
                 const tbodyDashboard = document.getElementById('tablaSolicitudesRecientes');
                 const tbodyCompleta = document.getElementById('tablaSolicitudesCompleta');
 
-                if (data.length === 0) {
-                    const emptyRow = '<tr><td colspan="7" style="text-align:center;">No hay solicitudes registradas.</td></tr>';
-                    if (tbodyDashboard) tbodyDashboard.innerHTML = emptyRow;
-                    if (tbodyCompleta) tbodyCompleta.innerHTML = emptyRow;
-                    return;
-                }
+                if (!data || data.length === 0) return;
 
                 const rowsHtmlDashboard = data.slice(0, 5).map(s => `
                     <tr>
                         <td><span class="badge-solicitud">${s.codigo_solicitud}</span></td>
                         <td>${s.cliente_nombre}</td>
                         <td>${s.proyecto_nombre}</td>
-                        <td>${s.fecha_recepcion}</td>
                         <td><span class="badge-status badge-en-proceso">${s.estado}</span></td>
                     </tr>
                 `).join('');
@@ -636,9 +425,7 @@
                         <td>${s.cliente_nombre}</td>
                         <td>${s.proyecto_nombre}</td>
                         <td>${s.fecha_recepcion}</td>
-                        <td>${s.responsable_tecnico || 'Técnico LSMCH'}</td>
                         <td><span class="badge-status badge-en-proceso">${s.estado}</span></td>
-                        <td><button class="btn btn-secondary" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="switchTab('geotecnia')"><i class="fa-solid fa-flask"></i> Cargar Ensayos</button></td>
                     </tr>
                 `).join('');
 
@@ -648,113 +435,12 @@
             } catch (e) { console.error(e); }
         }
 
-        async function cargarClientesCombo() {
-            try {
-                const res = await fetch('/api/lims/clientes');
-                const clientes = await res.json();
-                const sel = document.getElementById('selectCliente');
-                if (sel) {
-                    sel.innerHTML = '<option value="">-- Seleccionar Cliente --</option>' + 
-                        clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-                }
-            } catch(e) { console.error(e); }
-        }
-
-        async function cargarProyectosCliente() {
-            const clienteId = document.getElementById('selectCliente').value;
-            if (!clienteId) return;
-            try {
-                const res = await fetch(`/api/lims/proyectos?cliente_id=${clienteId}`);
-                const proyectos = await res.json();
-                const sel = document.getElementById('selectProyecto');
-                if (sel) {
-                    sel.innerHTML = '<option value="">-- Seleccionar Proyecto --</option>' + 
-                        proyectos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
-                }
-            } catch(e) { console.error(e); }
-        }
-
-        async function guardarNuevaSolicitud(e) {
-            e.preventDefault();
-            const clienteId = document.getElementById('selectCliente').value;
-            const proyectoId = document.getElementById('selectProyecto').value;
-            const fechaRec = document.getElementById('fechaRecepcion').value;
-            const fechaEnt = document.getElementById('fechaEntrega').value;
-
-            try {
-                const res = await fetch('/api/lims/solicitudes', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        cliente_id: clienteId,
-                        proyecto_id: proyectoId,
-                        fecha_recepcion: fechaRec,
-                        fecha_entrega_estimada: fechaEnt
-                    })
-                });
-                const r = await res.json();
-                if (r.success) {
-                    alert(`¡Solicitud ${r.codigo_solicitud} generada exitosamente!`);
-                    cargarStatsDashboard();
-                    cargarSolicitudesTabla();
-                    switchTab('solicitudes');
-                } else {
-                    alert("Error: " + r.error);
-                }
-            } catch(err) { alert("Error al conectar con el servidor."); }
-        }
-
-        async function guardarClienteRapido(e) {
-            e.preventDefault();
-            const nombre = document.getElementById('nuevoClienteNombre').value.trim();
-            const ruc = document.getElementById('nuevoClienteRuc').value.trim();
-            const contacto = document.getElementById('nuevoClienteContacto').value.trim();
-
-            try {
-                const res = await fetch('/api/lims/clientes', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({nombre, ruc_nit: ruc, contacto})
-                });
-                const r = await res.json();
-                if (r.success) {
-                    alert("Cliente guardado correctamente.");
-                    document.getElementById('nuevoClienteNombre').value = '';
-                    cargarClientesCombo();
-                }
-            } catch(e) { console.error(e); }
-        }
-
-        async function guardarProyectoRapido(e) {
-            e.preventDefault();
-            const clienteId = document.getElementById('selectCliente').value;
-            const nombre = document.getElementById('nuevoProyectoNombre').value.trim();
-            const ubicacion = document.getElementById('nuevoProyectoUbicacion').value.trim();
-
-            if (!clienteId) {
-                alert("Por favor seleccione un cliente primero.");
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/lims/proyectos', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({cliente_id: clienteId, nombre, ubicacion})
-                });
-                const r = await res.json();
-                if (r.success) {
-                    alert("Proyecto registrado correctamente.");
-                    document.getElementById('nuevoProyectoNombre').value = '';
-                    cargarProyectosCliente();
-                }
-            } catch(e) { console.error(e); }
-        }
-
         async function calcularHojaHC006() {
             const mSecaTotal = parseFloat(document.getElementById('hcMasaSecaTotal').value || 1246.3);
             const ll = parseFloat(document.getElementById('hcLL').value || 38.0);
             const lp = parseFloat(document.getElementById('hcLP').value || 22.0);
+            const metodo = document.getElementById('hcMetodoASTM').value || "METODO_A";
+            const procedimiento = document.getElementById('hcProcedimientoASTM').value || "HUMEDO";
 
             const rows = document.querySelectorAll('#tablaHC006 tbody tr');
             const tamices = [];
@@ -770,6 +456,8 @@
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
+                        metodo_ensayo: metodo,
+                        procedimiento: procedimiento,
                         masa_total_seca_g: mSecaTotal,
                         ll: ll,
                         lp: lp,
@@ -787,6 +475,16 @@
                             r.querySelector('.r-pasa').innerText = data.tamices[idx].pct_pasa + '%';
                         }
                     });
+                }
+
+                // Criterio de pérdida por lavado ASTM D6913
+                const badgeCPL = document.getElementById('badgeCPL');
+                if (data.cp_l_aceptable) {
+                    badgeCPL.className = 'badge-status badge-validado';
+                    badgeCPL.innerText = `Criterio Pérdida Lavado: Cumple (${data.cp_l_pct}% \u2264 0.5%)`;
+                } else {
+                    badgeCPL.className = 'badge-status badge-en-proceso';
+                    badgeCPL.innerText = `ALERTA NORMATIVA: Pérdida Lavado Excesiva (${data.cp_l_pct}% > 0.5%)`;
                 }
 
                 document.getElementById('hcResultSUCS').innerText = data.clasificacion_sucs || "GW";
